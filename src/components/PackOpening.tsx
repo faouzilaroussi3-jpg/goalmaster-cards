@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlayerCard } from "@/components/PlayerCard";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FootballCinematic } from "@/components/FootballCinematic";
-import { openingCinematic } from "@/lib/opening-cinematic";
 
 export interface OpenedCard {
   slot: number;
@@ -60,12 +59,7 @@ export function PackOpening({
     return () => clearTimeout(t);
   }, [phase]);
 
-  useEffect(() => {
-    if (phase !== "football" || !result) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = setTimeout(() => setPhase("reveal"), reduced ? 1000 : openingCinematic(result.cards).duration);
-    return () => clearTimeout(t);
-  }, [phase, result]);
+  const finishFootball = useCallback(() => setPhase((current) => current === "football" ? "reveal" : current), []);
 
   // reveal cards progressively, longer pause for higher tiers
   useEffect(() => {
@@ -147,7 +141,7 @@ export function PackOpening({
         </div>
       )}
 
-      {phase === "football" && result && <FootballCinematic cards={result.cards} />}
+      {phase === "football" && result && <FootballCinematic cards={result.cards} onComplete={finishFootball} />}
 
       {phase !== "intro" && phase !== "burst" && phase !== "football" && result && (
         <div className="relative w-full max-w-5xl">
