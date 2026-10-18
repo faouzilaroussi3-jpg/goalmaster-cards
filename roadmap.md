@@ -1,3 +1,3 @@
-- [x] Renforcer les couleurs et les effets des sept raretés.
-- [x] Remplacer le catalogue fictif par de vrais joueurs avec portraits attribués.
-- [x] Vérifier les cartes et l’ouverture dans le jeu.
+- [x] Photos plein cadre et bordures réfléchissantes à partir de Légendaire.
+- [x] Répartir les joueurs par niveau et créer des éditions illustrées distinctes.
+- [x] Vérifier catalogue, illustrations et ouverture réelle.
