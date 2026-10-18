@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
 import { MysteryCard, PlayerCard } from "@/components/PlayerCard";
+import { PhotoCredits } from "@/components/PhotoCredits";
 
 export const Route = createFileRoute("/_authenticated/collection")({
   head: () => ({
@@ -126,6 +127,7 @@ function CollectionPage() {
         ))}
       </div>
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
+      <PhotoCredits />
     </div>
   );
 }
