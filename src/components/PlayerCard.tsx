@@ -1,4 +1,5 @@
-import playerImg from "@/assets/player.png";
+import { useState } from "react";
+import { Shield, Star, Crown, Sparkles } from "lucide-react";
 import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 
@@ -15,28 +16,29 @@ export function PlayerCard({
 }) {
   const r = rarityMeta(card.rarity);
   const version = card.version ?? "normal";
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const Emblem = r.tier >= 5 ? Crown : r.tier >= 3 ? Star : Shield;
   return (
     <div
       className={cn("fm-card select-none", missing && "is-missing", className)}
       data-rarity={card.rarity}
       data-version={version}
     >
-      <img
-        src={card.image_url || playerImg}
-        alt={card.name}
-        loading="lazy"
-        className="absolute inset-x-0 bottom-[30%] mx-auto h-[62%] w-auto object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.6)]"
-      />
-      <div className="absolute left-2.5 top-2 flex flex-col items-center leading-none">
-        <span className="font-display text-3xl text-foreground sm:text-4xl">{card.rating}</span>
-        <span className="font-display text-sm text-primary">{card.pos}</span>
+      <div className="card-pattern" aria-hidden="true" />
+      <div className="card-crest" aria-hidden="true"><Emblem /></div>
+      {card.image_url && failedImage !== card.image_url ? (
+        <img src={card.image_url} alt={card.name} loading="lazy" className="card-portrait" onError={() => setFailedImage(card.image_url ?? null)} />
+      ) : <div className="card-initials" aria-label={card.name}>{card.name.split(" ").map((word) => word[0]).slice(0, 2).join("")}</div>}
+      <div className="card-rating">
+        <span className="font-display">{card.rating}</span>
+        <span className="font-display card-position">{card.pos}</span>
       </div>
-      <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
-        <span className="rounded bg-background/70 px-1.5 py-0.5 font-display text-xs tracking-wider text-foreground">
+      <div className="card-badges">
+        <span className="card-rarity-code font-display">
           {r.short}
         </span>
         {version !== "normal" && (
-          <span className="rounded bg-gold px-1.5 py-0.5 font-display text-xs text-primary-foreground">
+          <span className="card-version font-display">
             {VERSION_LABEL[version]}
           </span>
         )}
@@ -46,15 +48,15 @@ export function PlayerCard({
           x{count}
         </span>
       ) : null}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/90 to-transparent px-2 pb-2 pt-6 text-center">
-        <div className="truncate font-display text-lg leading-tight text-foreground sm:text-xl">{card.name}</div>
-        <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
-          {card.club} · {card.nationality}
-        </div>
-        <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">{r.label}</div>
+      <div className="card-details">
+        <div className="card-name font-display">{card.name}</div>
+        <div className="card-club">{card.club}</div>
+        <div className="card-country">{card.nationality}</div>
+        <div className="card-rarity-label">{r.tier >= 4 && <Sparkles aria-hidden="true" />}{r.label}</div>
       </div>
       <div className="holo" />
       {r.tier >= 3 && <div className="sheen" />}
+      {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
     </div>
   );
 }
