@@ -8,6 +8,8 @@ export const Route = createFileRoute("/leaderboard")({
       { name: "description", content: "Les meilleurs collectionneurs Goalmaster : cartes, légendaires, Shiny et Secrètes Ultimes." },
       { property: "og:title", content: "Classement — Goalmaster" },
       { property: "og:description", content: "Qui possède la plus belle collection ?" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

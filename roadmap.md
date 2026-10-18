@@ -1,0 +1,3 @@
+- [x] Renforcer les couleurs et les effets des sept raretés.
+- [x] Remplacer le catalogue fictif par de vrais joueurs avec portraits attribués.
+- [x] Vérifier les cartes et l’ouverture dans le jeu.

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
 import { MysteryCard, PlayerCard } from "@/components/PlayerCard";
+import { PhotoCredits } from "@/components/PhotoCredits";
 
 export const Route = createFileRoute("/_authenticated/collection")({
   head: () => ({
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/_authenticated/collection")({
       { name: "description", content: "Toutes vos cartes, les cartes manquantes et vos statistiques de collection." },
       { property: "og:title", content: "Ma collection — Goalmaster" },
       { property: "og:description", content: "Votre collection de cartes de football." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CollectionPage,
@@ -124,6 +127,7 @@ function CollectionPage() {
         ))}
       </div>
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
+      <PhotoCredits />
     </div>
   );
 }
