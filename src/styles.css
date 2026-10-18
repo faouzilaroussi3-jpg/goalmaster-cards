@@ -128,17 +128,17 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .fm-card::after { content: ""; position: absolute; inset: 4px; border: 1px solid color-mix(in oklab, var(--rc) 65%, transparent); border-radius: 4px; pointer-events: none; z-index: 5; }
-.card-pattern { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 18px, color-mix(in oklab, var(--rc) 22%, transparent) 18px 19px); }
+.card-pattern { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(135deg, transparent 0 18px, color-mix(in oklab, var(--rc) 15%, transparent) 18px 19px); }
 .card-crest { position: absolute; top: 8%; left: 35%; width: 46%; opacity: .15; color: var(--rc); }
 .card-crest svg { width: 100%; height: auto; }
-.card-portrait { position: absolute; inset: 12% 9% auto 26%; width: 65%; height: 62%; object-fit: cover; object-position: center 20%; border-radius: 38% 38% 4px 4px; mask-image: linear-gradient(var(--card-night) 72%, transparent); }
+.card-portrait { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
 .card-initials { position: absolute; inset: 20% 0 auto; text-align: center; font-family: var(--font-display); font-size: 48px; color: var(--rc); }
-.card-rating { position: absolute; left: 8%; top: 6%; display: flex; flex-direction: column; align-items: center; font-size: 30px; line-height: 1; text-shadow: 0 2px 6px var(--card-shadow); }
+.card-rating { position: absolute; left: 7%; top: 5%; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 4px 6px; border-radius: 4px; background: color-mix(in oklab, var(--card-night) 75%, transparent); font-size: 30px; line-height: 1; text-shadow: 0 2px 6px var(--card-shadow); }
 .card-position { font-size: 12px; margin-top: 3px; }
-.card-badges { position: absolute; right: 8%; top: 6%; display: flex; flex-direction: column; align-items: end; gap: 3px; }
+.card-badges { position: absolute; right: 7%; top: 5%; z-index: 2; display: flex; flex-direction: column; align-items: end; gap: 3px; }
 .card-rarity-code, .card-version { border: 1px solid var(--rc); background: var(--card-night); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--rc); }
 .card-version { background: var(--rc); color: var(--card-night); }
-.card-details { position: absolute; inset: auto 0 0; min-height: 34%; padding: 18% 7% 7%; text-align: center; background: linear-gradient(transparent, var(--card-night) 36%, color-mix(in oklab, var(--rc) 18%, var(--card-night))); z-index: 2; }
+.card-details { position: absolute; inset: auto 0 0; min-height: 34%; padding: 18% 7% 7%; text-align: center; background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 90%, transparent) 45%, color-mix(in oklab, var(--rc) 18%, var(--card-night))); z-index: 2; }
 .card-name { font-size: 18px; line-height: 1.05; text-wrap: balance; overflow-wrap: anywhere; }
 .card-club { font-size: 10px; line-height: 1.2; margin-top: 4px; }
 .card-country { font-size: 9px; opacity: .75; line-height: 1.3; }
@@ -163,6 +163,16 @@
 .fm-card[data-rarity="secret_legendary"] .card-pattern { background: repeating-conic-gradient(from 0deg at 65% 35%, transparent 0deg 9deg, color-mix(in oklab, var(--rc) 40%, transparent) 9deg 11deg); animation: aura-breathe 3s ease-in-out infinite; }
 .card-sparks { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(circle at 15% 28%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 88% 44%, var(--rc) 0 1px, transparent 3px), radial-gradient(circle at 25% 70%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 80% 15%, var(--rc) 0 2px, transparent 4px); animation: sparkle-drift 4s ease-in-out infinite; }
 .fm-card[data-rarity="legendary"] .card-sparks { animation-duration: 3s; }
+.fm-card[data-rarity="legendary"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 92%, transparent) 38%, color-mix(in oklab, var(--rc) 38%, var(--card-night))); padding-bottom: 9%; }
+.fm-card[data-rarity="legendary"] .card-name { color: var(--rc); }
+.fm-card[data-rarity="legendary"] .card-pattern { background: linear-gradient(125deg, color-mix(in oklab, var(--rc) 30%, transparent), transparent 35% 70%, color-mix(in oklab, var(--rc) 30%, transparent)), repeating-linear-gradient(45deg, transparent 0 24px, color-mix(in oklab, var(--rc) 22%, transparent) 24px 25px); }
+.card-foil-border { position: absolute; inset: 0; padding: 5px; z-index: 6; border-radius: inherit; pointer-events: none; background: conic-gradient(from 0deg, var(--rc), var(--card-light), var(--rc), var(--card-night), var(--rc), var(--card-light), var(--rc)); background-size: 200% 200%; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; animation: foil-travel 3s linear infinite; }
+.card-border-glitter { position: absolute; inset: 0; z-index: 7; pointer-events: none; background: radial-gradient(circle at 3% 18%, var(--card-light) 0 1px, transparent 3px), radial-gradient(circle at 97% 42%, var(--card-light) 0 1px, transparent 4px), radial-gradient(circle at 24% 2%, var(--card-light) 0 1px, transparent 3px), radial-gradient(circle at 78% 98%, var(--card-light) 0 1px, transparent 4px), radial-gradient(circle at 3% 80%, var(--rc) 0 2px, transparent 5px), radial-gradient(circle at 96% 12%, var(--card-light) 0 2px, transparent 5px); animation: glitter-twinkle 1.8s ease-in-out infinite alternate; }
+.fm-card[data-rarity="secret_legendary"] .card-foil-border { padding: 6px; animation-duration: 2s; }
+.fm-card[data-rarity="secret_ultimate"] .card-foil-border { background-image: var(--gradient-rainbow); animation-duration: 1.5s; }
+.fm-card[data-version="alt"] .card-portrait { transform: scale(1.08); object-position: 65% 20%; }
+@keyframes foil-travel { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } 100% { background-position: 0% 0%; } }
+@keyframes glitter-twinkle { from { opacity: .3; filter: brightness(1); } to { opacity: 1; filter: brightness(2); } }
 .fm-card[data-rarity="secret_legendary"] .card-sparks { animation-duration: 2s; }
 .fm-card[data-rarity="secret_ultimate"] {
   --rc: var(--r-su);

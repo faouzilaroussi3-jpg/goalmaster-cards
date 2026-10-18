@@ -55,6 +55,8 @@ export function PlayerCard({
         <div className="card-rarity-label">{r.tier >= 4 && <Sparkles aria-hidden="true" />}{r.label}</div>
       </div>
       <div className="holo" />
+      {r.tier >= 5 && <div className="card-foil-border" aria-hidden="true" />}
+      {r.tier >= 5 && <div className="card-border-glitter" aria-hidden="true" />}
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
     </div>
