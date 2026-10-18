@@ -64,7 +64,7 @@ function PacksPage() {
 
   async function buy(key: string) {
     const { error } = await supabase.rpc("buy_pack", { _pack_key: key });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Pack acheté !");
     qc.invalidateQueries({ queryKey: ["packs"] });
     qc.invalidateQueries({ queryKey: ["profile"] });

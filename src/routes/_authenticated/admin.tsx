@@ -54,7 +54,7 @@ function CardsAdmin() {
   async function add(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("cards").insert({ ...f, image_url: f.image_url || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Carte ajoutée");
     setF(empty);
     qc.invalidateQueries();
@@ -129,7 +129,7 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
   async function save() {
     const clean = (o: Record<string, number>) => Object.fromEntries(Object.entries(o).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)]));
     const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), bonus_rates: clean(bonus) }).eq("id", p.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Pack enregistré");
     onSaved();
   }
@@ -148,7 +148,7 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
       </div>
       <div>
         <p className="mb-1 text-xs uppercase text-muted-foreground">Carte bonus (total {sum(bonus).toFixed(1)}%)</p>
-        {[["normal", "Normale"], ["alt", "ALT"], ["shiny", "Shiny"], ["ultimate", "Secrète Ultime"]].map(([k, l]) => (
+        {([["normal", "Normale"], ["alt", "ALT"], ["shiny", "Shiny"], ["ultimate", "Secrète Ultime"]] as const).map(([k, l]) => (
           <label key={k} className="flex items-center justify-between gap-2 py-0.5 text-sm">
             {l}
             <input className={`${inp} w-24`} type="number" step="0.1" min={0} value={bonus[k] ?? 0} onChange={(e) => setBonus({ ...bonus, [k]: +e.target.value })} />
@@ -179,7 +179,7 @@ function EventsAdmin() {
     const { error } = await supabase.from("events").insert({
       title: f.title, description: f.description, pack_key: f.pack_key || null, ends_at: f.ends_at ? new Date(f.ends_at).toISOString() : null,
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setF({ title: "", description: "", pack_key: "", ends_at: "" });
     qc.invalidateQueries();
   }

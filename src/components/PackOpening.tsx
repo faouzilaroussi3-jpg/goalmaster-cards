@@ -68,7 +68,7 @@ export function PackOpening({
     const delay = revealed === 0 ? 500 : 450 + (prev ? prev.tier * 120 : 0);
     const t = setTimeout(() => {
       const c = main[revealed];
-      if (c.tier >= 4) triggerFlash(c);
+      if (c && c.tier >= 4) triggerFlash(c);
       setRevealed((r) => r + 1);
     }, delay);
     return () => clearTimeout(t);
