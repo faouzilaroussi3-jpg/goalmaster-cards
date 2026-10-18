@@ -15,6 +15,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Ouvrez des boosters, découvrez des cartes Légendaires, Shiny et Secrètes Ultimes, et grimpez au classement." },
       { property: "og:title", content: "Goalmaster — Collectionnez les légendes du football" },
       { property: "og:description", content: "Le jeu de cartes de football à collectionner. Ouvrez vos packs !" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,

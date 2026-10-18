@@ -13,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/collection")({
       { name: "description", content: "Toutes vos cartes, les cartes manquantes et vos statistiques de collection." },
       { property: "og:title", content: "Ma collection — Goalmaster" },
       { property: "og:description", content: "Votre collection de cartes de football." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CollectionPage,

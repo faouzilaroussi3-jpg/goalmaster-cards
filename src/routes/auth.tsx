@@ -12,6 +12,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Créez votre compte Goalmaster et commencez votre collection de cartes de football." },
       { property: "og:title", content: "Connexion — Goalmaster" },
       { property: "og:description", content: "Rejoignez Goalmaster et ouvrez vos premiers packs." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,

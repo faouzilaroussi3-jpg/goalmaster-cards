@@ -16,6 +16,8 @@ export const Route = createFileRoute("/_authenticated/packs")({
       { name: "description", content: "Ouvrez vos boosters Classique et Premium." },
       { property: "og:title", content: "Mes packs — Goalmaster" },
       { property: "og:description", content: "Ouvrez vos boosters Goalmaster." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: PacksPage,

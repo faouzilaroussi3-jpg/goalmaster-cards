@@ -13,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { name: "description", content: "Gérer les cartes, packs, taux de drop et événements." },
       { property: "og:title", content: "Administration — Goalmaster" },
       { property: "og:description", content: "Interface administrateur Goalmaster." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AdminPage,

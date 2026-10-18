@@ -13,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/profile")({
       { name: "description", content: "Votre niveau, vos statistiques et votre historique d'ouverture." },
       { property: "og:title", content: "Mon profil — Goalmaster" },
       { property: "og:description", content: "Profil joueur Goalmaster." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProfilePage,
