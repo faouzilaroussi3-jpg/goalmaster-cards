@@ -3,3 +3,5 @@
 - [x] Vérifier catalogue, illustrations et ouverture réelle.
 - [x] Animation de silhouettes football avec intensité liée aux cartes du pack.
 - [x] Vérifier la séquence complète et les tests de rareté.
+- [ ] Remplacer les silhouettes plates par une ouverture 3D acrobatique avec caméra dynamique et effets de rareté.
+- [ ] Vérifier le rendu 3D, le mouvement et une ouverture complète.
