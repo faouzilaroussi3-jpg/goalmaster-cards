@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { PlayerCard } from "@/components/PlayerCard";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FootballCinematic } from "@/components/FootballCinematic";
+import { openingCinematic } from "@/lib/opening-cinematic";
 
 export interface OpenedCard {
   slot: number;
@@ -25,7 +28,7 @@ export interface OpenResult {
   xp_gained: number;
 }
 
-type Phase = "intro" | "burst" | "reveal" | "bonus-wait" | "bonus" | "done";
+type Phase = "intro" | "burst" | "football" | "reveal" | "bonus-wait" | "bonus" | "done";
 
 export function PackOpening({
   packImage,
@@ -53,9 +56,16 @@ export function PackOpening({
 
   useEffect(() => {
     if (phase !== "burst") return;
-    const t = setTimeout(() => setPhase("reveal"), 750);
+    const t = setTimeout(() => setPhase("football"), 750);
     return () => clearTimeout(t);
   }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "football" || !result) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = setTimeout(() => setPhase("reveal"), reduced ? 1000 : openingCinematic(result.cards).duration);
+    return () => clearTimeout(t);
+  }, [phase, result]);
 
   // reveal cards progressively, longer pause for higher tiers
   useEffect(() => {
@@ -137,7 +147,9 @@ export function PackOpening({
         </div>
       )}
 
-      {phase !== "intro" && phase !== "burst" && result && (
+      {phase === "football" && result && <FootballCinematic cards={result.cards} />}
+
+      {phase !== "intro" && phase !== "burst" && phase !== "football" && result && (
         <div className="relative w-full max-w-5xl">
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-4">
             {main.map((c, i) => (
@@ -184,18 +196,18 @@ export function PackOpening({
                 +{result.xp_gained} XP
                 {result.coins_gained > 0 && ` · +${result.coins_gained} pièces (doublons)`} · cartes ajoutées à votre collection
               </p>
-              <button onClick={onClose} className="rounded-xl bg-gold px-8 py-3 font-display text-xl tracking-widest text-primary-foreground shadow-gold">
+              <Button onClick={onClose} className="h-auto bg-gold px-8 py-3 font-display text-xl text-primary-foreground shadow-gold">
                 Continuer
-              </button>
+              </Button>
             </div>
           )}
         </div>
       )}
 
       {result && phase !== "done" && (
-        <button onClick={skip} className="fixed bottom-4 right-4 z-30 rounded-full bg-secondary px-4 py-2 text-xs font-bold uppercase text-muted-foreground">
+        <Button variant="secondary" onClick={skip} className="fixed bottom-4 right-4 z-30 px-4 py-2 text-xs font-bold uppercase text-muted-foreground">
           Passer
-        </button>
+        </Button>
       )}
     </div>
   );

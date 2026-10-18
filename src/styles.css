@@ -244,3 +244,59 @@
   mask-image: radial-gradient(circle, black 0%, transparent 55%);
 }
 .su-overlay { background: var(--gradient-rainbow); background-size: 300% 300%; animation: rainbow-border 1.5s linear infinite; }
+
+/* Football silhouettes: intensity follows the actual highest draw tier. */
+.football-cinematic { --cinema-color: var(--r-common); --silhouette: oklch(0.015 0 0); position: absolute; inset: 0; overflow: hidden; display: grid; place-items: center; background: var(--card-night); isolation: isolate; }
+.football-cinematic[data-tier="2"] { --cinema-color: var(--r-uncommon); }
+.football-cinematic[data-tier="3"] { --cinema-color: var(--r-rare); }
+.football-cinematic[data-tier="4"] { --cinema-color: var(--r-sr); }
+.football-cinematic[data-tier="5"] { --cinema-color: var(--r-legendary); }
+.football-cinematic[data-tier="6"] { --cinema-color: var(--r-sl); }
+.football-cinematic[data-tier="7"] { --cinema-color: var(--r-su); }
+.cinema-scene { position: relative; width: min(100%, 1200px); max-height: 90%; overflow: visible; }
+.cinema-floodlights { position: absolute; inset: 0; background: conic-gradient(from 155deg at 20% 0%, transparent 0deg, color-mix(in oklab, var(--cinema-color) 25%, transparent) 10deg 28deg, transparent 40deg), conic-gradient(from 170deg at 85% 0%, transparent, color-mix(in oklab, var(--cinema-color) 38%, transparent) 10deg 30deg, transparent 45deg); }
+.cinema-stadium { fill: none; stroke: var(--cinema-color); opacity: .3; }
+.cinema-ground-shadow { fill: var(--silhouette); opacity: .6; }
+.cinema-player-travel { transform: translate(440px, 385px); animation: football-run 2.6s ease-in-out both; }
+.cinema-player { fill: var(--silhouette); stroke: color-mix(in oklab, var(--cinema-color) 65%, transparent); stroke-width: 1.2; stroke-linejoin: round; filter: drop-shadow(0 0 6px var(--cinema-color)); }
+.cinema-arm-back, .cinema-arm-front { transform-origin: 15px -108px; animation: football-arm .5s ease-in-out 4 alternate; }
+.cinema-arm-back { animation-direction: alternate-reverse; }
+.cinema-leg-front { transform-origin: 0 0; animation: football-kick 2.6s ease-in-out both; }
+.cinema-leg-back { transform-origin: 0 0; animation: football-back-leg 2.6s ease-in-out both; }
+.cinema-ball-travel { animation: football-ball 2.7s ease-in-out both; }
+.cinema-ball { fill: var(--card-light); stroke: var(--silhouette); stroke-width: 2; filter: drop-shadow(0 0 10px var(--cinema-color)); }
+.cinema-impact { fill: none; stroke: var(--cinema-color); stroke-width: 4; transform-origin: 830px 365px; animation: football-impact 3s ease-out both; }
+.cinema-sparks { fill: var(--cinema-color); animation: football-impact 3.4s ease-out both; transform-origin: 830px 365px; }
+.cinema-speed-lines { position: absolute; inset: 20% 0; opacity: 0; background: repeating-linear-gradient(0deg, transparent 0 45px, color-mix(in oklab, var(--cinema-color) 28%, transparent) 46px 47px, transparent 48px 90px); }
+.cinema-impact-wash { position: absolute; inset: 0; background: var(--cinema-color); opacity: 0; animation: football-wash 3.4s ease-out both; pointer-events: none; }
+.football-cinematic[data-action="dribble"] .cinema-impact, .football-cinematic[data-action="dribble"] .cinema-impact-wash { display: none; }
+.football-cinematic[data-action="dribble"] .cinema-ball-travel { animation-name: football-dribble; }
+.football-cinematic[data-action="volley"] .cinema-player { animation: football-volley 3.4s ease-in-out both; }
+.football-cinematic[data-action="bicycle"] .cinema-player { animation: football-bicycle 4.2s cubic-bezier(.3,0,.2,1) both; }
+.football-cinematic[data-action="bicycle"] .cinema-leg-front { animation-name: football-overhead-leg; animation-duration: 4.2s; }
+.football-cinematic[data-action="bicycle"] .cinema-ball-travel { animation-name: football-overhead-ball; animation-duration: 4.2s; }
+.football-cinematic[data-action="bicycle"] .cinema-impact, .football-cinematic[data-action="bicycle"] .cinema-sparks, .football-cinematic[data-action="bicycle"] .cinema-impact-wash { animation-delay: 1.1s; }
+.football-cinematic[data-tier="5"] .cinema-speed-lines, .football-cinematic[data-tier="6"] .cinema-speed-lines, .football-cinematic[data-tier="7"] .cinema-speed-lines { opacity: .6; animation: football-lines 4s ease-out both; }
+.football-cinematic[data-tier="6"] .cinema-player { filter: drop-shadow(0 0 14px var(--cinema-color)); }
+.football-cinematic[data-tier="7"] .cinema-floodlights { background: var(--gradient-rainbow); opacity: .35; animation: sheen 3s linear both; background-size: 250% 100%; }
+.football-cinematic[data-tier="7"] .cinema-player { filter: drop-shadow(0 0 22px var(--cinema-color)); }
+@keyframes football-run { 0% { transform: translate(260px,385px); } 50% { transform: translate(440px,385px); } 100% { transform: translate(470px,385px); } }
+@keyframes football-arm { from { transform: rotate(-20deg); } to { transform: rotate(25deg); } }
+@keyframes football-kick { 0%,20% { transform: rotate(18deg); } 40% { transform: rotate(65deg); } 65%,100% { transform: rotate(-65deg); } }
+@keyframes football-back-leg { 0%,20% { transform: rotate(-20deg); } 50%,100% { transform: rotate(15deg); } }
+@keyframes football-ball { 0% { transform: translate(350px,462px) rotate(0); } 45% { transform: translate(530px,450px) rotate(160deg); } 85%,100% { transform: translate(830px,365px) rotate(560deg); } }
+@keyframes football-dribble { 0% { transform: translate(350px,462px) rotate(0); } 25% { transform: translate(405px,442px) rotate(100deg); } 50% { transform: translate(495px,462px) rotate(200deg); } 75% { transform: translate(535px,445px) rotate(300deg); } 100% { transform: translate(580px,462px) rotate(420deg); } }
+@keyframes football-volley { 0%,20% { transform: translateY(0); } 50% { transform: translateY(-85px) rotate(-18deg); } 80%,100% { transform: translateY(0); } }
+@keyframes football-bicycle { 0%,20% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-100px) rotate(-70deg); } 62% { transform: translateY(-110px) rotate(-125deg); } 85%,100% { transform: translateY(42px) rotate(-180deg); } }
+@keyframes football-overhead-leg { 0%,20% { transform: rotate(20deg); } 45% { transform: rotate(60deg); } 62%,100% { transform: rotate(-100deg); } }
+@keyframes football-overhead-ball { 0% { transform: translate(650px,220px); } 45% { transform: translate(490px,205px); } 61% { transform: translate(540px,218px); } 85%,100% { transform: translate(830px,365px) rotate(720deg); } }
+@keyframes football-impact { 0%,74% { opacity: 0; transform: scale(.3); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(2.8); } }
+@keyframes football-wash { 0%, seventy { opacity: 0; } 78% { opacity: .22; } 100% { opacity: 0; } }
+@keyframes football-lines { from { transform: translateX(-20%); opacity: 0; } 60% { opacity: .6; } to { transform: translateX(20%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays { animation: none !important; }
+  .cinema-player-travel { transform: translate(440px,385px); }
+  .cinema-ball-travel { transform: translate(540px,450px); }
+  .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }
+  .flip-inner { transition: none; }
+}

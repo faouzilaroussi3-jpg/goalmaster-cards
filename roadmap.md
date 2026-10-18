@@ -1,3 +1,5 @@
 - [x] Photos plein cadre et bordures réfléchissantes à partir de Légendaire.
 - [x] Répartir les joueurs par niveau et créer des éditions illustrées distinctes.
 - [x] Vérifier catalogue, illustrations et ouverture réelle.
+- [ ] Animation de silhouettes football avec intensité liée aux cartes du pack.
+- [ ] Vérifier la séquence complète et les tests de rareté.
