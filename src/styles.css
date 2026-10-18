@@ -291,7 +291,7 @@
 @keyframes football-overhead-leg { 0%,20% { transform: rotate(20deg); } 45% { transform: rotate(60deg); } 62%,100% { transform: rotate(-100deg); } }
 @keyframes football-overhead-ball { 0% { transform: translate(650px,220px); } 45% { transform: translate(490px,205px); } 61% { transform: translate(540px,218px); } 85%,100% { transform: translate(830px,365px) rotate(720deg); } }
 @keyframes football-impact { 0%,74% { opacity: 0; transform: scale(.3); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(2.8); } }
-@keyframes football-wash { 0%, seventy { opacity: 0; } 78% { opacity: .22; } 100% { opacity: 0; } }
+@keyframes football-wash { 0%, 70% { opacity: 0; } 78% { opacity: .22; } 100% { opacity: 0; } }
 @keyframes football-lines { from { transform: translateX(-20%); opacity: 0; } 60% { opacity: .6; } to { transform: translateX(20%); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays { animation: none !important; }
