@@ -16,3 +16,4 @@
 - PlayerCard is the shared presentation for collection and pack results; container queries keep names legible at different card sizes, and rarity-token effects respect reduced motion.
 - Downloaded player portraits use asset pointers with provenance in player-portraits; collection credits expose author/source/license, and catalog replacements preserve card IDs and game rarity ratings.
 - Catalog edition data is curated in a browser-safe module and applied to existing card IDs; tests validate player-tier eligibility and distinct star-edition photographs without changing pack probabilities.
+- The football opening cinematic uses the highest server-returned card tier, including the bonus, to select an SVG silhouette action; it never changes draws and supports skipping and reduced motion.
