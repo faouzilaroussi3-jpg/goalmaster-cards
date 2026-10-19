@@ -18,4 +18,4 @@
 - [x] Duels tactiques entre joueurs : équipe de 5 cartes (budget 20), 5 manches à thème, choix secret, pièces + classement Elo
 - [x] Gros tirages (Légendaire et plus) en direct sur la page Packs
 - [x] Effets sonores partout (clics, onglets, rotation des cartes, arrachage, lueur, explosion, révélations, duels, pièces) + bouton couper le son
-- [ ] Amis : envoyer/recevoir/accepter des demandes d'ami + onglet Messages pour discuter avec ses amis
+- [x] Amis : envoyer/recevoir/accepter des demandes d'ami + onglet Messages pour discuter avec ses amis
