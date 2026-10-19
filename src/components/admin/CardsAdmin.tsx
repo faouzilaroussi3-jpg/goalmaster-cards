@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Replace, Trash2 } from "lucide-react";
+import { ImageUp, Loader2, Pencil, Replace, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
+import { CARD_PHOTO_BUCKET, cardPhotoUrl, fitWithin, rarityEffects } from "@/lib/card-photo";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
