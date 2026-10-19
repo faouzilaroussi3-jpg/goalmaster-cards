@@ -183,7 +183,7 @@ export function PackOpening({
                     ["--charge" as string]: `${charge}ms`,
                   }}
                 >
-                  {front.tier >= 5 && <div className="rays reveal-rays" style={{ ["--rc" as string]: RARITY_VAR[front.rarity] }} />}
+                  {front.tier >= 5 && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: RARITY_VAR[front.rarity] }} />}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
                       <CardBack bonus={front.is_bonus} className={cn(front.tier >= 4 && "gm-back-charge")} />
@@ -199,7 +199,7 @@ export function PackOpening({
 
             {/* The previous card slides down into the tray. */}
             {leaving !== null && cards[leaving] && (
-              <div key={`leave-${leaving}`} className="reveal-leave absolute inset-0" style={{ zIndex: 30 }} onAnimationEnd={() => setLeaving(null)}>
+              <div key={`leave-${leaving}`} className="reveal-leave absolute inset-0" style={{ zIndex: 30 }} onAnimationEnd={(e) => { if (e.target === e.currentTarget) setLeaving(null); }}>
                 <PlayerCard card={cards[leaving]} />
               </div>
             )}
