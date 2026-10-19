@@ -58,7 +58,7 @@ export function AppHeader() {
           )}
         </div>
       </div>
-      <nav className="flex justify-around border-t border-border py-1 md:hidden">
+      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 md:hidden [&>a]:shrink-0 [&>a]:px-2">
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
