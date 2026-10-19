@@ -6,4 +6,4 @@
 - [x] Remplacer les silhouettes plates par une ouverture 3D acrobatique avec caméra dynamique et effets de rareté.
 - [x] Vérifier le rendu 3D, le mouvement et une ouverture complète.
 - [x] Retirer toute écriture des visuels de packs.
-- [ ] Enlever les contours blancs bizarres visibles sur les deux packs.
+- [x] Enlever les contours blancs bizarres visibles sur les deux packs.
