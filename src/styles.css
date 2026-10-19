@@ -148,26 +148,40 @@
 .card-crest { position: absolute; top: 8%; left: 35%; width: 46%; opacity: .15; color: var(--rc); }
 .card-crest svg { width: 100%; height: auto; }
 .card-portrait { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
-.card-initials { position: absolute; inset: 20% 0 auto; text-align: center; font-family: var(--font-display); font-size: 48px; color: var(--rc); }
-.card-rating { position: absolute; left: 7%; top: 5%; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 4px 6px; border-radius: 4px; background: color-mix(in oklab, var(--card-night) 75%, transparent); font-size: 30px; line-height: 1; text-shadow: 0 2px 6px var(--card-shadow); }
-.card-position { font-size: 12px; margin-top: 3px; }
-.card-badges { position: absolute; right: 7%; top: 5%; z-index: 2; display: flex; flex-direction: column; align-items: end; gap: 3px; }
-.card-rarity-code, .card-version { border: 1px solid var(--rc); background: var(--card-night); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--rc); }
+.card-initials { position: absolute; inset: 20% 0 auto; text-align: center; font-family: var(--font-display); font-size: 30cqw; color: var(--rc); }
+/* Card lettering scales with the card (cqw) so names stay proportional from pack tray to collection. */
+.card-rating { position: absolute; left: 6%; top: 4.5%; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 1.8cqw 3cqw 1.4cqw; border-radius: 4px; background: color-mix(in oklab, var(--card-night) 75%, transparent); font-size: clamp(20px, 17cqw, 44px); line-height: .9; text-shadow: 0 2px 6px var(--card-shadow); }
+.card-position { font-family: var(--font-card-sport); font-weight: 700; font-size: clamp(8px, 5.6cqw, 15px); letter-spacing: .14em; padding-left: .14em; margin-top: 1.4cqw; padding-top: 1.2cqw; border-top: 1px solid color-mix(in oklab, var(--rc) 60%, transparent); }
+.card-badges { position: absolute; right: 6%; top: 4.5%; z-index: 2; display: flex; flex-direction: column; align-items: end; gap: 3px; }
+.card-rarity-code, .card-version { border: 1px solid var(--rc); background: var(--card-night); padding: .4cqw 2.6cqw 0; border-radius: 3px; font-size: clamp(9px, 6.4cqw, 16px); letter-spacing: .08em; color: var(--rc); }
 .card-version { background: var(--rc); color: var(--card-night); }
 .card-details { position: absolute; inset: auto 0 0; min-height: 34%; padding: 18% 7% 7%; text-align: center; background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 90%, transparent) 45%, color-mix(in oklab, var(--rc) 18%, var(--card-night))); z-index: 2; }
-.card-name { font-size: 18px; line-height: 1.05; text-wrap: balance; overflow-wrap: anywhere; }
-.card-club { font-size: 10px; line-height: 1.2; margin-top: 4px; }
-.card-country { font-size: 9px; opacity: .75; line-height: 1.3; }
-.card-rarity-label { display: flex; justify-content: center; align-items: center; gap: 3px; color: var(--rc); border-top: 1px solid color-mix(in oklab, var(--rc) 45%, transparent); margin-top: 5px; padding-top: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; line-height: 1.1; }
-.card-rarity-label svg { width: 10px; height: 10px; flex-shrink: 0; }
+.card-name { font-family: var(--font-card-sport); font-weight: 700; text-transform: uppercase; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .02em; line-height: 1; text-wrap: balance; overflow-wrap: anywhere; }
+.card-club { font-family: var(--font-card-sport); font-weight: 600; text-transform: uppercase; font-size: clamp(7px, 5.2cqw, 14px); letter-spacing: .1em; line-height: 1.2; margin-top: 1.8cqw; opacity: .95; }
+.card-country { font-size: clamp(7px, 4.8cqw, 13px); font-style: italic; letter-spacing: .04em; opacity: .75; line-height: 1.3; }
+.card-rarity-label { display: flex; justify-content: center; align-items: center; gap: 1.5cqw; color: var(--rc); border-top: 1px solid color-mix(in oklab, var(--rc) 45%, transparent); margin-top: 2.4cqw; padding-top: 2cqw; font-family: var(--font-card-sport); font-size: clamp(7px, 4.6cqw, 12px); font-weight: 700; text-transform: uppercase; letter-spacing: .2em; padding-left: .2em; line-height: 1.1; }
+.card-rarity-label svg { width: 1.2em; height: 1.2em; flex-shrink: 0; }
 @container (max-width: 115px) {
-  .card-rating { font-size: 24px; }
-  .card-name { font-size: 13px; }
-  .card-club, .card-country, .card-rarity-label { font-size: 8px; }
   .card-details { padding-bottom: 8%; }
-  .card-rarity-label { gap: 2px; margin-top: 3px; padding-top: 3px; }
+  .card-rarity-label { letter-spacing: .1em; }
   .card-rarity-label svg { display: none; }
 }
+
+/* --- Lettering per rarity: one sport sans for the low tiers, Bebas for Rare/SR, engraved Cinzel serif from Légendaire up --- */
+.fm-card[data-rarity="common"] .card-name { font-weight: 600; }
+.fm-card[data-rarity="uncommon"] .card-name { text-shadow: 0 0 10px color-mix(in oklab, var(--rc) 55%, transparent); }
+.fm-card[data-rarity="uncommon"] .card-club { color: color-mix(in oklab, var(--rc) 45%, var(--card-ink)); }
+.fm-card[data-rarity="rare"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(13px, 13cqw, 34px); letter-spacing: .05em; text-shadow: 0 2px 0 color-mix(in oklab, var(--rc) 70%, var(--card-night)), 0 0 12px color-mix(in oklab, var(--rc) 50%, transparent); }
+.fm-card[data-rarity="super_rare"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(13px, 13.5cqw, 36px); letter-spacing: .05em; transform: skewX(-8deg); background: linear-gradient(180deg, var(--card-light) 35%, var(--rc)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1.5px 0 var(--card-night)) drop-shadow(0 0 6px color-mix(in oklab, var(--rc) 70%, transparent)); }
+.fm-card[data-rarity="super_rare"] .card-club { color: var(--rc); }
+.fm-card:is([data-rarity="legendary"], [data-rarity="secret_legendary"], [data-rarity="secret_ultimate"]) .card-rating > span:first-child { font-family: var(--font-card-engraved); font-weight: 900; font-size: .82em; letter-spacing: -.02em; }
+.fm-card:is([data-rarity="legendary"], [data-rarity="secret_legendary"], [data-rarity="secret_ultimate"]) .card-rarity-label { font-family: var(--font-card-engraved); font-weight: 700; letter-spacing: .16em; padding-left: .16em; }
+.fm-card[data-rarity="legendary"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; text-transform: none; font-size: clamp(11px, 10cqw, 28px); letter-spacing: .03em; line-height: 1.05; background: linear-gradient(180deg, var(--gold-bright) 20%, var(--r-legendary) 55%, var(--gold-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 5px color-mix(in oklab, var(--r-legendary) 55%, transparent)); }
+.fm-card[data-rarity="legendary"] .card-rating > span:first-child { color: var(--gold-bright); }
+.fm-card[data-rarity="secret_legendary"] .card-name { font-family: var(--font-card-engraved); font-weight: 700; font-size: clamp(11px, 9.6cqw, 27px); letter-spacing: .1em; padding-left: .1em; line-height: 1.08; background: linear-gradient(170deg, var(--card-light) 25%, var(--diamond-ice) 50%, var(--card-light) 62%, var(--diamond-lilac)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px var(--diamond-ice)) drop-shadow(0 0 10px color-mix(in oklab, var(--diamond-lilac) 70%, transparent)); }
+.fm-card[data-rarity="secret_legendary"] .card-rating > span:first-child { color: var(--card-light); text-shadow: 0 0 8px var(--diamond-ice); }
+.fm-card[data-rarity="secret_ultimate"] .card-name { position: relative; z-index: 9; font-family: var(--font-card-ornate); font-weight: 900; text-transform: none; font-size: clamp(11px, 10cqw, 28px); letter-spacing: .02em; line-height: 1.05; background: linear-gradient(0deg, var(--flame-outer) 5%, var(--flame-mid) 45%, var(--flame-core) 80%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px var(--flame-mid)) drop-shadow(0 0 10px var(--flame-outer)); }
+.fm-card[data-rarity="secret_ultimate"] .card-rating > span:first-child { color: var(--flame-core); text-shadow: 0 0 6px var(--flame-mid), 0 0 14px var(--flame-outer); }
 .fm-card:hover { transform: translateY(-4px); }
 .fm-card[data-rarity="uncommon"] { --rc: var(--r-uncommon); }
 .fm-card[data-rarity="rare"] { --rc: var(--r-rare); box-shadow: 0 0 22px -6px var(--rc); }
