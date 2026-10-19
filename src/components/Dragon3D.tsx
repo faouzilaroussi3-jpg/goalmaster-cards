@@ -54,6 +54,7 @@ function Dragon({ glow }: { glow: string }) {
     };
     const box = measure();
     const size = box.getSize(new THREE.Vector3());
+    console.log('DRAGONDBG size', size.toArray().join(','));
     o.scale.setScalar(DRAGON_LEN / (Math.max(size.x, size.z) || 1));
     const centered = measure().getCenter(new THREE.Vector3());
     o.position.sub(centered);
