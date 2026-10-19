@@ -219,7 +219,8 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           const a = pHeading + dh * f + (Math.random() - 0.5) * 0.3;
           const sp = (65 + Math.random() * 35) * u;
           const vx = Math.cos(a) * sp + hvx * 0.35, vy = Math.sin(a) * sp + hvy * 0.35;
-          const lead = (1 - f) * dt;
+          // The update loop below advances every particle by dt, so start it dt earlier than its true age.
+          const lead = (1 - f) * dt - dt;
           parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.3, size: (2 + Math.random() * 1.5) * u, grow: (8 + Math.random() * 8) * u, ember: false, seed: Math.random() * 1000 });
         }
         if (acc > 1) acc = 0;
