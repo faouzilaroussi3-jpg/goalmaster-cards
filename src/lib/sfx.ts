@@ -259,8 +259,10 @@ export const sfx = {
     noise(e, { dur: 0.09, freq: 1800, to: 6000, q: 0.9, gain: 0.12, attack: 0.03, reverb: 0.12, pan: rand(-0.1, 0.1) });
     tone(e, { start: 0.03, freq: 1180, to: 620, glide: 0.07, dur: 0.12, gain: 0.24, attack: 0.002, reverb: 0.2 });
     tone(e, { start: 0.03, freq: 2360, to: 1240, glide: 0.07, dur: 0.08, gain: 0.06, attack: 0.002, reverb: 0.2 });
-    bell(e, 1567.98, 0.07, 0.55, 0.11, -0.15);
-    bell(e, 2349.32, 0.12, 0.7, 0.09, 0.15);
+    tone(e, { start: 0.07, freq: 1567.98, dur: 0.45, gain: 0.13, attack: 0.004, reverb: 0.45, pan: -0.15 });
+    tone(e, { start: 0.07, freq: 3135.96, dur: 0.25, gain: 0.035, attack: 0.004, reverb: 0.45, pan: -0.15 });
+    tone(e, { start: 0.125, freq: 2349.32, dur: 0.6, gain: 0.11, attack: 0.004, reverb: 0.5, pan: 0.15 });
+    tone(e, { start: 0.125, freq: 2349.32, dur: 0.6, gain: 0.05, attack: 0.004, reverb: 0.5, pan: 0.15, detune: 9 });
     noise(e, { start: 0.1, dur: 0.35, filter: "highpass", freq: 7000, gain: 0.025, attack: 0.08, reverb: 0.4 });
   }),
   cardSlide: () => play((e) => noise(e, { dur: 0.22, filter: "lowpass", freq: 1400, to: 300, gain: 0.07, attack: 0.04 })),
