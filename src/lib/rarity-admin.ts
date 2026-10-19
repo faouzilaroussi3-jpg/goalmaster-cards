@@ -1,8 +1,8 @@
 // Rules for admin-created rarities, mirrored from the database (_validate_rarity, admin_create_rarity, admin_delete_rarity).
-import type { RarityKey } from "@/lib/rarity";
+import type { RarityEffect } from "@/lib/rarity";
 
-/** Visual effects an admin can give a new rarity: the look of each built-in rarity. */
-export const RARITY_EFFECTS: { fx: RarityKey; label: string; hint: string }[] = [
+/** Visual effects an admin can give a new rarity: the look of each built-in rarity, then 8 extra styles (isNew). */
+export const RARITY_EFFECTS: { fx: RarityEffect; label: string; hint: string; isNew?: boolean }[] = [
   { fx: "common", label: "Simple", hint: "Cadre sobre, comme une Commune" },
   { fx: "uncommon", label: "Liseré", hint: "Cadre coloré, comme une Peu commune" },
   { fx: "rare", label: "Reflet brillant", hint: "Reflet qui passe sur la carte, comme une Rare" },
@@ -10,6 +10,14 @@ export const RARITY_EFFECTS: { fx: RarityKey; label: string; hint: string }[] = 
   { fx: "legendary", label: "Or et paillettes", hint: "Bordure dorée pailletée, comme une Légendaire" },
   { fx: "secret_legendary", label: "Diamant", hint: "Bordure diamant + diamants en orbite, comme une Secrète Légendaire" },
   { fx: "secret_ultimate", label: "Rouge métal, feu et dragon", hint: "Rouge métallisé, feu et dragon, comme une Secrète Ultime" },
+  { fx: "metal", label: "Métallique", hint: "Chrome brossé avec reflet d'acier qui glisse", isNew: true },
+  { fx: "tinted", label: "Teinté", hint: "Photo teintée dans la couleur de la rareté", isNew: true },
+  { fx: "cartoon", label: "Cartoon", hint: "Gros contour noir, trame BD et couleurs vives", isNew: true },
+  { fx: "vintage", label: "Vintage", hint: "Photo sépia, papier ancien et bord crème", isNew: true },
+  { fx: "neon", label: "Néon", hint: "Tube néon lumineux qui clignote autour de la carte", isNew: true },
+  { fx: "holo", label: "Holographique", hint: "Film holographique arc-en-ciel sur toute la carte", isNew: true },
+  { fx: "frost", label: "Glace", hint: "Bordure givrée, cristaux et neige qui tombe", isNew: true },
+  { fx: "galaxy", label: "Galaxie", hint: "Nébuleuse cosmique et étoiles qui scintillent", isNew: true },
 ];
 
 export const LABEL_MAX = 30;
