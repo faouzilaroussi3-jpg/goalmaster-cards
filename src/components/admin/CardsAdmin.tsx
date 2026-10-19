@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Replace, Trash2 } from "lucide-react";
+import { ImageUp, Loader2, Pencil, Replace, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
+import { CARD_PHOTO_BUCKET, cardPhotoUrl, fitWithin, rarityEffects } from "@/lib/card-photo";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -196,19 +197,27 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
                 {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
             </label>
-            <label className="text-xs text-muted-foreground sm:col-span-2">Lien de la photo (adresse d'une image, pas d'une page web)
-              <input className={`${inp} w-full`} placeholder="https://…/photo.jpg" value={f.image_url} onChange={(e) => set("image_url", e.target.value)} />
-            </label>
-            <label className="text-xs text-muted-foreground sm:col-span-2">Lien de la photo ALT (optionnel)
-              <input className={`${inp} w-full`} placeholder="https://…/photo-alt.jpg" value={f.alt_image_url} onChange={(e) => set("alt_image_url", e.target.value)} />
-            </label>
+            <PhotoField label="Photo du joueur" value={f.image_url} onChange={(v) => set("image_url", v)} />
+            {(f.rarity === "legendary" || f.has_alt) && (
+              <PhotoField label="Photo ALT (une autre photo du joueur)" value={f.alt_image_url} onChange={(v) => set("alt_image_url", v)} />
+            )}
             <div className="flex flex-wrap items-center gap-4 text-sm sm:col-span-2">
-              <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_alt} onChange={(e) => set("has_alt", e.target.checked)} /> Version ALT</label>
-              <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_shiny} onChange={(e) => set("has_shiny", e.target.checked)} /> Version Shiny</label>
+              {(f.rarity === "legendary" || f.has_alt) && (
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_alt} onChange={(e) => set("has_alt", e.target.checked)} /> Version ALT</label>
+              )}
+              {(f.rarity === "secret_legendary" || f.has_shiny) && (
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_shiny} onChange={(e) => set("has_shiny", e.target.checked)} /> Version Shiny (même photo)</label>
+              )}
               <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} /> Active (peut sortir des packs)</label>
             </div>
+            <div className="rounded-lg border border-border bg-background/40 p-3 text-xs sm:col-span-2">
+              <p className="mb-1.5 font-bold text-foreground">Effets appliqués automatiquement ({rarityMeta(f.rarity).label})</p>
+              <EffectList items={rarityEffects(f.rarity)} />
+              {f.has_alt && <><p className="mb-1.5 mt-2 font-bold text-foreground">Version ALT</p><EffectList items={rarityEffects(f.rarity, "alt")} /></>}
+              {f.has_shiny && <><p className="mb-1.5 mt-2 font-bold text-foreground">Version Shiny</p><EffectList items={rarityEffects(f.rarity, "shiny")} /></>}
+            </div>
           </div>
-          <div className="flex justify-center gap-3 sm:flex-col">
+          <div className="flex flex-wrap justify-center gap-3 sm:flex-col sm:flex-nowrap">
             <div className="w-36">
               <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu</p>
               <PlayerCard card={preview} />
@@ -217,6 +226,12 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
               <div className="w-36">
                 <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu ALT</p>
                 <PlayerCard card={{ ...preview, version: "alt" }} />
+              </div>
+            )}
+            {f.has_shiny && (
+              <div className="w-36">
+                <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu Shiny</p>
+                <PlayerCard card={{ ...preview, version: "shiny" }} />
               </div>
             )}
           </div>
@@ -291,5 +306,64 @@ function ReplaceDialog({ card, cards, stats, onClose, onDone }: { card: Card; ca
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function EffectList({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-1.5">
+      {items.map((t) => <li key={t} className="rounded-full bg-secondary px-2 py-0.5 text-foreground">{t}</li>)}
+    </ul>
+  );
+}
+
+/** Shrinks the picked photo in the browser, then stores it in the private card-photos bucket. */
+async function uploadCardPhoto(file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("Ce fichier n'est pas une image.");
+  const bitmap = await createImageBitmap(file);
+  const { width, height } = fitWithin(bitmap.width, bitmap.height);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/jpeg", 0.86));
+  if (!blob) throw new Error("Impossible de lire cette image.");
+  const name = `${crypto.randomUUID()}.jpg`;
+  const { error } = await supabase.storage.from(CARD_PHOTO_BUCKET).upload(name, blob, { contentType: "image/jpeg" });
+  if (error) throw error;
+  return cardPhotoUrl(name);
+}
+
+function PhotoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  async function pick(file?: File) {
+    if (!file) return;
+    setBusy(true);
+    try {
+      onChange(await uploadCardPhoto(file));
+      toast.success("Photo importée");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Import impossible");
+    } finally {
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
+    }
+  }
+  return (
+    <div className="text-xs text-muted-foreground sm:col-span-2">
+      <span>{label}</span>
+      <div className="mt-1 flex flex-wrap gap-2">
+        <button type="button" disabled={busy} onClick={() => ref.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-sm font-bold text-foreground disabled:opacity-60">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />} Photo depuis ce PC
+        </button>
+        <input ref={ref} type="file" accept="image/*" className="hidden" aria-label={`${label} : fichier`} onChange={(e) => pick(e.target.files?.[0])} />
+        <input className={`${inp} min-w-48 flex-1`} placeholder="ou colle un lien https://…/photo.jpg" aria-label={`${label} : lien`} value={value} onChange={(e) => onChange(e.target.value)} />
+        {value && (
+          <button type="button" onClick={() => onChange("")} className="rounded-lg p-2 hover:bg-secondary" aria-label="Retirer la photo" title="Retirer la photo"><X className="h-4 w-4" /></button>
+        )}
+      </div>
+    </div>
   );
 }

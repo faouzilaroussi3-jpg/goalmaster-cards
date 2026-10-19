@@ -17,6 +17,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as ApiPublicCardPhotoSplatRouteImport } from './routes/api/public/card-photo/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +58,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicCardPhotoSplatRoute = ApiPublicCardPhotoSplatRouteImport.update({
+  id: '/api/public/card-photo/$',
+  path: '/api/public/card-photo/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof AuthenticatedCollectionRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/collection': typeof AuthenticatedCollectionRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/packs'
     | '/profile'
+    | '/api/public/card-photo/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/packs'
     | '/profile'
+    | '/api/public/card-photo/$'
   id:
     | '__root__'
     | '/'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/_authenticated/collection'
     | '/_authenticated/packs'
     | '/_authenticated/profile'
+    | '/api/public/card-photo/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -123,6 +135,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  ApiPublicCardPhotoSplatRoute: typeof ApiPublicCardPhotoSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/card-photo/$': {
+      id: '/api/public/card-photo/$'
+      path: '/api/public/card-photo/$'
+      fullPath: '/api/public/card-photo/$'
+      preLoaderRoute: typeof ApiPublicCardPhotoSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -208,6 +228,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   LeaderboardRoute: LeaderboardRoute,
+  ApiPublicCardPhotoSplatRoute: ApiPublicCardPhotoSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
