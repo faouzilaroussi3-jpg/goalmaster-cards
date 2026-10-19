@@ -361,6 +361,18 @@ export type Database = {
         Returns: string
       }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
+      admin_card_stats: {
+        Args: never
+        Returns: {
+          card_id: string
+          copies: number
+          owners: number
+        }[]
+      }
+      admin_replace_card: {
+        Args: { _from: string; _to: string }
+        Returns: number
+      }
       buy_pack: { Args: { _pack_key: string }; Returns: undefined }
       get_leaderboard: {
         Args: { _limit?: number; _sort?: string }

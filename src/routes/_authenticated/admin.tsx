@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/auth";
 import { RARITIES } from "@/lib/rarity";
+import { CardsAdmin } from "@/components/admin/CardsAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -40,70 +41,6 @@ function AdminPage() {
       {tab === "cards" && <CardsAdmin />}
       {tab === "packs" && <PacksAdmin />}
       {tab === "events" && <EventsAdmin />}
-    </div>
-  );
-}
-
-function CardsAdmin() {
-  const qc = useQueryClient();
-  const { data: cards = [] } = useQuery({
-    queryKey: ["admin-cards"],
-    queryFn: async () => (await supabase.from("cards").select("*").order("rating", { ascending: false })).data ?? [],
-  });
-  const empty = { name: "", club: "", nationality: "", pos: "", rating: 75, rarity: "common", image_url: "", alt_image_url: "", has_alt: false, has_shiny: false };
-  const [f, setF] = useState(empty);
-
-  async function add(e: React.FormEvent) {
-    e.preventDefault();
-    const { error } = await supabase.from("cards").insert({ ...f, image_url: f.image_url || null, alt_image_url: f.alt_image_url || null });
-    if (error) { toast.error(error.message); return; }
-    toast.success("Carte ajoutée");
-    setF(empty);
-    qc.invalidateQueries();
-  }
-  async function toggle(id: string, active: boolean) {
-    await supabase.from("cards").update({ active }).eq("id", id);
-    qc.invalidateQueries();
-  }
-
-  return (
-    <div className="space-y-6">
-      <form onSubmit={add} className="panel grid gap-2 p-4 sm:grid-cols-4">
-        <input className={inp} placeholder="Nom" required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
-        <input className={inp} placeholder="Club" required value={f.club} onChange={(e) => setF({ ...f, club: e.target.value })} />
-        <input className={inp} placeholder="Nationalité" required value={f.nationality} onChange={(e) => setF({ ...f, nationality: e.target.value })} />
-        <input className={inp} placeholder="Poste (ex: BU)" required value={f.pos} onChange={(e) => setF({ ...f, pos: e.target.value })} />
-        <input className={inp} type="number" min={1} max={99} value={f.rating} onChange={(e) => setF({ ...f, rating: +e.target.value })} />
-        <select className={inp} value={f.rarity} onChange={(e) => setF({ ...f, rarity: e.target.value })}>
-          {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-        </select>
-        <input className={inp} placeholder="URL illustration (optionnel)" value={f.image_url} onChange={(e) => setF({ ...f, image_url: e.target.value })} />
-        <input className={inp} placeholder="URL illustration ALT (optionnel)" value={f.alt_image_url} onChange={(e) => setF({ ...f, alt_image_url: e.target.value })} />
-        <div className="flex items-center gap-3 text-sm">
-          <label><input type="checkbox" checked={f.has_alt} onChange={(e) => setF({ ...f, has_alt: e.target.checked })} /> ALT</label>
-          <label><input type="checkbox" checked={f.has_shiny} onChange={(e) => setF({ ...f, has_shiny: e.target.checked })} /> Shiny</label>
-        </div>
-        <button className="rounded-lg bg-gold py-2 font-bold text-primary-foreground sm:col-span-4">Ajouter la carte</button>
-      </form>
-      <div className="panel overflow-x-auto p-2">
-        <table className="w-full text-sm">
-          <thead className="text-left text-muted-foreground">
-            <tr><th className="p-2">Nom</th><th>Club</th><th>Note</th><th>Rareté</th><th>Versions</th><th>Active</th></tr>
-          </thead>
-          <tbody>
-            {cards.map((c) => (
-              <tr key={c.id} className="border-t border-border">
-                <td className="p-2 font-semibold">{c.name}</td>
-                <td>{c.club}</td>
-                <td>{c.rating}</td>
-                <td>{RARITIES.find((r) => r.key === c.rarity)?.label}{c.rarity === "secret_ultimate" && !c.revealed ? " (cachée)" : ""}</td>
-                <td>{[c.has_alt && "ALT", c.has_shiny && "Shiny"].filter(Boolean).join(", ") || "—"}</td>
-                <td><input type="checkbox" checked={c.active} onChange={(e) => toggle(c.id, e.target.checked)} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
