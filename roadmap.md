@@ -7,3 +7,4 @@
 - [x] Vérifier le rendu 3D, le mouvement et une ouverture complète.
 - [x] Retirer toute écriture des visuels de packs.
 - [x] Enlever les contours blancs bizarres visibles sur les deux packs.
+- [x] Choisir son pack et le glisser vers la gauche pour l'ouvrir
