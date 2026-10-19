@@ -220,11 +220,11 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           // Born at a random instant inside this frame: start on the mouth's path and already advanced by the time left.
           const f = Math.random();
           const a = pHeading + dh * f + (Math.random() - 0.5) * 0.3;
-          const sp = (48 + Math.random() * 26) * u;
+          const sp = (75 + Math.random() * 30) * u;
           const vx = Math.cos(a) * sp + hvx * 0.35, vy = Math.sin(a) * sp + hvy * 0.35;
           // The update loop below advances every particle by dt, so start it dt earlier than its true age.
           const lead = (1 - f) * dt - dt;
-          parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.25, size: (1.8 + Math.random() * 1.2) * u, grow: (7 + Math.random() * 6) * u, ember: false, seed: Math.random() * 1000 });
+          parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.25, size: (1.6 + Math.random() * 1) * u, grow: (5 + Math.random() * 4.5) * u, ember: false, seed: Math.random() * 1000 });
         }
         if (acc > 1) acc = 0;
         embers += dt * (2 + k * 24);
@@ -245,17 +245,17 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           ctx.drawImage(fire[Math.floor((0.3 + q * 0.4) * top)]!, p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
           continue;
         }
-        const drag = Math.exp(-1.2 * dt);
+        const drag = Math.exp(-1.6 * dt);
         p.vx *= drag; p.vy *= drag;
         p.vy -= 18 * u * dt;
         // Gentle per-particle turbulence (own phase and slower rate) so the jet billows instead of jittering.
         p.x += (p.vx + Math.sin(p.seed + time * 6 + q * 4) * 7 * u * q) * dt;
         p.y += (p.vy + Math.cos(p.seed * 1.7 + time * 5 + q * 3) * 5 * u * q) * dt;
         const size = p.size + (p.grow - p.size) * Math.sqrt(q);
-        const stretch = Math.min(2.2, 1 + Math.hypot(p.vx, p.vy) / (50 * u));
-        ctx.globalAlpha = (q < 0.12 ? smoothstep(q / 0.12) : Math.pow(1 - q, 1.1)) * 0.17;
+        const stretch = Math.min(2.8, 1 + Math.hypot(p.vx, p.vy) / (40 * u));
+        ctx.globalAlpha = (q < 0.12 ? smoothstep(q / 0.12) : Math.pow(1 - q, 1.1)) * 0.15;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
-        ctx.drawImage(fire[Math.min(top, Math.floor((0.2 + 0.8 * Math.pow(q, 1.2)) * fire.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
+        ctx.drawImage(fire[Math.min(top, Math.floor((0.12 + 0.88 * Math.pow(q, 0.85)) * fire.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
         ctx.restore();
       }
       pmx = mx; pmy = my; pHeading = heading;
