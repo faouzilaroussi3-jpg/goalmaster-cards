@@ -311,8 +311,8 @@
 @keyframes su-wing-flap { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(9deg); } }
 @keyframes su-tail-sway { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
 @keyframes su-claw-flex { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg) scale(1.03); } }
-@keyframes su-glow-idle { from { opacity: .14; } to { opacity: .3; } }
-@keyframes su-glow-breath { 0% { opacity: .22; } 19% { opacity: .35; } 30% { opacity: .95; } 42% { opacity: .7; } 54% { opacity: 1; } 66% { opacity: .75; } 78% { opacity: .9; } 100% { opacity: .22; } }
+@keyframes su-glow-idle { from { opacity: .1; } to { opacity: .22; } }
+@keyframes su-glow-breath { 0% { opacity: .2; } 19% { opacity: .32; } 30% { opacity: .75; } 42% { opacity: .55; } 54% { opacity: .8; } 66% { opacity: .6; } 78% { opacity: .7; } 100% { opacity: .2; } }
 .su-fire { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; box-shadow: inset 0 -10px 16px -4px var(--flame-outer), inset 8px 0 14px -6px var(--flame-outer), inset -8px 0 14px -6px var(--flame-outer); }
 /* Secrète Légendaire: orbiting diamond */
 .sl-orbit-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }

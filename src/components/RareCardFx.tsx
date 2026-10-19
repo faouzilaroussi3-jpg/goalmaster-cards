@@ -124,7 +124,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           ctx.drawImage(sprites[Math.floor(q * 0.6 * top)]!, p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
           continue;
         }
-        const drag = 1 - Math.min(1, 1.1 * dt);
+        const drag = 1 - Math.min(1, 0.9 * dt);
         p.vx *= drag; p.vy *= drag;
         p.vy -= 30 * u * dt; // hot gas rises and curls the plume upward
         p.x += (p.vx + Math.sin(p.seed + t * 13 + p.y * 0.05) * 14 * u * q) * dt;
@@ -133,11 +133,11 @@ export function SuDragonShell({ className, missing, children }: { className?: st
         // Each tongue is stretched along its motion; only the youngest flames near the mouth burn white-hot.
         const speed = Math.hypot(p.vx, p.vy);
         const stretch = Math.min(2.4, 1 + speed / (55 * u));
-        ctx.globalAlpha = (q < 0.06 ? q / 0.06 : (1 - q) * (1 - q)) * 0.38; // the red tail fades fast so it never piles up into pink
+        ctx.globalAlpha = (q < 0.1 ? q / 0.1 : Math.pow(1 - q, 0.7)) * 0.2; // low alpha so the stacked flames never saturate into a flat blob
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(Math.atan2(p.vy, p.vx));
-        ctx.drawImage(sprites[Math.min(top, Math.floor(Math.pow(q, 0.7) * sprites.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
+        ctx.drawImage(sprites[Math.min(top, Math.floor(Math.pow(q, 1.4) * sprites.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
         ctx.restore();
       }
       ctx.globalAlpha = 1;
