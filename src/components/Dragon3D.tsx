@@ -46,10 +46,16 @@ function Dragon({ glow }: { glow: string }) {
       mesh.material = Array.isArray(mesh.material) ? mats : mats[0]!;
     });
     // Normalize: longest horizontal side → DRAGON_LEN, centered on its own origin.
-    const box = new THREE.Box3().setFromObject(o);
+    // Skinned bounds depend on the bone matrices, so pose the skeleton before measuring.
+    const measure = () => {
+      o.updateMatrixWorld(true);
+      o.traverse((n) => { const sm = n as THREE.SkinnedMesh; if (sm.isSkinnedMesh) { sm.skeleton.update(); sm.computeBoundingBox(); } });
+      return new THREE.Box3().setFromObject(o);
+    };
+    const box = measure();
     const size = box.getSize(new THREE.Vector3());
     o.scale.setScalar(DRAGON_LEN / (Math.max(size.x, size.z) || 1));
-    const centered = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
+    const centered = measure().getCenter(new THREE.Vector3());
     o.position.sub(centered);
     const pivot = new THREE.Group();
     pivot.add(o);
