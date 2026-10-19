@@ -42,7 +42,7 @@ export function GoldenFlames({ className }: { className?: string }) {
     ro.observe(canvas);
 
     // The pack occupies the middle of the canvas; flames are born on its outline.
-    const pack = () => ({ l: w * 0.24, r: w * 0.76, t: h * 0.2, b: h * 0.93 });
+    const pack = () => ({ l: w * 0.29, r: w * 0.71, t: h * 0.22, b: h * 0.9 });
     const flames: Flame[] = [];
     const spawn = () => {
       const p = pack();
@@ -51,15 +51,15 @@ export function GoldenFlames({ className }: { className?: string }) {
       if (side < 0.38) { x = p.l + Math.random() * 6; y = p.t + Math.random() * (p.b - p.t); vx = -10 - Math.random() * 25; }
       else if (side < 0.76) { x = p.r - Math.random() * 6; y = p.t + Math.random() * (p.b - p.t); vx = 10 + Math.random() * 25; }
       else { x = p.l + Math.random() * (p.r - p.l); y = p.t + Math.random() * 6; vx = (Math.random() - 0.5) * 20; }
-      const max = 0.55 + Math.random() * 0.7;
-      flames.push({ x, y, vx, vy: -50 - Math.random() * 80, life: max, max, size: 10 + Math.random() * 18, phase: Math.random() * 6.28 });
+      const max = 0.35 + Math.random() * 0.45;
+      flames.push({ x, y, vx, vy: -70 - Math.random() * 90, life: max, max, size: 16 + Math.random() * 20, phase: Math.random() * 6.28 });
     };
 
     let raf = 0, last = performance.now(), acc = 0;
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      acc += dt * 170;
+      acc += dt * 320;
       while (acc > 1) { spawn(); acc -= 1; }
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
@@ -74,8 +74,8 @@ export function GoldenFlames({ className }: { className?: string }) {
         f.y += f.vy * dt;
         f.vx *= 0.97;
         const size = f.size * (0.35 + k * 0.75);
-        ctx.globalAlpha = Math.min(1, k * 1.4) * 0.85;
-        ctx.drawImage(sprite, f.x - size / 2, f.y - size, size, size * 1.7);
+        ctx.globalAlpha = Math.min(1, k * 1.6) * 0.4;
+        ctx.drawImage(sprite, f.x - size / 2, f.y - size * 1.4, size, size * 2.4);
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
