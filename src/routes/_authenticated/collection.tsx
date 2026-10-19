@@ -122,7 +122,7 @@ function CollectionPage() {
         </button>
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7">
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
         {filtered.map((e) => (
           <PlayerCard key={`${e.card.id}:${e.version}`} card={{ ...e.card, version: e.version }} missing={e.count === 0} count={e.count} />
         ))}
