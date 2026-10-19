@@ -50,12 +50,12 @@ function CardsAdmin() {
     queryKey: ["admin-cards"],
     queryFn: async () => (await supabase.from("cards").select("*").order("rating", { ascending: false })).data ?? [],
   });
-  const empty = { name: "", club: "", nationality: "", pos: "", rating: 75, rarity: "common", image_url: "", has_alt: false, has_shiny: false };
+  const empty = { name: "", club: "", nationality: "", pos: "", rating: 75, rarity: "common", image_url: "", alt_image_url: "", has_alt: false, has_shiny: false };
   const [f, setF] = useState(empty);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.from("cards").insert({ ...f, image_url: f.image_url || null });
+    const { error } = await supabase.from("cards").insert({ ...f, image_url: f.image_url || null, alt_image_url: f.alt_image_url || null });
     if (error) { toast.error(error.message); return; }
     toast.success("Carte ajoutée");
     setF(empty);
@@ -78,6 +78,7 @@ function CardsAdmin() {
           {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
         </select>
         <input className={inp} placeholder="URL illustration (optionnel)" value={f.image_url} onChange={(e) => setF({ ...f, image_url: e.target.value })} />
+        <input className={inp} placeholder="URL illustration ALT (optionnel)" value={f.alt_image_url} onChange={(e) => setF({ ...f, alt_image_url: e.target.value })} />
         <div className="flex items-center gap-3 text-sm">
           <label><input type="checkbox" checked={f.has_alt} onChange={(e) => setF({ ...f, has_alt: e.target.checked })} /> ALT</label>
           <label><input type="checkbox" checked={f.has_shiny} onChange={(e) => setF({ ...f, has_shiny: e.target.checked })} /> Shiny</label>
