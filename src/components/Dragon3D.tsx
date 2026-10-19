@@ -191,7 +191,7 @@ function Dragon({ glow, ember, warm, len }: { glow: string; ember: string; warm:
   );
 }
 
-/** Transparent overlay scene: a real 3D dragon circling the Secret Ultimate card, hidden behind the card when it flies round the back. */
+/** Transparent overlay scene: three small 3D dragons circling the Secret Ultimate card on their own random paths, hidden behind the card when it flies round the back. */
 export default function Dragon3D({ glow, warm, ember }: { glow: string; warm: string; ember: string }) {
   return (
     <Canvas
