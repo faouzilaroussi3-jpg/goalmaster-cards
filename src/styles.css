@@ -263,25 +263,25 @@
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
 @keyframes su-heat { from { box-shadow: 0 0 28px 0 color-mix(in oklab, var(--flame-outer) 70%, transparent), 0 0 60px -12px var(--flame-mid); } to { box-shadow: 0 0 46px 4px color-mix(in oklab, var(--flame-outer) 85%, transparent), 0 0 90px -8px var(--flame-mid); } }
 @keyframes ember-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-60%); opacity: 0; } }
-/* Dragon wrapped around the SU card: wings, tail and head behind it (z 0), card (z 1), flame light (z 2), claws (z 3), fire breath (z 4).
+/* Dragon wrapped around the SU card: wings, tail and head sit behind it with z-index -1, so they also pass behind neighbouring
+   cards instead of covering their text; flame light, claws and fire breath paint over the card in DOM order.
    Left/right sizes are % of the card width, top % of its height; the right side is the left side mirrored about the card. */
-.su-shell { position: relative; isolation: isolate; transition: transform 0.25s ease; }
+.su-shell { position: relative; transition: transform 0.25s ease; }
 .su-shell:hover { transform: translateY(-4px); }
-.su-shell > .fm-card { z-index: 1; transition: filter .3s ease; }
+.su-shell > .fm-card { transition: filter .3s ease; }
 .su-shell .fm-card:hover { transform: none; }
 .su-back, .su-front, .su-side { position: absolute; inset: 0; pointer-events: none; }
-.su-back { z-index: 0; }
-.su-front { z-index: 3; }
+.su-back { z-index: -1; }
 .su-side.is-mirror { transform: scaleX(-1); }
 .su-part { position: absolute; max-width: none; height: auto; user-select: none; filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 6px color-mix(in oklab, var(--flame-outer) 55%, transparent)); }
 .su-head { width: 52%; left: 25%; top: -23%; transform-origin: 35% 95%; transition: filter .3s ease; }
-.su-wing { width: 40%; left: -19%; top: 1%; transform-origin: 93% 98%; }
+.su-wing { width: 46%; left: -22%; top: -12%; transform-origin: 93% 98%; }
 .su-tail { width: 30%; right: -9%; top: 86%; transform-origin: 40% 0; }
 .su-claw { transform-origin: 70% 80%; }
 .su-claw-fore { width: 34%; left: -21%; top: 33%; rotate: -52deg; }
 .su-claw-hind { width: 25%; left: -15%; top: 63%; rotate: -38deg; }
-.su-breath { position: absolute; z-index: 4; left: 20%; top: -48%; width: 135%; height: 108%; pointer-events: none; }
-.su-breath-glow { position: absolute; inset: 0; z-index: 2; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--flame-core) 80%, transparent), color-mix(in oklab, var(--flame-mid) 55%, transparent) 32%, color-mix(in oklab, var(--flame-outer) 30%, transparent) 58%, transparent 82%); }
+.su-breath { position: absolute; left: 20%; top: -48%; width: 135%; height: 108%; pointer-events: none; }
+.su-breath-glow { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--flame-core) 80%, transparent), color-mix(in oklab, var(--flame-mid) 55%, transparent) 32%, color-mix(in oklab, var(--flame-outer) 30%, transparent) 58%, transparent 82%); }
 .su-shell.is-breathing > .fm-card { filter: brightness(1.12) saturate(1.15); }
 .su-shell.is-breathing .su-head { filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 10px var(--flame-mid)) brightness(1.15); }
 .su-shell.is-missing > :not(.fm-card) { filter: grayscale(1) brightness(0.5); }
