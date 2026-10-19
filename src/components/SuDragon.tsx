@@ -202,8 +202,11 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       glowS = dt > 0 ? glowS + (glowT - glowS) * (1 - Math.exp(-dt * 9)) : glowT;
       const glow = glowS;
       ctx.globalAlpha = glow * 0.6;
-      const gr = (14 + 26 * glow) * u;
-      ctx.drawImage(fire[Math.floor(top * 0.55)]!, mx - gr, my - gr, gr * 2, gr * 2);
+      // Centred a little onto the card and kept clear of the overlay's edges, so the light never shows a clipped box.
+      const nx = -Math.sin(ha), ny = Math.cos(ha);
+      const gx = mx + nx * 6 * u, gy = my + ny * 6 * u;
+      const gr = Math.max(0, Math.min((14 + 26 * glow) * u, gx, gy, w - gx, h - gy));
+      if (gr > 1) ctx.drawImage(fire[Math.floor(top * 0.55)]!, gx - gr, gy - gr, gr * 2, gr * 2);
 
       const heading = ha + 0.1; // along the edge, leaning onto the card so the jet stays inside the overlay and lights the frame
       if (Number.isNaN(pmx)) { pmx = mx; pmy = my; pHeading = heading; }
