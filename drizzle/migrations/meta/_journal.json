@@ -43,6 +43,13 @@
       "when": 1792433156760,
       "tag": "0005_admin_card_tools",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792433637193,
+      "tag": "0006_card_photos_admin_policies",
+      "breakpoints": true
     }
   ]
 }
