@@ -109,7 +109,7 @@ function PackTile({
   return (
     <div className="panel flex flex-col items-center p-6 text-center">
       <button onClick={onOpen} disabled={busy || p.count < 1} className="group disabled:opacity-50">
-        <img src={IMG[p.pack_key] ?? packClassic} alt={p.name} width={768} height={1152} className={`w-40 transition group-hover:scale-105 group-enabled:anim-float ${p.pack_key === "premium" ? "drop-shadow-[0_0_22px_var(--card-light)]" : ""}`} />
+        <img src={IMG[p.pack_key] ?? packClassic} alt={p.name} width={768} height={1152} className={`w-40 transition group-hover:scale-105 group-enabled:anim-float ${p.pack_key === "premium" ? "drop-shadow-[0_0_22px_var(--primary)]" : ""}`} />
       </button>
       <h2 className="mt-4 text-3xl">{p.name}</h2>
       <p className="text-sm text-muted-foreground">{p.description}</p>
