@@ -5,5 +5,5 @@ export const Route = createFileRoute("/dragon-debug")({ ssr: false, component: D
 function Dbg() {
   const [ok, setOk] = useState(false);
   useEffect(() => setOk(true), []);
-  return <div style={{ width: 504, height: 588, background: "#234", position: "relative" }}>{ok && <Suspense fallback={null}><Dragon3D glow="rgb(255,150,30)" warm="rgb(255,240,200)" /></Suspense>}</div>;
+  return <div style={{ width: 504, height: 588, background: "#fff", position: "relative" }}>{ok && <Suspense fallback={null}><Dragon3D glow="rgb(255,150,30)" warm="rgb(255,240,200)" /></Suspense>}</div>;
 }
