@@ -253,6 +253,13 @@ export const sfx = {
     noise(e, { dur: 0.15, freq: 1100, to: 3800, q: 1.6, gain: 0.11, attack: 0.03 });
     tone(e, { start: 0.11, freq: 320, to: 170, dur: 0.08, gain: 0.08 });
   }),
+  /** Real trading-card handling: a crisp cardboard snap, a light thump and a short paper rub. */
+  cardTap: () => play((e) => {
+    noise(e, { dur: 0.018, filter: "highpass", freq: 3200, gain: 0.16, attack: 0.001, reverb: 0.02 });
+    noise(e, { start: 0.004, dur: 0.035, freq: 1800, q: 2.2, gain: 0.1, attack: 0.002, reverb: 0.03 });
+    tone(e, { start: 0.002, freq: 180, to: 110, dur: 0.05, gain: 0.07, reverb: 0 });
+    noise(e, { start: 0.03, dur: 0.09, filter: "lowpass", freq: 2600, to: 900, gain: 0.035, attack: 0.02, reverb: 0.04 });
+  }),
   cardSlide: () => play((e) => noise(e, { dur: 0.22, filter: "lowpass", freq: 1400, to: 300, gain: 0.07, attack: 0.04 })),
   stackAppear: () => play((e) => {
     for (let i = 0; i < 5; i++) noise(e, { start: i * 0.07, dur: 0.12, filter: "lowpass", freq: 1800, to: 500, gain: 0.05, pan: (i - 2) * 0.12 });
@@ -416,7 +423,7 @@ export const sfx = {
 export type SfxName = keyof typeof sfx;
 
 const SIMPLE: Partial<Record<string, () => void>> = {
-  click: sfx.click, tab: sfx.tab, select: sfx.select, back: sfx.back, open: sfx.open, flip: sfx.cardFlip, whoosh: () => sfx.whoosh(0.5),
+  click: sfx.click, tab: sfx.tab, select: sfx.select, back: sfx.back, open: sfx.open, flip: sfx.cardFlip, card: sfx.cardTap, whoosh: () => sfx.whoosh(0.5),
 };
 
 /**

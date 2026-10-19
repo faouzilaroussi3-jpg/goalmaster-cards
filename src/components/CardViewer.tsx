@@ -15,7 +15,7 @@ export function CardViewer({ card, missing, count, onClose }: { card: CardData |
   // Rotation sound: a swish each time the card has turned another ~35°, louder when spun fast.
   const spin = useRef({ acc: 0, lastY: 0, lastT: 0 });
 
-  useEffect(() => { setRot({ x: 0, y: 0 }); if (card) sfx.open(); }, [card]);
+  useEffect(() => { setRot({ x: 0, y: 0 }); }, [card]);
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);

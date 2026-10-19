@@ -93,7 +93,7 @@ export function PackOpening({
     if (turned > 0) setLeaving(turned - 1);
     setTurned(turned + 1);
     setBusy(true);
-    if (turned > 0) sfx.cardSlide();
+    sfx.cardTap();
     if (timing.fx) {
       sfx.rareBuild(timing.fx, timing.charge);
       later(() => sfx.cardFlip(), timing.charge);
