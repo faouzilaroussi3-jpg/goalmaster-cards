@@ -7,6 +7,11 @@ describe("pack swipe", () => {
     expect(shouldOpen(-130, 0, 400)).toBe(false);
   });
 
+  it("never needs more than 160px on wide screens", () => {
+    expect(shouldOpen(-160, 0, 1200)).toBe(true);
+    expect(shouldOpen(-150, 0, 1200)).toBe(false);
+  });
+
   it("opens on a fast leftward flick even if short", () => {
     expect(shouldOpen(-60, -0.9, 400)).toBe(true);
   });

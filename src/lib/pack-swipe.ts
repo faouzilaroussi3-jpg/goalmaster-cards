@@ -2,8 +2,10 @@
 
 /** Fraction of the stage width the pack must travel left to open. */
 export const SWIPE_OPEN_RATIO = 0.35;
+/** Cap on that distance (px) so wide screens do not need a huge drag. */
+export const SWIPE_OPEN_MAX = 160;
 /** Leftward flick speed (px/ms) that opens even under the distance threshold. */
-export const SWIPE_FLICK_SPEED = 0.6;
+export const SWIPE_FLICK_SPEED = 0.5;
 /** Minimum travel (px) for a flick to count, so a tap never opens. */
 export const SWIPE_FLICK_MIN = 40;
 
@@ -15,7 +17,7 @@ export function dragOffset(rawDx: number): number {
 /** Progress 0..1 toward opening, used for the glow and hint feedback. */
 export function swipeProgress(dx: number, width: number): number {
   if (width <= 0 || dx >= 0) return 0;
-  return Math.min(1, -dx / (width * SWIPE_OPEN_RATIO));
+  return Math.min(1, -dx / Math.min(width * SWIPE_OPEN_RATIO, SWIPE_OPEN_MAX));
 }
 
 /** Decide on release whether the pack opens. velocity is px/ms, negative = left. */
