@@ -55,7 +55,7 @@ export function AppHeader() {
         if (p.eventType === "INSERT" && row?.recipient_id === uid) {
           sfx.messageIn();
           if (!pathRef.current.startsWith("/messages")) {
-            toast("Nouveau message", { action: { label: "Lire", onClick: () => navigate({ to: "/messages", search: { ami: row.sender_id } }) } });
+            toast("Nouveau message", { action: { label: "Lire", onClick: () => navigate({ to: "/messages", search: row.sender_id ? { ami: row.sender_id } : {} }) } });
           }
         }
       })

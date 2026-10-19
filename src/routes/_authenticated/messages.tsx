@@ -15,7 +15,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const Route = createFileRoute("/_authenticated/messages")({
   validateSearch: (s: Record<string, unknown>): { ami?: string } =>
-    typeof s.ami === "string" && UUID.test(s.ami) ? { ami: s.ami } : {},
+    typeof s["ami"] === "string" && UUID.test(s["ami"]) ? { ami: s["ami"] } : {},
   head: () => ({
     meta: [
       { title: "Messages — Goalmaster" },
@@ -181,7 +181,7 @@ function Conversation({ friend }: { friend: Friend }) {
             </div>
           );
         })}
-        {msgs.length > 0 && msgs[msgs.length - 1].sender_id === me && msgs[msgs.length - 1].read_at && (
+        {msgs.at(-1)?.sender_id === me && msgs.at(-1)?.read_at && (
           <p className="pr-1 text-right text-[10px] text-muted-foreground">Vu</p>
         )}
         <div ref={endRef} />
