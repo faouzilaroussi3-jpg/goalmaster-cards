@@ -127,7 +127,7 @@ function CollectionPage() {
         ))}
       </div>
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
-      <PhotoCredits />
+      <PhotoCredits cards={catalog} />
     </div>
   );
 }

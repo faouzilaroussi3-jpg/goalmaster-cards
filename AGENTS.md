@@ -19,3 +19,4 @@
 - Tearing a pack goes straight from the light burst to the face-down reveal stack (no cinematic in between), so opening stays fast and lightweight.
 - Pack tear-to-open thresholds (left-to-right on the top strip) live in src/lib/pack-swipe.ts as pure functions with tests, so gesture tuning never touches the component or the server draw.
 - Pack results are revealed from a tap-to-flip stack (CardBack + src/lib/card-reveal.ts timings, bonus card last); reveal suspense is presentation only and never affects the server draw.
+- Bulk catalog expansions are recorded in src/data/*.json (Wikidata ID, licensed Commons photo pointer, credit fields) and inserted as card rows carrying photo_author/photo_license/photo_source, so credits come from the database instead of hand-written modules.
