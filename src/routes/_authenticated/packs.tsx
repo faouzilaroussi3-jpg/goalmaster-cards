@@ -93,7 +93,7 @@ function PacksPage() {
     const fresh = newlyClaimable(before, qc.getQueryData<Challenge[]>(key) ?? []);
     if (fresh.length > 0) {
       const coins = fresh.reduce((s, c) => s + c.reward_coins, 0);
-      toast.success(fresh.length > 1 ? `${fresh.length} défis accomplis !` : `Défi accompli : ${fresh[0].title}`, {
+      toast.success(fresh.length > 1 ? `${fresh.length} défis accomplis !` : `Défi accompli : ${fresh[0]?.title ?? ""}`, {
         description: `${coins} pièces à récupérer`,
         action: { label: "Récupérer", onClick: () => navigate({ to: "/defis" }) },
       });
