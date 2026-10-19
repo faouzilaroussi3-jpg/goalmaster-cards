@@ -15,3 +15,4 @@
 - [x] Animation lueur + explosion (3-4 s) quand une carte Légendaire ou plus est révélée, aux couleurs de son effet
 - [x] Rubrique Transferts : enchères entre joueurs (durée au choix, taxe 5 %, toutes cartes sauf Secrète Ultime)
 - [x] Défis : pièces gagnées par paliers de cartes tirées dans les packs (total, chaque rareté, ALT, Shiny, SU secrète)
+- [ ] Duels tactiques entre joueurs : équipe de 5 cartes (budget 20), 5 manches à thème, choix secret, pièces + classement Elo
