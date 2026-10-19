@@ -169,6 +169,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       {children}
       <div className="su-breath-glow" aria-hidden="true" />
       <div className="su-front" aria-hidden="true">
+        <div className="su-grip" />
         <div className="su-side">
           <Part src={dragonClaw} className="su-claw su-claw-fore" w={480} h={480} />
           <Part src={dragonClaw} className="su-claw su-claw-hind" w={480} h={480} />

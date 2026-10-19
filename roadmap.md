@@ -20,3 +20,5 @@
 - [x] Effets sonores partout (clics, onglets, rotation des cartes, arrachage, lueur, explosion, révélations, duels, pièces) + bouton couper le son
 - [x] Amis : envoyer/recevoir/accepter des demandes d'ami + onglet Messages pour discuter avec ses amis
 - [x] Admin : offrir des packs, des pièces et des cartes aux joueurs (un ou tous), sans limite d'envois
+- [ ] SU : dragon 2D qui tient la carte (griffes réalistes), lueur rouge métallisée moins intense qui bouge
+- [ ] SU : dragon juste derrière la carte, proportions compactes pour ne pas gêner les cartes voisines

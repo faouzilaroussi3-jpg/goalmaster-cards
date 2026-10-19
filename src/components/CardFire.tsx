@@ -103,7 +103,7 @@ export function CardFire({ className }: { className?: string }) {
       last = now; t += dt;
       // A few particles per second per pixel of card width keeps density constant at every card size.
       const boost = shell?.classList.contains("is-breathing") ? 2 : 1;
-      acc += dt * Math.max(320, w * 3.6) * boost;
+      acc += dt * Math.max(220, w * 2.6) * boost;
       while (acc > 1) { spawn(); acc -= 1; }
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, w, h);
@@ -120,8 +120,8 @@ export function CardFire({ className }: { className?: string }) {
         p.y += p.vy * dt;
         p.vy *= 1 + dt * 0.8; // accelerates as hot air rises
         const size = p.size * (k < 0.2 ? 0.6 + k * 2 : 1 - (k - 0.2) * 0.85);
-        const alpha = (k < 0.1 ? k * 10 : 1 - k) * 0.85;
-        const sprite = sprites[Math.min(STEPS - 1, Math.floor(k * STEPS))]!;
+        const alpha = (k < 0.1 ? k * 10 : 1 - k) * 0.5; // a softer red glow, so the metal frame reads through it
+        const sprite = sprites[Math.min(STEPS - 1, Math.floor((0.3 + k * 0.7) * STEPS))]!; // born orange-red, never white-hot
         ctx.globalAlpha = alpha;
         ctx.drawImage(sprite, p.x - size / 2, p.y - size * 1.2, size, size * 2.2);
       }

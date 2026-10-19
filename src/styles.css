@@ -304,7 +304,8 @@
 .su-shell.is-missing > :not(.fm-card) { filter: grayscale(1) brightness(0.5); }
 .su-shell.is-missing .su-breath-glow, .su-shell.is-missing .su-breath { display: none; }
 @media (prefers-reduced-motion: no-preference) {
-  .su-shell > * { animation: su-carry 2.8s ease-in-out infinite; }
+  .su-back, .su-front { animation: su-carry 2.8s ease-in-out infinite; }
+  .su-shell > .fm-card[data-rarity="secret_ultimate"] { animation: su-heat 1.6s ease-in-out infinite alternate, su-carry 2.8s ease-in-out infinite; }
   .su-head { animation: su-head-idle 3.4s ease-in-out infinite; }
   .su-shell.is-breathing .su-head { animation: su-head-breath 2s ease-out; }
   .su-wing { animation: su-wing-flap 2.8s ease-in-out infinite; }
@@ -314,8 +315,8 @@
   .su-claw-hind { animation-delay: -1.3s; }
   .is-mirror .su-claw { animation-delay: -.8s; }
   .is-mirror .su-claw-hind { animation-delay: -2.1s; }
-  .su-breath-glow { animation: su-glow-idle 2.2s ease-in-out infinite alternate; }
-  .su-shell.is-breathing .su-breath-glow { animation: su-glow-breath 2s ease-out; }
+  .su-breath-glow { animation: su-glow-idle 2.2s ease-in-out infinite alternate, su-carry 2.8s ease-in-out infinite; }
+  .su-shell.is-breathing .su-breath-glow { animation: su-glow-breath 2s ease-out, su-carry 2.8s ease-in-out infinite; }
 }
 @keyframes su-carry { 0%, 100% { translate: 0 0; rotate: 0deg; } 30% { translate: 0 -1.8%; rotate: -.6deg; } 65% { translate: 0 .6%; rotate: .5deg; } }
 @keyframes su-head-idle { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.5%) rotate(-1.5deg); } }
