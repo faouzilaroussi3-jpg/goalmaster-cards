@@ -67,7 +67,7 @@ function Dragon({ glow }: { glow: string }) {
   useEffect(() => {
     const name = names.find((n) => /Fast_Flying/i.test(n)) ?? names.find((n) => /Fly/i.test(n)) ?? names[0];
     const action = name ? actions[name] : undefined;
-    action?.reset().setEffectiveTimeScale(1.15).play();
+    if (!(window as unknown as { __noanim?: boolean }).__noanim) action?.reset().setEffectiveTimeScale(1.15).play();
     return () => { action?.stop(); };
   }, [actions, names]);
 
