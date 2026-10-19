@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { GoldenFlames } from "@/components/GoldenFlames";
 import { TearSparkles } from "@/components/TearSparkles";
 import { shouldTear, tearProgress } from "@/lib/pack-swipe";
+import { sfx } from "@/lib/sfx";
 
 /** Height of the tear line, as a percentage of the pack image. */
 const TEAR_Y = 10;
@@ -40,6 +41,8 @@ export function SwipePack({
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [torn, setTorn] = useState(false);
+  const tearSound = useRef<ReturnType<typeof sfx.startTear> | null>(null);
+  useEffect(() => () => tearSound.current?.end(), []);
 
   useEffect(() => {
     setProgress(0);
@@ -52,6 +55,11 @@ export function SwipePack({
     if (disabled || torn) return;
     setProgress(1);
     setTorn(true);
+    tearSound.current?.end();
+    tearSound.current = null;
+    sfx.tearComplete();
+    sfx.packGlow();
+    setTimeout(() => sfx.whiteout(), 380);
     onOpen();
   }
 
@@ -60,6 +68,8 @@ export function SwipePack({
     e.currentTarget.setPointerCapture(e.pointerId);
     start.current = { x: e.clientX, lastX: e.clientX, lastT: performance.now() };
     setDragging(true);
+    tearSound.current?.end();
+    tearSound.current = sfx.startTear();
   }
 
   function onPointerMove(e: PointerEvent<HTMLDivElement>) {
@@ -67,7 +77,9 @@ export function SwipePack({
     if (!s) return;
     const now = performance.now();
     if (now - s.lastT > 60) { s.lastX = e.clientX; s.lastT = now; }
-    setProgress(tearProgress(e.clientX - s.x, width()));
+    const p = tearProgress(e.clientX - s.x, width());
+    tearSound.current?.update(p);
+    setProgress(p);
   }
 
   function onPointerUp(e: PointerEvent<HTMLDivElement>) {
@@ -78,7 +90,12 @@ export function SwipePack({
     const now = performance.now();
     const velocity = (e.clientX - s.lastX) / Math.max(1, now - s.lastT);
     if (shouldTear(e.clientX - s.x, velocity, width())) finish();
-    else setProgress(0);
+    else {
+      tearSound.current?.end();
+      tearSound.current = null;
+      if (progress > 0.05) sfx.cardSlide();
+      setProgress(0);
+    }
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
@@ -166,6 +183,7 @@ export function SwipePack({
             </div>
             <div
               role="button"
+              data-sfx="none"
               tabIndex={0}
               aria-label={`${name} : glisser de gauche à droite sur la ligne du haut pour arracher et ouvrir`}
               onPointerDown={onPointerDown}

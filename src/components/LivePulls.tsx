@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PlayerCard } from "@/components/PlayerCard";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
+import { sfx } from "@/lib/sfx";
 
 interface BigPull {
   id: string; username: string | null; card_id: string; name: string; club: string; nationality: string; pos: string;
@@ -52,7 +53,7 @@ export function LivePulls({ limit = 20 }: { limit?: number }) {
     if (known.current === null) { known.current = new Set(pulls.map((p) => p.id)); return; }
     const added = pulls.filter((p) => !known.current!.has(p.id)).map((p) => p.id);
     added.forEach((id) => known.current!.add(id));
-    if (added.length) setFresh(new Set(added));
+    if (added.length) { setFresh(new Set(added)); sfx.sparkle(); }
   }, [pulls]);
 
   const [now, setNow] = useState(() => Date.now());

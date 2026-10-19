@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Coins, Package, LogOut, Shield } from "lucide-react";
+import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
 import { useAuth, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
 import { claimableSummary } from "@/lib/challenges";
 
@@ -82,6 +83,7 @@ export function AppHeader() {
           )}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <SoundToggle />
           {session ? (
             <>
               <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm font-bold text-primary">
@@ -112,5 +114,21 @@ export function AppHeader() {
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}
       </nav>
     </header>
+  );
+}
+
+function SoundToggle() {
+  const muted = useSyncExternalStore(subscribeMuted, isMuted, () => false);
+  return (
+    <button
+      type="button"
+      data-sfx="none"
+      onClick={() => { setMuted(!muted); if (muted) setTimeout(() => sfx.select(), 30); }}
+      aria-label={muted ? "Activer les sons" : "Couper les sons"}
+      title={muted ? "Activer les sons" : "Couper les sons"}
+      className="rounded-full p-2 text-muted-foreground transition hover:text-foreground"
+    >
+      {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4 text-primary" />}
+    </button>
   );
 }

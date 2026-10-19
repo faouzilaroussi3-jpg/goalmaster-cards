@@ -9,6 +9,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { sfx } from "@/lib/sfx";
 
 interface OwnedCopy {
   id: string;
@@ -65,6 +66,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
     (!q || `${o.name} ${o.club} ${o.nationality} ${o.pos}`.toLowerCase().includes(q.toLowerCase())));
 
   function toggle(o: PickedCard) {
+    if (picked.some((x) => x.user_card_id === o.user_card_id)) sfx.cardSlide(); else sfx.playCard();
     setPicked((p) => p.some((x) => x.user_card_id === o.user_card_id) ? p.filter((x) => x.user_card_id !== o.user_card_id) : [...p, o]);
   }
 
@@ -89,7 +91,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
         </div>
         <div className="grid grid-cols-5 gap-2">
           {Array.from({ length: DECK_SIZE }, (_, i) => picked[i]).map((c, i) => c ? (
-            <button key={c.user_card_id} type="button" onClick={() => toggle(c)} className="group relative" aria-label={`Retirer ${c.name}`}>
+            <button key={c.user_card_id} type="button" data-sfx="none" onClick={() => toggle(c)} className="group relative" aria-label={`Retirer ${c.name}`}>
               <PlayerCard card={c} />
               <span className="absolute -right-1 -top-1 z-10 rounded-full bg-background p-0.5 text-muted-foreground group-hover:text-foreground"><X className="h-3.5 w-3.5" /></span>
             </button>
@@ -125,6 +127,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
                 key={o.user_card_id}
                 type="button"
                 disabled={off}
+                data-sfx="none"
                 onClick={() => toggle(o)}
                 className={cn("relative rounded-lg text-left transition", on && "ring-2 ring-primary ring-offset-2 ring-offset-background", off && "opacity-35")}
                 aria-pressed={on}
