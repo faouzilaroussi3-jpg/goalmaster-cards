@@ -36,6 +36,13 @@
       "when": 1792432866682,
       "tag": "0004_no_bonus_sorted_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792433156760,
+      "tag": "0005_admin_card_tools",
+      "breakpoints": true
     }
   ]
 }
