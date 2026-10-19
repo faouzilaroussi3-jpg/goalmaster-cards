@@ -105,7 +105,7 @@ export function PackOpening({
   const lastShown = turned >= total && !busy;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-y-auto bg-background/95 px-3 py-6 backdrop-blur">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center-safe overflow-y-auto bg-background/95 px-3 py-6 backdrop-blur">
       {flash && (
         <div
           className={cn("pointer-events-none fixed inset-0 z-10 anim-flash", flash === "secret_ultimate" ? "su-overlay" : "bg-primary/40")}
@@ -135,7 +135,7 @@ export function PackOpening({
           <p className="mb-1 font-display text-2xl tracking-widest text-primary">
             {front?.is_bonus ? "CARTE BONUS" : `CARTE ${Math.max(1, turned)} / ${total}`}
           </p>
-          <p className="mb-6 h-5 text-sm text-muted-foreground">
+          <p className="mb-10 h-5 text-sm text-muted-foreground">
             {busy ? "" : lastShown ? "Touche la carte pour voir ton pack" : "Touche la carte pour la révéler"}
           </p>
 
