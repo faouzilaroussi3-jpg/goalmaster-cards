@@ -1,7 +1,6 @@
-import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 import { CardFire } from "@/components/CardFire";
 export { SuDragonShell } from "@/components/SuDragon";
-import { cn } from "@/lib/utils";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 function subscribe(cb: () => void) {
