@@ -31,6 +31,7 @@ export function AppHeader() {
         <nav className="hidden flex-1 items-center gap-1 md:flex">
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
+          <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
           {profile?.isAdmin && (
@@ -60,6 +61,7 @@ export function AppHeader() {
       <nav className="flex justify-around border-t border-border py-1 md:hidden">
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
+        <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
         {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}
