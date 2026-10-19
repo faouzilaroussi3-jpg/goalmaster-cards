@@ -11,6 +11,7 @@ function Preview() {
   const cards = [other, su, other, other, other, other, su, other];
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <div className="mx-auto w-96 pt-24 pb-16"><PlayerCard card={su} /></div>
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
         {cards.map((c, i) => <div key={i}><PlayerCard card={c} /></div>)}
       </div>
