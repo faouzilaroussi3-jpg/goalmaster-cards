@@ -102,7 +102,8 @@ export function CardFire({ className }: { className?: string }) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now; t += dt;
       // A few particles per second per pixel of card width keeps density constant at every card size.
-      acc += dt * Math.max(320, w * 3.6);
+      const boost = shell?.classList.contains("is-breathing") ? 2 : 1;
+      acc += dt * Math.max(320, w * 3.6) * boost;
       while (acc > 1) { spawn(); acc -= 1; }
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, w, h);
