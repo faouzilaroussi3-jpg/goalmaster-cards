@@ -77,7 +77,7 @@ export function AppHeader() {
       sfx.sparkle();
       setTimeout(() => sfx.coins(5), 250);
       for (const g of data) {
-        toast.success("🎁 Cadeau de l'admin !", { description: [giftSummary(g), g.note && `« ${g.note} »`].filter(Boolean).join(" — "), duration: 8000 });
+        toast.success("Cadeau de l'admin !", { description: [giftSummary(g), g.note && `« ${g.note} »`].filter(Boolean).join(" — "), duration: 8000 });
       }
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["packs"] });
