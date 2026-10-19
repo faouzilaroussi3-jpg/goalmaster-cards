@@ -280,7 +280,7 @@
 .su-claw { transform-origin: 70% 80%; }
 .su-claw-fore { width: 34%; left: -21%; top: 33%; rotate: -52deg; }
 .su-claw-hind { width: 25%; left: -15%; top: 63%; rotate: -38deg; }
-.su-breath { position: absolute; z-index: 4; left: 20%; right: -55%; top: -48%; bottom: 40%; width: 125%; height: 108%; pointer-events: none; }
+.su-breath { position: absolute; z-index: 4; left: 20%; top: -48%; width: 135%; height: 108%; pointer-events: none; }
 .su-breath-glow { position: absolute; inset: 0; z-index: 2; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--flame-core) 80%, transparent), color-mix(in oklab, var(--flame-mid) 55%, transparent) 32%, color-mix(in oklab, var(--flame-outer) 30%, transparent) 58%, transparent 82%); }
 .su-shell.is-breathing > .fm-card { filter: brightness(1.12) saturate(1.15); }
 .su-shell.is-breathing .su-head { filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 10px var(--flame-mid)) brightness(1.15); }
