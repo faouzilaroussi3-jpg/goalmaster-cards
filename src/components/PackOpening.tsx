@@ -4,7 +4,7 @@ import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CardBack } from "@/components/CardBack";
-import { FLIP_MS, RARITY_VAR } from "@/lib/card-reveal";
+import { RARITY_VAR } from "@/lib/card-reveal";
 import { revealTiming, type RareFx } from "@/lib/rare-reveal";
 import { RareRevealFx } from "@/components/RareRevealFx";
 

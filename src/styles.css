@@ -396,3 +396,20 @@
 .card-viewer-glare { position: absolute; inset: 0; z-index: 20; border-radius: 8px; pointer-events: none; mix-blend-mode: soft-light; background: radial-gradient(circle at var(--glare-x, 50%) 30%, color-mix(in oklab, var(--card-light) 55%, transparent), transparent 55%); }
 @media (prefers-reduced-motion: reduce) { .card-viewer-spin { transition: none; } }
 .card-viewer-stage img { -webkit-user-drag: none; pointer-events: none; }
+
+/* ===== Légendaire+ reveal: build-up, explosion, title ===== */
+.gm-back-rare { animation: suspense .3s ease-in-out infinite, rare-charge var(--charge, 1500ms) ease-in forwards; }
+@keyframes rare-charge { from { filter: brightness(1); } to { filter: brightness(2.4) saturate(1.4) drop-shadow(0 0 24px var(--rc)); } }
+.rare-shake { animation: rare-shake .5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes rare-shake { 10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(5px, -3px); } 30%, 50%, 70% { transform: translate(-8px, 4px) rotate(-1deg); } 40%, 60% { transform: translate(8px, -4px) rotate(1deg); } }
+.rare-title { font-family: var(--font-card-engraved, var(--font-display)); font-weight: 900; letter-spacing: .06em; line-height: 1; -webkit-background-clip: text; background-clip: text; color: transparent; animation: rare-title 3s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes rare-title { 0% { transform: scale(2.2); opacity: 0; filter: blur(8px); } 14% { transform: scale(1); opacity: 1; filter: blur(0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-10px); } }
+.rare-title[data-fx="legendary"] { background-image: linear-gradient(180deg, var(--gold-bright) 15%, var(--r-legendary) 55%, var(--gold-deep)); filter: drop-shadow(0 0 18px var(--r-legendary)); }
+.rare-title[data-fx="alt"] { background-image: var(--gradient-rainbow); background-size: 200% 100%; filter: drop-shadow(0 0 16px var(--card-light)); }
+.rare-title[data-fx="secret_legendary"] { background-image: linear-gradient(115deg, var(--card-light) 20%, var(--diamond-ice) 45%, var(--diamond-lilac) 60%, var(--card-light) 80%); filter: drop-shadow(0 0 18px var(--diamond-ice)); }
+.rare-title[data-fx="shiny"] { background-image: linear-gradient(180deg, var(--neon-ice) 30%, var(--neon-blue)); filter: drop-shadow(0 0 6px var(--card-light)) drop-shadow(0 0 22px var(--neon-blue)); }
+.rare-title[data-fx="secret_ultimate"] { font-family: var(--font-card-ornate, var(--font-card-engraved, var(--font-display))); background-image: var(--gradient-fire); filter: drop-shadow(0 0 20px var(--flame-outer)); }
+@media (prefers-reduced-motion: reduce) {
+  .gm-back-rare, .rare-shake { animation: none; }
+  .rare-title { animation: none; }
+}
