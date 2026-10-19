@@ -8,6 +8,11 @@ interface CreditedCard {
   photo_license?: string | null;
   photo_license_url?: string | null;
   photo_source?: string | null;
+  alt_image_url?: string | null;
+  alt_photo_author?: string | null;
+  alt_photo_license?: string | null;
+  alt_photo_license_url?: string | null;
+  alt_photo_source?: string | null;
 }
 
 /** Photo credits: curated portraits plus every catalog card that carries its own licence data. */
@@ -15,8 +20,11 @@ export function PhotoCredits({ cards = [] }: { cards?: CreditedCard[] }) {
   const fromCards = cards
     .filter((c) => c.photo_source && c.image_url)
     .map((c) => ({ name: c.name, url: c.image_url!, author: c.photo_author ?? "", license: c.photo_license ?? "", license_url: c.photo_license_url ?? c.photo_source!, source: c.photo_source! }));
+  const fromAltArt = cards
+    .filter((c) => c.alt_photo_source && c.alt_image_url)
+    .map((c) => ({ name: `${c.name} (ALT)`, url: c.alt_image_url!, author: c.alt_photo_author ?? "", license: c.alt_photo_license ?? "", license_url: c.alt_photo_license_url ?? c.alt_photo_source!, source: c.alt_photo_source! }));
   const seen = new Set<string>();
-  const credits = [...PLAYER_PORTRAITS, ...EDITION_PHOTO_CREDITS, ...fromCards].filter((p) => !seen.has(p.url) && seen.add(p.url));
+  const credits = [...PLAYER_PORTRAITS, ...EDITION_PHOTO_CREDITS, ...fromCards, ...fromAltArt].filter((p) => !seen.has(p.url) && seen.add(p.url));
 
   return (
     <details className="mt-10 border-t border-border pt-4 text-xs text-muted-foreground">
