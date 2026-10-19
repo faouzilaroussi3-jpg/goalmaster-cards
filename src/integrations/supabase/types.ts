@@ -350,7 +350,10 @@ export type Database = {
     }
     Functions: {
       _draw_key: { Args: { _w: Json }; Returns: string }
-      _pick_card: { Args: { _rarity: string }; Returns: string }
+      _pick_card: {
+        Args: { _exclude?: string[]; _rarity: string }
+        Returns: string
+      }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
       buy_pack: { Args: { _pack_key: string }; Returns: undefined }
       get_leaderboard: {
