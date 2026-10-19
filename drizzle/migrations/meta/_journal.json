@@ -85,6 +85,13 @@
       "when": 1792443019728,
       "tag": "0011_tactical_duels",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792443734984,
+      "tag": "0012_big_pulls_live_feed",
+      "breakpoints": true
     }
   ]
 }
