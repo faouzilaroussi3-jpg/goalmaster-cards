@@ -69,6 +69,7 @@ function Dragon({ glow }: { glow: string }) {
   const ahead = useMemo(() => new THREE.Vector3(), []);
   useFrame((state) => {
     const g = group.current;
+    if (state.clock.elapsedTime < 0.05 || Math.random() < 0.01) console.log('DRAGONDBG frame', !!g);
     if (!g) return;
     const t = state.clock.elapsedTime;
     orbit(t, pos);
