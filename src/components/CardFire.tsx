@@ -22,10 +22,33 @@ function mix(a: Rgb, b: Rgb, t: number): Rgb {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 }
 
+/** Pre-tinted soft fire sprites, white-hot core → orange → red → ember, from the theme's flame tokens on `el`. */
+export function fireSprites(el: Element): HTMLCanvasElement[] {
+  const css = getComputedStyle(el);
+  const core = toRgb(css.getPropertyValue("--flame-core").trim(), [255, 244, 190]);
+  const mid = toRgb(css.getPropertyValue("--flame-mid").trim(), [255, 150, 30]);
+  const outer = toRgb(css.getPropertyValue("--flame-outer").trim(), [215, 40, 20]);
+  const dark = toRgb(css.getPropertyValue("--flame-dark").trim(), [80, 12, 8]);
+  const ramp = (t: number): Rgb => (t < 0.25 ? mix(core, mid, t / 0.25) : t < 0.6 ? mix(mid, outer, (t - 0.25) / 0.35) : mix(outer, dark, (t - 0.6) / 0.4));
+  return Array.from({ length: STEPS }, (_, i) => {
+    const [r, g, b] = ramp(i / (STEPS - 1)).map(Math.round) as Rgb;
+    const s = document.createElement("canvas");
+    s.width = s.height = 48;
+    const sx = s.getContext("2d")!;
+    const grad = sx.createRadialGradient(24, 24, 0, 24, 24, 24);
+    grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
+    grad.addColorStop(0.3, `rgba(${r},${g},${b},0.75)`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    sx.fillStyle = grad;
+    sx.fillRect(0, 0, 48, 48);
+    return s;
+  });
+}
+
 /**
  * Realistic fire burning along the card edges: hundreds of additive particles that are born white-hot,
- * cool through orange and red, sway with turbulence and fade out as they rise. Paused off-screen and
- * skipped entirely for reduced motion.
+ * cool through orange and red, sway with turbulence and fade out as they rise. Burns twice as hard while
+ * the SU dragon breathes fire (.su-shell.is-breathing). Paused off-screen and skipped for reduced motion.
  */
 export function CardFire({ className }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -36,29 +59,8 @@ export function CardFire({ className }: { className?: string }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    // Temperature ramp from the theme's flame tokens: white-hot core → orange → red → ember.
-    const css = getComputedStyle(canvas);
-    const core = toRgb(css.getPropertyValue("--flame-core").trim(), [255, 244, 190]);
-    const mid = toRgb(css.getPropertyValue("--flame-mid").trim(), [255, 150, 30]);
-    const outer = toRgb(css.getPropertyValue("--flame-outer").trim(), [215, 40, 20]);
-    const dark = toRgb(css.getPropertyValue("--flame-dark").trim(), [80, 12, 8]);
-    const ramp = (t: number): Rgb => (t < 0.25 ? mix(core, mid, t / 0.25) : t < 0.6 ? mix(mid, outer, (t - 0.25) / 0.35) : mix(outer, dark, (t - 0.6) / 0.4));
-
-    // Pre-tinted soft sprites, one per temperature step.
-    const sprites = Array.from({ length: STEPS }, (_, i) => {
-      const [r, g, b] = ramp(i / (STEPS - 1)).map(Math.round) as Rgb;
-      const s = document.createElement("canvas");
-      s.width = s.height = 48;
-      const sx = s.getContext("2d")!;
-      const grad = sx.createRadialGradient(24, 24, 0, 24, 24, 24);
-      grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
-      grad.addColorStop(0.3, `rgba(${r},${g},${b},0.75)`);
-      grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
-      sx.fillStyle = grad;
-      sx.fillRect(0, 0, 48, 48);
-      return s;
-    });
+    const sprites = fireSprites(canvas);
+    const shell = canvas.closest(".su-shell");
 
     let w = 0, h = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
