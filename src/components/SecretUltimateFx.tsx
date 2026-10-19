@@ -13,8 +13,8 @@ function useReducedMotion() {
 // The card is 5:7, so a 100x140 viewBox maps 1:1 without distortion.
 const TRACK = "M12,5 H88 Q95,5 95,12 V128 Q95,135 88,135 H12 Q5,135 5,128 V12 Q5,5 12,5 Z";
 const LAP_S = 7;
-const SEGMENTS = 26;
-const GAP_S = 0.055;
+const SEGMENTS = 34;
+const GAP_S = 0.036;
 
 /** Secret Ultimate frame: a flickering fire border and a dragon slithering around the card edge. */
 export function SecretUltimateFx() {
@@ -67,18 +67,19 @@ export function SecretUltimateFx() {
           {Array.from({ length: SEGMENTS - 1 }, (_, k) => {
             const i = SEGMENTS - 1 - k; // i = 1 (neck) .. SEGMENTS-1 (tail tip)
             const t = i / SEGMENTS;
-            const s = 1.15 - t * 0.85;
+            const s = 1.2 - t * 0.9;
             return (
               <g key={i}>
                 {motion(i)}
                 <g transform={`scale(${s.toFixed(3)})`}>
                   {i === SEGMENTS - 1 ? (
-                    <path className="su-dragon-tail" d="M2,0 L-4,-2.6 L-2.5,0 L-4,2.6 Z" />
+                    <path className="su-dragon-tail" d="M3,0 Q-2,-1 -7,-4.5 Q-4,-0.8 -8,0 Q-4,0.8 -7,4.5 Q-2,1 3,0 Z" />
                   ) : (
                     <>
-                      <polygon className="su-dragon-spike" points="-1.2,-1.9 0.4,-4.2 1.4,-1.9" />
-                      <ellipse rx="2.5" ry="2.1" fill={`url(#${scale})`} className="su-dragon-scale" />
-                      {(i === 5 || i === 13) && <path className="su-dragon-claw" d="M0,2 L-1,4.4 M0,2 L0.6,4.6 M0,2 L1.8,4.2" />}
+                      {i % 2 === 0 && <path className="su-dragon-spike" d="M-1.6,-1.8 Q-1.4,-4 -0.2,-5 Q0.4,-3.4 1.4,-1.8 Z" />}
+                      <path fill={`url(#${scale})`} className="su-dragon-scale" d="M2.6,0 Q1.2,-2.4 -1.6,-2.2 Q-2.6,0 -1.6,2.2 Q1.2,2.4 2.6,0 Z" />
+                      <path className="su-dragon-belly" d="M-1.4,1.3 Q0.6,2 2,0.8" />
+                      {(i === 6 || i === 18) && <path className="su-dragon-claw" d="M0,2 L-1,4.4 M0,2 L0.6,4.6 M0,2 L1.8,4.2" />}
                     </>
                   )}
                 </g>

@@ -210,7 +210,8 @@
 
 /* --- Secrète Légendaire: faceted diamond frame --- */
 .fm-card[data-rarity="secret_legendary"] { box-shadow: 0 0 34px 0 color-mix(in oklab, var(--diamond-ice) 70%, transparent), 0 0 60px -10px var(--diamond-lilac); }
-.fm-card[data-rarity="secret_legendary"] .card-foil-border { padding: 7px; background: repeating-conic-gradient(from var(--facet) at 50% 50%, var(--card-light) 0deg 5deg, var(--diamond-ice) 5deg 11deg, var(--r-sl) 11deg 16deg, var(--diamond-lilac) 16deg 21deg, color-mix(in oklab, var(--diamond-ice) 45%, var(--card-night)) 21deg 26deg, var(--card-light) 26deg 30deg); background-size: 100% 100%; animation: facet-spin 8s linear infinite; }
+.fm-card[data-rarity="secret_legendary"] .card-foil-border { padding: 7px; background: linear-gradient(115deg, transparent 42%, var(--card-light) 50%, transparent 58%) no-repeat, repeating-conic-gradient(from var(--facet) at 50% 50%, var(--card-light) 0deg 5deg, var(--diamond-ice) 5deg 11deg, var(--r-sl) 11deg 16deg, var(--diamond-lilac) 16deg 21deg, color-mix(in oklab, var(--diamond-ice) 45%, var(--card-night)) 21deg 26deg, var(--card-light) 26deg 30deg); background-size: 100% 100%; background-size: 250% 100%, 100% 100%; animation: facet-spin 8s linear infinite, diamond-glint 2.6s ease-in-out infinite; }
+@keyframes diamond-glint { 0% { background-position: 160% 0, 0 0; } 60%, 100% { background-position: -60% 0, 0 0; } }
 .fm-card[data-rarity="secret_legendary"]::after { inset: 7px; border-color: var(--card-light); box-shadow: 0 0 6px var(--diamond-ice); }
 .fm-card[data-rarity="secret_legendary"] .card-name { color: var(--card-light); text-shadow: 0 0 6px var(--diamond-ice), 0 0 14px var(--diamond-lilac); }
 .fm-card[data-rarity="secret_legendary"] .card-border-glitter { background: radial-gradient(circle at 4% 10%, var(--card-light) 0 1.5px, transparent 4px), radial-gradient(circle at 96% 30%, var(--card-light) 0 2px, transparent 6px), radial-gradient(circle at 50% 1.5%, var(--card-light) 0 1.5px, transparent 5px), radial-gradient(circle at 3% 60%, var(--diamond-ice) 0 2px, transparent 6px), radial-gradient(circle at 97% 86%, var(--card-light) 0 2px, transparent 6px), radial-gradient(circle at 30% 98.5%, var(--diamond-lilac) 0 2px, transparent 5px), radial-gradient(circle at 75% 1.5%, var(--diamond-ice) 0 1.5px, transparent 4px); animation: glitter-twinkle .9s ease-in-out infinite alternate; }
@@ -253,6 +254,7 @@
 .su-dragon-spike, .su-dragon-tail, .su-dragon-mane { fill: var(--flame-mid); }
 .su-dragon-horn, .su-dragon-claw, .su-dragon-whisker { fill: none; stroke: var(--flame-core); stroke-width: .5; stroke-linecap: round; }
 .su-dragon-whisker { stroke-width: .3; }
+.su-dragon-belly { fill: none; stroke: var(--flame-core); stroke-width: .35; opacity: .8; }
 .su-dragon-mouth { stroke: var(--flame-dark); stroke-width: .45; }
 .su-dragon-eye { fill: var(--flame-core); }
 .fm-card.is-missing { filter: grayscale(1) brightness(0.45); }
