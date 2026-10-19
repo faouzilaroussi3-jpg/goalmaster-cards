@@ -350,4 +350,6 @@
   .cinema-ball-travel { transform: translate(540px,450px); }
   .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }
   .flip-inner { transition: none; }
+  .reveal-flip { transform: rotateY(180deg); }
+  .reveal-leave { display: none; }
 }
