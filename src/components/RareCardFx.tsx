@@ -56,11 +56,36 @@ export function SuDragon3D() {
 const DIAMOND_LAP_S = 6;
 const TRAIL = [1, 2, 3, 4, 5];
 
-/** Secret Legendary: a small brilliant-cut diamond orbiting the card edge, leaving a sparkle trail. */
+// Small diamonds gravitating over the card face on three nested, tilted ellipses centred on the card
+// (viewBox 100x140), alternating direction. Gems on a ring are evenly spaced so the face stays balanced;
+// each one shrinks and dims on the far side of its ring to read as a 3D orbit.
+type Ring = { rx: number; ry: number; tilt: number; lap: number; cw: boolean; gems: number; size: number };
+const RINGS: Ring[] = [
+  { rx: 41, ry: 58, tilt: 0, lap: 16, cw: true, gems: 3, size: 0.9 },
+  { rx: 33, ry: 47, tilt: 24, lap: 12, cw: false, gems: 3, size: 0.75 },
+  { rx: 22, ry: 34, tilt: -28, lap: 9, cw: true, gems: 2, size: 0.62 },
+];
+const ellipse = ({ rx, ry, cw }: Ring) => {
+  const sweep = cw ? 1 : 0;
+  return `M${50 - rx},70 A${rx},${ry} 0 1 ${sweep} ${50 + rx},70 A${rx},${ry} 0 1 ${sweep} ${50 - rx},70 Z`;
+};
+
+function Gem({ fill, scale }: { fill: string; scale: number }) {
+  return (
+    <g className="sl-gem" transform={`scale(${scale})`}>
+      <polygon points="-3,-0.8 -1.8,-2.3 1.8,-2.3 3,-0.8 0,3.2" fill={fill} />
+      <path className="sl-gem-facets" d="M-3,-0.8 H3 M-1.8,-2.3 L-0.9,-0.8 L0,-2.3 L0.9,-0.8 L1.8,-2.3 M-0.9,-0.8 L0,3.2 L0.9,-0.8" />
+      <path className="sl-gem-star" d="M0,-5.2 L0.45,-2.9 L2.6,-2.5 L0.45,-2.1 L0,0.2 L-0.45,-2.1 L-2.6,-2.5 L-0.45,-2.9 Z" />
+    </g>
+  );
+}
+
+/** Secret Legendary: a brilliant-cut diamond orbiting the card edge with a sparkle trail, plus small diamonds gravitating over the face. */
 export function DiamondOrbitFx() {
   const reduced = useReducedMotion();
   const orbit = useSvgId("sl-orbit");
   const gem = useSvgId("sl-gem");
+  const ring = useSvgId("sl-ring");
   if (reduced) return null;
   const along = (lag: number) => (
     <animateMotion dur={`${DIAMOND_LAP_S}s`} repeatCount="indefinite" begin={`-${(DIAMOND_LAP_S - lag).toFixed(2)}s`}>
@@ -71,6 +96,9 @@ export function DiamondOrbitFx() {
     <svg className="sl-orbit-fx" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <path id={orbit} d={ORBIT} fill="none" />
+        {RINGS.map((r, i) => (
+          <path key={i} id={`${ring}-${i}`} d={ellipse(r)} fill="none" />
+        ))}
         <linearGradient id={gem} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" className="sl-stop-light" />
           <stop offset="0.45" className="sl-stop-ice" />
@@ -78,6 +106,32 @@ export function DiamondOrbitFx() {
           <stop offset="1" className="sl-stop-light" />
         </linearGradient>
       </defs>
+      {RINGS.map((r, i) => {
+        // The path starts at the left point; clockwise passes the far (top) side first.
+        const depth = r.cw ? "0.8;0.5;0.8;1.15;0.8" : "0.8;1.15;0.8;0.5;0.8";
+        const fade = r.cw ? "0.85;0.35;0.85;1;0.85" : "0.85;1;0.85;0.35;0.85";
+        return (
+          <g key={i} transform={`rotate(${r.tilt} 50 70)`}>
+            {Array.from({ length: r.gems }, (_, k) => {
+              const begin = `-${((r.lap * k) / r.gems + i * 1.7).toFixed(2)}s`;
+              return (
+                <g key={k} className="sl-satellite" style={{ animationDelay: `${(i * 0.37 + k * 0.53).toFixed(2)}s` }}>
+                  <animateMotion dur={`${r.lap}s`} repeatCount="indefinite" begin={begin}>
+                    <mpath href={`#${ring}-${i}`} />
+                  </animateMotion>
+                  <g transform={`rotate(${-r.tilt})`}>
+                    <g>
+                      <animateTransform attributeName="transform" type="scale" values={depth} keyTimes="0;0.25;0.5;0.75;1" dur={`${r.lap}s`} begin={begin} repeatCount="indefinite" />
+                      <animate attributeName="opacity" values={fade} keyTimes="0;0.25;0.5;0.75;1" dur={`${r.lap}s`} begin={begin} repeatCount="indefinite" />
+                      <Gem fill={`url(#${gem})`} scale={r.size} />
+                    </g>
+                  </g>
+                </g>
+              );
+            })}
+          </g>
+        );
+      })}
       {TRAIL.map((n) => (
         <g key={n}>
           {along(n * 0.07)}
@@ -86,11 +140,7 @@ export function DiamondOrbitFx() {
       ))}
       <g>
         {along(0)}
-        <g className="sl-gem" transform="scale(1.3)">
-          <polygon points="-3,-0.8 -1.8,-2.3 1.8,-2.3 3,-0.8 0,3.2" fill={`url(#${gem})`} />
-          <path className="sl-gem-facets" d="M-3,-0.8 H3 M-1.8,-2.3 L-0.9,-0.8 L0,-2.3 L0.9,-0.8 L1.8,-2.3 M-0.9,-0.8 L0,3.2 L0.9,-0.8" />
-          <path className="sl-gem-star" d="M0,-5.2 L0.45,-2.9 L2.6,-2.5 L0.45,-2.1 L0,0.2 L-0.45,-2.1 L-2.6,-2.5 L-0.45,-2.9 Z" />
-        </g>
+        <Gem fill={`url(#${gem})`} scale={1.3} />
       </g>
     </svg>
   );
