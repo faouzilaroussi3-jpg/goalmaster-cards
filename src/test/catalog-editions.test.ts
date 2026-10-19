@@ -24,13 +24,15 @@ describe("Player edition eligibility", () => {
     }
   });
 
-  it("gives every Legendary ALT its own new illustration", () => {
+  it("gives every Legendary ALT a different photo of the same player", () => {
     const legendaries = CATALOG_EDITIONS.filter((c) => c.rarity === "legendary");
     expect(legendaries.length).toBeGreaterThan(0);
     for (const card of legendaries) {
       const alt = "alt_image_url" in card ? card.alt_image_url : undefined;
       expect(alt, card.name).toBeTruthy();
-      expect(alt, card.name).not.toBe(card.image_url);
+      // A different real photo: never reuses any other edition's picture of the same player.
+      const otherPhotos = CATALOG_EDITIONS.filter((c) => c.name === card.name).map((c) => c.image_url as string);
+      expect(otherPhotos, card.name).not.toContain(alt);
     }
   });
 

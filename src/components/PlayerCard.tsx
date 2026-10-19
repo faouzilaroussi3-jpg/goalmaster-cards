@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
 import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
-import { SecretUltimateFx } from "@/components/SecretUltimateFx";
+import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, useNeonFilterId } from "@/components/RareCardFx";
 
 export function PlayerCard({
   card,
@@ -21,6 +21,8 @@ export function PlayerCard({
   const image = version === "alt" ? (card.alt_image_url ?? card.image_url) : card.image_url;
   const reusedArt = version === "alt" && !card.alt_image_url;
   const [failedImage, setFailedImage] = useState<string | null>(null);
+  const neonId = useNeonFilterId();
+  const shiny = version === "shiny";
   const Emblem = r.tier >= 5 ? Crown : r.tier >= 3 ? Star : Shield;
   return (
     <div
@@ -29,10 +31,11 @@ export function PlayerCard({
       data-version={version}
       data-reused-art={reusedArt || undefined}
     >
+      {shiny && <NeonInvertFilter id={neonId} />}
       <div className="card-pattern" aria-hidden="true" />
       <div className="card-crest" aria-hidden="true"><Emblem /></div>
       {image && failedImage !== image ? (
-        <img src={image} alt={card.name} loading="lazy" className="card-portrait" onError={() => setFailedImage(image)} />
+        <img src={image} alt={card.name} loading="lazy" className="card-portrait" style={shiny ? { filter: `url(#${neonId})` } : undefined} onError={() => setFailedImage(image)} />
       ) : <div className="card-initials" aria-label={card.name}>{card.name.split(" ").map((word) => word[0]).slice(0, 2).join("")}</div>}
       <div className="card-rating">
         <span className="font-display">{card.rating}</span>
@@ -64,6 +67,7 @@ export function PlayerCard({
       {r.tier >= 5 && <div className="card-border-glitter" aria-hidden="true" />}
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
+      {card.rarity === "secret_legendary" && version === "normal" && <DiamondOrbitFx />}
       {card.rarity === "secret_ultimate" && <SecretUltimateFx />}
     </div>
   );

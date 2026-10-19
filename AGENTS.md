@@ -22,4 +22,4 @@
 - Bulk catalog expansions are recorded in src/data/*.json (Wikidata ID, licensed Commons photo pointer, credit fields) and inserted as card rows carrying photo_author/photo_license/photo_source, so credits come from the database instead of hand-written modules.
 - Secret Ultimate secrecy is enforced by the cards SELECT policy (owner or admin only) and by excluding the tier from public feeds/leaderboard UI, so the tier never leaks through client code.
 - ALT editions store their own art in cards.alt_image_url; open_pack/get_recent_drops resolve the image per version server-side, and PlayerCard falls back to the normal art only when no ALT art exists.
-- Rare-tier frames (gold, rainbow ALT, diamond, neon Shiny, fire+dragon SU) are CSS/SVG keyed off data-rarity/data-version; the SU dragon uses SVG animateMotion along the card edge and is skipped under reduced motion.
+- Rare-tier frames (gold, rainbow ALT, diamond + orbiting gem, navy/white neon-invert Shiny, fire + dragon SU) are CSS plus SVG overlays in src/components/RareCardFx.tsx keyed off data-rarity/data-version; motion uses SVG animateMotion along the card edge and is skipped under reduced motion.

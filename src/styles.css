@@ -80,8 +80,9 @@
   --gold-bright: oklch(0.96 0.09 95);
   --diamond-ice: oklch(0.83 0.08 225);
   --diamond-lilac: oklch(0.86 0.07 300);
-  --neon-cyan: oklch(0.88 0.17 195);
-  --neon-magenta: oklch(0.72 0.3 340);
+  --neon-navy: oklch(0.26 0.12 264);
+  --neon-blue: oklch(0.62 0.2 262);
+  --neon-ice: oklch(0.97 0.025 250);
   --flame-core: oklch(0.97 0.12 100);
   --flame-mid: oklch(0.8 0.19 62);
   --flame-outer: oklch(0.6 0.25 28);
@@ -218,14 +219,16 @@
 .fm-card[data-rarity="secret_legendary"] .card-sparks { animation-duration: 2s; }
 
 /* --- Shiny: same illustration, inverted neon colors --- */
-.fm-card[data-version="shiny"] { background: var(--card-night); box-shadow: 0 0 16px 0 var(--neon-magenta), 0 0 36px -6px var(--neon-cyan); animation: neon-flicker 3.2s linear infinite; }
-.fm-card[data-version="shiny"] .card-portrait { filter: invert(1) hue-rotate(180deg) saturate(2.6) contrast(1.25) brightness(1.05); }
-.fm-card[data-version="shiny"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; background: linear-gradient(135deg, color-mix(in oklab, var(--neon-magenta) 70%, transparent), transparent 35% 65%, color-mix(in oklab, var(--neon-cyan) 70%, transparent)); background-size: 200% 200%; mix-blend-mode: screen; opacity: .45; animation: foil-travel 4s ease-in-out infinite; }
-.fm-card[data-version="shiny"] .card-foil-border { background: conic-gradient(from var(--facet), var(--neon-magenta), var(--card-light), var(--neon-cyan), var(--neon-magenta), var(--card-light), var(--neon-cyan), var(--neon-magenta)); background-size: 100% 100%; animation: facet-spin 2.4s linear infinite; }
-.fm-card[data-version="shiny"]::after { border-color: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan), inset 0 0 6px var(--neon-magenta); }
-.fm-card[data-version="shiny"] .card-name { color: var(--neon-cyan); text-shadow: 0 0 4px var(--neon-cyan), 0 0 12px var(--neon-magenta); }
-.fm-card[data-version="shiny"] .card-version { background: var(--neon-magenta); border-color: var(--neon-cyan); color: var(--card-light); box-shadow: 0 0 8px var(--neon-magenta); }
-@keyframes neon-flicker { 0%, 18%, 22%, 60%, 64%, 100% { box-shadow: 0 0 16px 0 var(--neon-magenta), 0 0 36px -6px var(--neon-cyan); } 20%, 62% { box-shadow: 0 0 6px 0 var(--neon-magenta), 0 0 12px -6px var(--neon-cyan); } }
+.fm-card[data-version="shiny"] { background: var(--neon-navy); border-color: var(--neon-ice); box-shadow: 0 0 14px 0 var(--neon-ice), 0 0 34px -4px var(--neon-blue); animation: neon-flicker 3.2s linear infinite; }
+/* The photo itself is re-coloured by the inline NeonInvertFilter (inverted navy / white duotone). */
+.fm-card[data-version="shiny"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; background: repeating-linear-gradient(0deg, color-mix(in oklab, var(--neon-ice) 10%, transparent) 0 1px, transparent 1px 3px), linear-gradient(135deg, color-mix(in oklab, var(--neon-blue) 45%, transparent), transparent 40% 60%, color-mix(in oklab, var(--neon-ice) 35%, transparent)); background-size: 100% 100%, 200% 200%; mix-blend-mode: screen; opacity: .5; animation: foil-travel 4s ease-in-out infinite; }
+.fm-card[data-version="shiny"] .card-foil-border { background: conic-gradient(from var(--facet), var(--neon-navy), var(--neon-ice), var(--neon-blue), var(--neon-navy), var(--neon-ice), var(--neon-blue), var(--neon-navy)); background-size: 100% 100%; animation: facet-spin 2.4s linear infinite; }
+.fm-card[data-version="shiny"]::after { border-color: var(--neon-ice); box-shadow: 0 0 6px var(--neon-ice), inset 0 0 8px var(--neon-blue); }
+.fm-card[data-version="shiny"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--neon-navy) 92%, transparent) 40%, var(--neon-navy)); }
+.fm-card[data-version="shiny"] .card-name { color: var(--neon-ice); text-shadow: 0 0 4px var(--neon-ice), 0 0 10px var(--neon-blue), 0 0 18px var(--neon-blue); }
+.fm-card[data-version="shiny"] .card-rarity-label { color: var(--neon-ice); border-top-color: color-mix(in oklab, var(--neon-ice) 50%, transparent); }
+.fm-card[data-version="shiny"] .card-version { background: var(--neon-ice); border-color: var(--neon-blue); color: var(--neon-navy); box-shadow: 0 0 8px var(--neon-ice); }
+@keyframes neon-flicker { 0%, 18%, 22%, 60%, 64%, 100% { box-shadow: 0 0 14px 0 var(--neon-ice), 0 0 34px -4px var(--neon-blue); } 20%, 62% { box-shadow: 0 0 5px 0 var(--neon-ice), 0 0 12px -6px var(--neon-blue); } }
 
 /* --- Secrète Ultime: red flame frame + dragon --- */
 .fm-card[data-rarity="secret_ultimate"] {
@@ -238,6 +241,7 @@
 .fm-card[data-rarity="secret_ultimate"] .card-foil-border { padding: 4px; background: var(--gradient-fire); background-size: 100% 200%; animation: foil-travel 1.2s linear infinite; }
 .fm-card[data-rarity="secret_ultimate"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; background: linear-gradient(to top, color-mix(in oklab, var(--flame-mid) 55%, transparent), transparent 38%); mix-blend-mode: screen; animation: aura-breathe 1.1s ease-in-out infinite; }
 .fm-card[data-rarity="secret_ultimate"] .card-name { color: var(--flame-core); text-shadow: 0 0 6px var(--flame-mid), 0 0 14px var(--flame-outer); }
+.fm-card[data-rarity="secret_ultimate"] .card-club, .fm-card[data-rarity="secret_ultimate"] .card-country, .fm-card[data-rarity="secret_ultimate"] .card-rarity-label { position: relative; z-index: 9; text-shadow: 0 1px 3px var(--card-night), 0 0 6px var(--card-night); }
 .fm-card[data-rarity="secret_ultimate"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 88%, transparent) 40%, color-mix(in oklab, var(--flame-outer) 40%, var(--card-night))); padding-bottom: 10%; }
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
 @keyframes su-heat { from { box-shadow: 0 0 28px 0 color-mix(in oklab, var(--flame-outer) 70%, transparent), 0 0 60px -12px var(--flame-mid); } to { box-shadow: 0 0 46px 4px color-mix(in oklab, var(--flame-outer) 85%, transparent), 0 0 90px -8px var(--flame-mid); } }
@@ -249,6 +253,11 @@
 .su-stop-dark { stop-color: var(--flame-dark); }
 .su-flame-outer { opacity: .95; }
 .su-flame-core { stroke: var(--flame-core); opacity: .85; }
+.su-flame-glow { stroke: var(--flame-outer); opacity: .45; }
+.su-tongue { transform-box: fill-box; transform-origin: 50% 100%; animation: su-lick .9s ease-in-out infinite alternate; mix-blend-mode: screen; opacity: .9; }
+@keyframes su-lick { 0% { transform: scale(.75, .55); opacity: .7; } 50% { transform: scale(1.05, 1.15) skewX(-6deg); opacity: 1; } 100% { transform: scale(.9, 1.3) skewX(6deg); opacity: .85; } }
+.su-embers circle { fill: var(--flame-core); filter: drop-shadow(0 0 1px var(--flame-mid)); animation: su-ember 2.6s ease-out infinite; transform-box: view-box; }
+@keyframes su-ember { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(4px, -110px); opacity: 0; } }
 .su-dragon { filter: drop-shadow(0 0 1.2px var(--flame-mid)) drop-shadow(0 0 3px var(--flame-outer)); }
 .su-dragon-scale { stroke: var(--flame-core); stroke-width: .25; }
 .su-dragon-spike, .su-dragon-tail, .su-dragon-mane { fill: var(--flame-mid); }
@@ -257,6 +266,17 @@
 .su-dragon-belly { fill: none; stroke: var(--flame-core); stroke-width: .35; opacity: .8; }
 .su-dragon-mouth { stroke: var(--flame-dark); stroke-width: .45; }
 .su-dragon-eye { fill: var(--flame-core); }
+/* Secrète Légendaire: orbiting diamond */
+.sl-orbit-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }
+.sl-stop-light { stop-color: var(--card-light); }
+.sl-stop-ice { stop-color: var(--diamond-ice); }
+.sl-stop-lilac { stop-color: var(--diamond-lilac); }
+.sl-gem { filter: drop-shadow(0 0 1px var(--card-light)) drop-shadow(0 0 3px var(--diamond-ice)); }
+.sl-gem polygon { stroke: var(--card-light); stroke-width: .3; }
+.sl-gem-facets { fill: none; stroke: color-mix(in oklab, var(--card-light) 80%, transparent); stroke-width: .2; }
+.sl-gem-star { fill: var(--card-light); transform-box: fill-box; transform-origin: center; animation: sl-twinkle 1.1s ease-in-out infinite; }
+@keyframes sl-twinkle { 0%, 100% { transform: scale(.3) rotate(0deg); opacity: .3; } 50% { transform: scale(1.1) rotate(45deg); opacity: 1; } }
+.sl-trail { fill: var(--card-light); filter: drop-shadow(0 0 1.5px var(--diamond-ice)); }
 .fm-card.is-missing { filter: grayscale(1) brightness(0.45); }
 @keyframes aura-breathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @keyframes sparkle-drift { 0%, 100% { opacity: .3; transform: translateY(3px); } 50% { opacity: 1; transform: translateY(-4px); } }

@@ -296,7 +296,7 @@ export const CATALOG_EDITIONS = [
     "nationality": "Norvège",
     "pos": "BU",
     "image_url": "/__l5e/assets-v1/6ac059ab-eb96-41eb-9100-725d807220b6/edition-stars-0.jpg",
-    "alt_image_url": "/__l5e/assets-v1/0bf22150-7682-4c1e-90ae-73e1826d8da4/alt-haaland.jpg"
+    "alt_image_url": "/__l5e/assets-v1/e21480ba-74bb-4a8a-9d2b-11a1d3889da3/alt-photo-haaland.jpg"
   },
   {
     "name": "Kylian Mbappé",
@@ -306,7 +306,7 @@ export const CATALOG_EDITIONS = [
     "nationality": "France",
     "pos": "BU",
     "image_url": "/__l5e/assets-v1/66f2336c-fc63-4786-bfc4-771845b528d7/edition-stars-1.jpg",
-    "alt_image_url": "/__l5e/assets-v1/f7328db2-79fe-4d92-bf6c-d05ba33bb8be/alt-mbappe.jpg"
+    "alt_image_url": "/__l5e/assets-v1/b921acc6-be5b-40fe-af9a-60a268766276/alt-photo-mbappe.jpg"
   },
   {
     "name": "Mohamed Salah",
@@ -316,7 +316,7 @@ export const CATALOG_EDITIONS = [
     "nationality": "Égypte",
     "pos": "AD",
     "image_url": "/__l5e/assets-v1/f7f7baac-9ea5-43d5-a4e7-6f22502d0a91/edition-stars-2.jpg",
-    "alt_image_url": "/__l5e/assets-v1/f17f8736-f374-41ab-804f-d7b8ee087060/alt-salah.jpg"
+    "alt_image_url": "/__l5e/assets-v1/299641b0-8c06-4a2e-bc70-65f288131876/alt-photo-salah.jpg"
   },
   {
     "name": "Jude Bellingham",
@@ -326,7 +326,7 @@ export const CATALOG_EDITIONS = [
     "nationality": "Angleterre",
     "pos": "MOC",
     "image_url": "/__l5e/assets-v1/18f4f851-6770-4174-bced-2d329d3ab1ca/edition-stars-3.jpg",
-    "alt_image_url": "/__l5e/assets-v1/f80ab520-db3d-4b5e-b1d6-0f86e8829990/alt-bellingham.jpg"
+    "alt_image_url": "/__l5e/assets-v1/e65f8615-9303-4d5e-bf89-42e55a96ced4/alt-photo-bellingham.jpg"
   },
   {
     "name": "Lionel Messi",
