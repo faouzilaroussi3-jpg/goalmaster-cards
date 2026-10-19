@@ -23,3 +23,4 @@
 - [x] SU : lueur rouge métallisée moins intense qui bouge sur la carte
 - [x] SU : remplacer le dragon qui tient la carte par un dragon 2D qui fait le tour de la carte (proportions compactes, ne gêne pas les voisines)
 - [x] SU : accentuer l'effet rouge teinté métallisé sur la carte
+- [ ] Admin : créer / supprimer des raretés, avec un effet visuel choisi appliqué à toutes les cartes de cette rareté
