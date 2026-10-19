@@ -65,6 +65,7 @@ export function GoldenFlames({ className }: { className?: string }) {
       ctx.globalCompositeOperation = "lighter";
       for (let i = flames.length - 1; i >= 0; i--) {
         const f = flames[i];
+        if (!f) continue;
         f.life -= dt;
         if (f.life <= 0) { flames.splice(i, 1); continue; }
         const k = f.life / f.max;
