@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, useRarities } from "@/lib/rarity";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PhotoCredits } from "@/components/PhotoCredits";
@@ -26,6 +26,10 @@ function CollectionPage() {
   const rarities = useRarities();
   const { session } = useAuth();
   const uid = session!.user.id;
+  const { data: profile } = useProfile();
+  // Admins can see missing cards in full colour (players keep the greyed-out look).
+  const [adminColors, setAdminColors] = useState(true);
+  const showMissingColors = !!profile?.isAdmin && adminColors;
   const { data: catalog = [] } = useQuery({
     queryKey: ["catalog"],
     queryFn: async () => (await supabase.from("cards").select("*").eq("active", true)).data ?? [],
@@ -99,6 +103,11 @@ function CollectionPage() {
             {v === "owned" ? "Obtenues" : v === "missing" ? "Manquantes" : "Toutes"}
           </button>
         ))}
+        {profile?.isAdmin && (
+          <button type="button" onClick={() => setAdminColors(!adminColors)} aria-pressed={adminColors} className={`ml-auto rounded-full border px-4 py-1.5 text-sm font-bold ${adminColors ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-muted-foreground"}`}>
+            Admin · Manquantes en couleur : {adminColors ? "oui" : "non"}
+          </button>
+        )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <input className={sel} placeholder="Joueur…" value={q} onChange={(e) => setQ(e.target.value)} />
@@ -128,13 +137,18 @@ function CollectionPage() {
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
         {filtered.map((e) => (
           <button key={`${e.card.id}:${e.version}`} type="button" data-sfx="card" onClick={() => setViewing(e)} className="block w-full rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" aria-label={`Voir ${e.card.name} en grand`}>
-            <PlayerCard card={{ ...e.card, version: e.version }} missing={e.count === 0} count={e.count} />
+            <span className="relative block">
+              <PlayerCard card={{ ...e.card, version: e.version }} missing={e.count === 0 && !showMissingColors} count={e.count} />
+              {e.count === 0 && showMissingColors && (
+                <span className="pointer-events-none absolute bottom-1 left-1/2 z-20 -translate-x-1/2 translate-y-1/2 rounded-full border border-border bg-background/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Manquante</span>
+              )}
+            </span>
           </button>
         ))}
       </div>
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
       <PhotoCredits cards={catalog} />
-      <CardViewer card={viewing ? { ...viewing.card, version: viewing.version } : null} missing={viewing?.count === 0} count={viewing?.count} onClose={() => setViewing(null)} />
+      <CardViewer card={viewing ? { ...viewing.card, version: viewing.version } : null} missing={viewing?.count === 0} showColor={showMissingColors} count={viewing?.count} onClose={() => setViewing(null)} />
     </div>
   );
 }
