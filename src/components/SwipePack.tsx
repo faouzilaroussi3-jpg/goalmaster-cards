@@ -134,7 +134,7 @@ export function SwipePack({
           progress={progress}
           torn={torn}
           tearY={TEAR_Y}
-          className="pointer-events-none absolute -left-[25%] -top-[25%] z-20 h-[150%] w-[150%]"
+          className="pointer-events-none absolute -left-1/2 -top-1/2 z-20 h-[200%] w-[200%]"
         />
         {torn && typeof document !== "undefined" && createPortal(<div className="tear-whiteout pointer-events-none fixed inset-0 z-40" aria-hidden />, document.body)}
         {/* The torn strip peels up from its tear point, then flies away. */}

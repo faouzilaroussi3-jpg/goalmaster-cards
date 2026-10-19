@@ -5,7 +5,7 @@ interface Spark { x: number; y: number; vx: number; vy: number; g: number; life:
 /**
  * Soft white light that follows the tear on a pack (sparkles trailing the finger,
  * a lens flare at the tear point), then pours out of the opening once it is torn.
- * The canvas is 150% of the pack, centred on it.
+ * The canvas is 200% of the pack, centred on it, so the light never hits its edges.
  */
 export function TearSparkles({ progress, torn, tearY, className }: { progress: number; torn: boolean; tearY: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -75,7 +75,7 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    const pack = () => ({ l: w / 6, t: h / 6, pw: w / 1.5, ph: h / 1.5 });
+    const pack = () => ({ l: w / 4, t: h / 4, pw: w / 2, ph: h / 2 });
     const headAt = (p: number) => {
       const b = pack();
       return { x: b.l + (0.06 + 0.88 * p) * b.pw, y: b.t + (tearY / 100) * b.ph };
@@ -126,8 +126,9 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
         const a = Math.min(1, t / 0.35);
         ctx.save();
         ctx.translate(cx, cy);
-        ctx.scale(1, 0.55 + t * 0.4);
-        const r = b.pw * (0.55 + t * 1.3);
+        // Keep the bloom inside the canvas so it never shows a hard edge.
+        const r = Math.min(b.pw * (0.55 + t * 1.3), b.pw * 0.98);
+        ctx.scale(1, Math.min(0.55 + t * 0.4, (cy * 0.98) / r));
         const bloom = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
         bloom.addColorStop(0, light);
         bloom.addColorStop(0.35, tint);
