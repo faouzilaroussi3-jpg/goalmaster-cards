@@ -133,6 +133,7 @@ export function PackOpening({
   const lastShown = turned >= total && !busy;
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center-safe overflow-y-auto bg-background/95 px-3 py-6 backdrop-blur">
       {flash && (
         <div
@@ -161,7 +162,7 @@ export function PackOpening({
       {phase === "reveal" && <div className="opening-entry pointer-events-none fixed inset-0 z-40" aria-hidden />}
 
       {phase === "reveal" && result && (
-        <div className="relative flex w-full max-w-3xl flex-col items-center">
+        <div className="relative flex w-full max-w-3xl flex-col items-center pb-20 sm:pb-24">
           <p className="mb-1 font-display text-2xl tracking-widest text-primary">
             {`CARTE ${Math.max(1, turned)} / ${total}`}
           </p>
@@ -279,11 +280,27 @@ export function PackOpening({
         </div>
       )}
 
+    </div>
       {result && phase !== "done" && (
-        <Button variant="secondary" data-sfx="none" onClick={skip} className="fixed bottom-4 right-4 z-30 gap-1 border border-primary/50 px-4 py-2 text-xs font-bold uppercase text-primary">
-          Passer · voir le résultat <ChevronsRight className="h-4 w-4" aria-hidden />
+        <Button
+          variant="secondary"
+          data-sfx="none"
+          onClick={skip}
+          aria-label="Passer l'ouverture et voir le résultat"
+          className={cn(
+            // Outside the blurred overlay so it stays pinned to the screen. Phone: centred pill above the home bar; tablet and desktop: bottom-right corner, a bit larger.
+            "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[60] -translate-x-1/2",
+            "h-11 gap-1.5 rounded-full border border-primary/60 bg-background/80 px-5 font-display text-lg tracking-widest text-primary shadow-gold backdrop-blur",
+            "hover:bg-primary hover:text-primary-foreground",
+            "sm:bottom-6 sm:left-auto sm:right-6 sm:h-12 sm:translate-x-0 sm:px-6 sm:text-xl",
+            "lg:bottom-8 lg:right-8 lg:h-14 lg:px-8 lg:text-2xl",
+          )}
+        >
+          <span>Passer</span>
+          <span className="hidden sm:inline">· voir le résultat</span>
+          <ChevronsRight className="size-5 lg:size-6" aria-hidden />
         </Button>
       )}
-    </div>
+    </>
   );
 }
