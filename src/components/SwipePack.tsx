@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GoldenFlames } from "@/components/GoldenFlames";
 import { shouldTear, tearProgress } from "@/lib/pack-swipe";
 
 /** Height of the tear line, as a percentage of the pack image. */
@@ -104,13 +105,16 @@ export function SwipePack({
           disabled && "opacity-40",
         )}
       >
+        {premium && !torn && (
+          <GoldenFlames className="pointer-events-none absolute -left-[50%] -top-[25%] h-[120%] w-[200%]" />
+        )}
         <img
           src={image}
           alt={name}
           draggable={false}
           width={768}
           height={1152}
-          className={cn("pointer-events-none block w-full", premium && "drop-shadow-[0_0_26px_var(--primary)]")}
+          className="pointer-events-none relative block w-full"
           style={{ clipPath: bodyClip, transition: ease }}
         />
         {/* Light leaks out of the tear as it opens, then bursts out of the pack. */}
