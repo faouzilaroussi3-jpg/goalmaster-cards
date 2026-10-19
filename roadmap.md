@@ -22,4 +22,4 @@
 - [x] Admin : offrir des packs, des pièces et des cartes aux joueurs (un ou tous), sans limite d'envois
 - [x] SU : lueur rouge métallisée moins intense qui bouge sur la carte
 - [x] SU : remplacer le dragon qui tient la carte par un dragon 2D qui fait le tour de la carte (proportions compactes, ne gêne pas les voisines)
-- [ ] SU : accentuer l'effet rouge teinté métallisé sur la carte
+- [x] SU : accentuer l'effet rouge teinté métallisé sur la carte
