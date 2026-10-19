@@ -15,6 +15,13 @@
       "when": 1792426577156,
       "tag": "0001_card_photo_credits",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792427083801,
+      "tag": "0002_no_duplicate_cards_in_pack",
+      "breakpoints": true
     }
   ]
 }
