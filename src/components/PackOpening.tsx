@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PlayerCard } from "@/components/PlayerCard";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FootballCinematic } from "@/components/FootballCinematic";
 import { CardBack } from "@/components/CardBack";
 import { chargeDelay, FLIP_MS, RARITY_VAR } from "@/lib/card-reveal";
 
@@ -29,7 +28,7 @@ export interface OpenResult {
   xp_gained: number;
 }
 
-type Phase = "intro" | "football" | "reveal" | "done";
+type Phase = "intro" | "reveal" | "done";
 
 /** Offset of a face-down card sitting `depth` places behind the front of the stack. */
 function stackOffset(depth: number) {
@@ -45,7 +44,7 @@ export function PackOpening({
   result: OpenResult | null;
   onClose: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>(() => (result ? "football" : "intro"));
+  const [phase, setPhase] = useState<Phase>(() => (result ? "reveal" : "intro"));
   // Number of cards turned over so far; the last turned card sits face up at the front of the stack.
   const [turned, setTurned] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -63,12 +62,10 @@ export function PackOpening({
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
   const later = (fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); };
 
-  // The pack was already torn on the packs page: go straight to the cinematic.
+  // The pack was already torn on the packs page: go straight to the face-down stack.
   useEffect(() => {
-    if (phase === "intro" && result) setPhase("football");
+    if (phase === "intro" && result) setPhase("reveal");
   }, [phase, result]);
-
-  const finishFootball = useCallback(() => setPhase((current) => current === "football" ? "reveal" : current), []);
 
   function triggerFlash(c: OpenedCard) {
     if (c.rarity === "secret_ultimate") {
@@ -127,8 +124,7 @@ export function PackOpening({
         </div>
       )}
 
-      {phase === "football" && result && <FootballCinematic cards={result.cards} onComplete={finishFootball} />}
-      {phase === "football" && <div className="opening-entry pointer-events-none fixed inset-0 z-10" aria-hidden />}
+      {phase === "reveal" && <div className="opening-entry pointer-events-none fixed inset-0 z-40" aria-hidden />}
 
       {phase === "reveal" && result && (
         <div className="relative flex w-full max-w-3xl flex-col items-center">
