@@ -6,7 +6,7 @@ const STEPS = 24;
 type Rgb = [number, number, number];
 
 /** Resolve a CSS color (any syntax the browser knows, e.g. oklch tokens) to RGB through a 1px canvas. */
-function toRgb(color: string, fallback: Rgb): Rgb {
+export function toRgb(color: string, fallback: Rgb): Rgb {
   const c = document.createElement("canvas");
   c.width = c.height = 1;
   const x = c.getContext("2d", { willReadFrequently: true });

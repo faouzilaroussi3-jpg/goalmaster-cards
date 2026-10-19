@@ -1,5 +1,5 @@
-import { useId, useSyncExternalStore } from "react";
-import { CardFire } from "@/components/CardFire";
+import { lazy, Suspense, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { CardFire, toRgb } from "@/components/CardFire";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 function subscribe(cb: () => void) {
@@ -15,77 +15,41 @@ function useSvgId(prefix: string) {
 }
 
 // The card is 5:7, so a 100x140 viewBox maps 1:1 without distortion.
-const TRACK = "M12,5 H88 Q95,5 95,12 V128 Q95,135 88,135 H12 Q5,135 5,128 V12 Q5,5 12,5 Z";
 const ORBIT = "M12,2.5 H88 Q97.5,2.5 97.5,12 V128 Q97.5,137.5 88,137.5 H12 Q2.5,137.5 2.5,128 V12 Q2.5,2.5 12,2.5 Z";
-const LAP_S = 7;
-const SEGMENTS = 34;
-const GAP_S = 0.036;
-/** Secret Ultimate frame: realistic particle fire along the card edges and a dragon slithering around the card. */
+/** Secret Ultimate frame: realistic particle fire along the card edges (the 3D dragon lives outside the card, see SuDragon3D). */
 export function SecretUltimateFx() {
+  return <CardFire className="su-fire" />;
+}
+
+const Dragon3D = lazy(() => import("@/components/Dragon3D"));
+
+/**
+ * Real-time 3D dragon circling the Secret Ultimate card. Rendered in a transparent overlay that overflows the card,
+ * mounted only once hydrated and on screen (one WebGL context per visible card), and skipped for reduced motion.
+ */
+export function SuDragon3D() {
   const reduced = useReducedMotion();
-  const scale = useSvgId("su-scale");
-  const track = useSvgId("su-track");
-
-  const motion = (index: number) =>
-    reduced ? null : (
-      <animateMotion dur={`${LAP_S}s`} repeatCount="indefinite" rotate="auto" begin={`-${((SEGMENTS - index) * GAP_S).toFixed(3)}s`}>
-        <mpath href={`#${track}`} />
-      </animateMotion>
-    );
-
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [colors, setColors] = useState<{ glow: string; warm: string } | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const css = getComputedStyle(el);
+    const rgb = (name: string, fb: [number, number, number]) => `rgb(${toRgb(css.getPropertyValue(name).trim(), fb).join(",")})`;
+    setColors({ glow: rgb("--flame-mid", [255, 150, 30]), warm: rgb("--flame-core", [255, 244, 190]) });
+    const io = new IntersectionObserver(([e]) => setVisible(!!e?.isIntersecting), { rootMargin: "150px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
-    <>
-    <CardFire className="su-fire" />
-    <svg className="su-fx" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <radialGradient id={scale}>
-          <stop offset="0" className="su-stop-mid" />
-          <stop offset="0.6" className="su-stop-outer" />
-          <stop offset="1" className="su-stop-dark" />
-        </radialGradient>
-        <path id={track} d={TRACK} fill="none" />
-      </defs>
-
-      {/* Dragon: tail first so the head is painted on top. */}
-      {!reduced && (
-        <g className="su-dragon">
-          {Array.from({ length: SEGMENTS - 1 }, (_, k) => {
-            const i = SEGMENTS - 1 - k; // i = 1 (neck) .. SEGMENTS-1 (tail tip)
-            const t = i / SEGMENTS;
-            const s = 1.2 - t * 0.9;
-            return (
-              <g key={i}>
-                {motion(i)}
-                <g transform={`scale(${s.toFixed(3)})`}>
-                  {i === SEGMENTS - 1 ? (
-                    <path className="su-dragon-tail" d="M3,0 Q-2,-1 -7,-4.5 Q-4,-0.8 -8,0 Q-4,0.8 -7,4.5 Q-2,1 3,0 Z" />
-                  ) : (
-                    <>
-                      {i % 2 === 0 && <path className="su-dragon-spike" d="M-1.6,-1.8 Q-1.4,-4 -0.2,-5 Q0.4,-3.4 1.4,-1.8 Z" />}
-                      <path fill={`url(#${scale})`} className="su-dragon-scale" d="M2.6,0 Q1.2,-2.4 -1.6,-2.2 Q-2.6,0 -1.6,2.2 Q1.2,2.4 2.6,0 Z" />
-                      <path className="su-dragon-belly" d="M-1.4,1.3 Q0.6,2 2,0.8" />
-                      {(i === 6 || i === 18) && <path className="su-dragon-claw" d="M0,2 L-1,4.4 M0,2 L0.6,4.6 M0,2 L1.8,4.2" />}
-                    </>
-                  )}
-                </g>
-              </g>
-            );
-          })}
-          <g>
-            {motion(0)}
-            <g transform="scale(1.15)">
-              <path className="su-dragon-mane" d="M-2.5,-2.8 L-6.5,-1.6 L-3.5,-0.4 L-7,0 L-3.5,0.4 L-6.5,1.6 L-2.5,2.8 Z" />
-              <path className="su-dragon-horn" d="M-0.5,-2.6 Q-4,-6.2 -7.5,-5.6 M-0.5,2.6 Q-4,6.2 -7.5,5.6" />
-              <path fill={`url(#${scale})`} className="su-dragon-scale" d="M-3,-2.8 Q2,-4.2 5.8,-1.6 L8,-0.7 Q8.7,0 8,0.7 L5.8,1.6 Q2,4.2 -3,2.8 Z" />
-              <path className="su-dragon-mouth" d="M3,0.25 L7.6,0.35" />
-              <circle className="su-dragon-eye" cx="2.2" cy="-1.5" r="0.75" />
-              <path className="su-dragon-whisker" d="M7,-0.7 Q10,-3.2 13,-1.8 M7,0.7 Q10,3.2 13,1.8" />
-            </g>
-          </g>
-        </g>
+    <div ref={ref} className="su-dragon3d" aria-hidden="true">
+      {visible && !reduced && colors && (
+        <Suspense fallback={null}>
+          <Dragon3D glow={colors.glow} warm={colors.warm} />
+        </Suspense>
       )}
-    </svg>
-    </>
+    </div>
   );
 }
 
