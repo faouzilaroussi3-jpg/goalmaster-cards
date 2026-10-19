@@ -7,12 +7,13 @@ import { useProfile } from "@/lib/auth";
 import { useRarities } from "@/lib/rarity";
 import { CardsAdmin } from "@/components/admin/CardsAdmin";
 import { GiftsAdmin } from "@/components/admin/GiftsAdmin";
+import { RaritiesAdmin } from "@/components/admin/RaritiesAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Administration — Goalmaster" },
-      { name: "description", content: "Gérer les cartes, packs, taux de drop et événements." },
+      { name: "description", content: "Gérer les cartes, raretés, packs, taux de drop et événements." },
       { property: "og:title", content: "Administration — Goalmaster" },
       { property: "og:description", content: "Interface administrateur Goalmaster." },
       { property: "og:type", content: "website" },
@@ -26,21 +27,22 @@ const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm t
 
 function AdminPage() {
   const { data: profile, isLoading } = useProfile();
-  const [tab, setTab] = useState<"cards" | "gifts" | "packs" | "events">("cards");
+  const [tab, setTab] = useState<"cards" | "rarities" | "gifts" | "packs" | "events">("cards");
   if (isLoading) return null;
   if (!profile?.isAdmin) return <p className="p-8 text-center text-muted-foreground">Accès réservé aux administrateurs.</p>;
-  const label = { cards: "Cartes", gifts: "Cadeaux joueurs", packs: "Packs & taux", events: "Événements" } as const;
+  const label = { cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs & taux", events: "Événements" } as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-5xl text-gold">Administration</h1>
       <div className="my-4 flex flex-wrap gap-2">
-        {(["cards", "gifts", "packs", "events"] as const).map((t) => (
+        {(["cards", "rarities", "gifts", "packs", "events"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 text-sm font-bold ${tab === t ? "bg-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             {label[t]}
           </button>
         ))}
       </div>
       {tab === "cards" && <CardsAdmin />}
+      {tab === "rarities" && <RaritiesAdmin />}
       {tab === "gifts" && <GiftsAdmin />}
       {tab === "packs" && <PacksAdmin />}
       {tab === "events" && <EventsAdmin />}
