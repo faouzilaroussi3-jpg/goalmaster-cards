@@ -15,7 +15,8 @@ const CAM_Z = 16;
 // Vertical FOV chosen so the z=0 plane maps exactly onto the card's DOM box.
 const FOV = (2 * Math.atan(VIEW_H / 2 / CAM_Z) * 180) / Math.PI;
 
-const DRAGON_LEN = 2.8;
+// Three small dragons per card, each with its own size, flight and wing beat.
+const DRAGON_LENS = [1.75, 1.5, 1.3] as const;
 const BANK = -0.5; // roll into turns; flips sign when the dragon turns back
 
 // ---- Scale skin -------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ function scaleSkin(mat: THREE.MeshStandardMaterial, deep: THREE.Color, light: TH
   mat.customProgramCacheKey = () => `dragon-scales-${freq}`;
 }
 
-function Dragon({ glow, ember, warm }: { glow: string; ember: string; warm: string }) {
+function Dragon({ glow, ember, warm, len }: { glow: string; ember: string; warm: string; len: number }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(dragonAsset.url);
 
@@ -135,7 +136,7 @@ function Dragon({ glow, ember, warm }: { glow: string; ember: string; warm: stri
       });
       mesh.material = Array.isArray(mesh.material) ? mats : mats[0]!;
     });
-    // Normalize: longest horizontal side → DRAGON_LEN, centered on its own origin.
+    // Normalize: longest horizontal side → len, centered on its own origin.
     // Skinned bounds depend on the bone matrices, so pose the skeleton before measuring.
     const measure = () => {
       o.updateMatrixWorld(true);
@@ -144,13 +145,13 @@ function Dragon({ glow, ember, warm }: { glow: string; ember: string; warm: stri
     };
     const box = measure();
     const size = box.getSize(new THREE.Vector3());
-    o.scale.setScalar(DRAGON_LEN / (Math.max(size.x, size.z) || 1));
+    o.scale.setScalar(len / (Math.max(size.x, size.z) || 1));
     const centered = measure().getCenter(new THREE.Vector3());
     o.position.sub(centered);
     const pivot = new THREE.Group();
     pivot.add(o);
     return pivot;
-  }, [scene, ember, glow, warm]);
+  }, [scene, ember, glow, warm, len]);
 
   const { actions, names } = useAnimations(animations, group);
   useEffect(() => {
@@ -185,12 +186,12 @@ function Dragon({ glow, ember, warm }: { glow: string; ember: string; warm: stri
   return (
     <group ref={group}>
       <primitive object={model} />
-      <pointLight color={glow} intensity={6} distance={7} decay={1.6} />
+      <pointLight color={glow} intensity={3} distance={5} decay={1.6} />
     </group>
   );
 }
 
-/** Transparent overlay scene: a real 3D dragon circling the Secret Ultimate card, hidden behind the card when it flies round the back. */
+/** Transparent overlay scene: three small 3D dragons circling the Secret Ultimate card on their own random paths, hidden behind the card when it flies round the back. */
 export default function Dragon3D({ glow, warm, ember }: { glow: string; warm: string; ember: string }) {
   return (
     <Canvas
@@ -212,7 +213,9 @@ export default function Dragon3D({ glow, warm, ember }: { glow: string; warm: st
         <meshBasicMaterial colorWrite={false} />
       </mesh>
       <Suspense fallback={null}>
-        <Dragon glow={glow} ember={ember} warm={warm} />
+        {DRAGON_LENS.map((len) => (
+          <Dragon key={len} glow={glow} ember={ember} warm={warm} len={len} />
+        ))}
       </Suspense>
     </Canvas>
   );
