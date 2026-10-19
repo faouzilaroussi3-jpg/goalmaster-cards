@@ -198,10 +198,16 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
               </select>
             </label>
             <PhotoField label="Photo du joueur" value={f.image_url} onChange={(v) => set("image_url", v)} />
-            <PhotoField label="Photo ALT (optionnel, une autre photo du joueur)" value={f.alt_image_url} onChange={(v) => set("alt_image_url", v)} />
+            {(f.rarity === "legendary" || f.has_alt) && (
+              <PhotoField label="Photo ALT (une autre photo du joueur)" value={f.alt_image_url} onChange={(v) => set("alt_image_url", v)} />
+            )}
             <div className="flex flex-wrap items-center gap-4 text-sm sm:col-span-2">
-              <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_alt} onChange={(e) => set("has_alt", e.target.checked)} /> Version ALT</label>
-              <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_shiny} onChange={(e) => set("has_shiny", e.target.checked)} /> Version Shiny</label>
+              {(f.rarity === "legendary" || f.has_alt) && (
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_alt} onChange={(e) => set("has_alt", e.target.checked)} /> Version ALT</label>
+              )}
+              {(f.rarity === "secret_legendary" || f.has_shiny) && (
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_shiny} onChange={(e) => set("has_shiny", e.target.checked)} /> Version Shiny (même photo)</label>
+              )}
               <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} /> Active (peut sortir des packs)</label>
             </div>
             <div className="rounded-lg border border-border bg-background/40 p-3 text-xs sm:col-span-2">
