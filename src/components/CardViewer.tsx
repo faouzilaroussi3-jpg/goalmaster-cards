@@ -51,6 +51,7 @@ export function CardViewer({ card, missing, count, onClose }: { card: CardData |
                 onPointerMove={move}
                 onPointerUp={up}
                 onPointerCancel={up}
+                onDragStart={(e) => e.preventDefault()}
                 aria-label="Faire glisser pour faire pivoter la carte"
               >
                 <div

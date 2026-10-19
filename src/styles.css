@@ -395,3 +395,4 @@
 .card-viewer-back { transform: rotateY(180deg); }
 .card-viewer-glare { position: absolute; inset: 0; z-index: 20; border-radius: 8px; pointer-events: none; mix-blend-mode: soft-light; background: radial-gradient(circle at var(--glare-x, 50%) 30%, color-mix(in oklab, var(--card-light) 55%, transparent), transparent 55%); }
 @media (prefers-reduced-motion: reduce) { .card-viewer-spin { transition: none; } }
+.card-viewer-stage img { -webkit-user-drag: none; pointer-events: none; }
