@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as SuPreviewRouteImport } from './routes/su-preview'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
@@ -42,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuPreviewRoute = SuPreviewRouteImport.update({
+  id: '/su-preview',
+  path: '/su-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/su-preview': typeof SuPreviewRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/collection': typeof AuthenticatedCollectionRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/su-preview': typeof SuPreviewRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/collection': typeof AuthenticatedCollectionRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/su-preview': typeof SuPreviewRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/amis': typeof AuthenticatedAmisRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/leaderboard'
+    | '/su-preview'
     | '/admin'
     | '/amis'
     | '/collection'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/leaderboard'
+    | '/su-preview'
     | '/admin'
     | '/amis'
     | '/collection'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/leaderboard'
+    | '/su-preview'
     | '/_authenticated/admin'
     | '/_authenticated/amis'
     | '/_authenticated/collection'
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  SuPreviewRoute: typeof SuPreviewRoute
   ApiPublicCardPhotoSplatRoute: typeof ApiPublicCardPhotoSplatRoute
 }
 
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/su-preview': {
+      id: '/su-preview'
+      path: '/su-preview'
+      fullPath: '/su-preview'
+      preLoaderRoute: typeof SuPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -355,6 +375,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   LeaderboardRoute: LeaderboardRoute,
+  SuPreviewRoute: SuPreviewRoute,
   ApiPublicCardPhotoSplatRoute: ApiPublicCardPhotoSplatRoute,
 }
 export const routeTree = rootRouteImport
