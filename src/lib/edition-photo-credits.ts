@@ -32,6 +32,10 @@ import photo30 from "@/assets/players/Gautier_Larsonneur.jpg.asset.json";
 import photo31 from "@/assets/players/Nabil_Bentaleb.jpg.asset.json";
 import photo32 from "@/assets/players/Yvann_Maçon.jpg.asset.json";
 import photo33 from "@/assets/players/Aïmen_Moueffek.jpg.asset.json";
+import altPhotoHaaland from "@/assets/players/alt-photo-haaland.jpg.asset.json";
+import altPhotoMbappe from "@/assets/players/alt-photo-mbappe.jpg.asset.json";
+import altPhotoSalah from "@/assets/players/alt-photo-salah.jpg.asset.json";
+import altPhotoBellingham from "@/assets/players/alt-photo-bellingham.jpg.asset.json";
 export const EDITION_PHOTO_CREDITS = [
   { ...{"name": "Romain Del Castillo", "author": "Paté kroute", "license": "CC0", "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "source": "https://commons.wikimedia.org/wiki/File:Del_castillo_asse_sb_2425.png"}, url: photo0.url },
   { ...{"name": "Wahbi Khazri", "author": "Дмитрий Садовников", "license": "CC BY-SA 3.0", "license_url": "https://creativecommons.org/licenses/by-sa/3.0", "source": "https://commons.wikimedia.org/wiki/File:Wahbi_Khazri.jpg"}, url: photo1.url },
@@ -67,4 +71,9 @@ export const EDITION_PHOTO_CREDITS = [
   { ...{"name": "Nabil Bentaleb", "author": "Supporterhéninois", "license": "CC0", "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "source": "https://commons.wikimedia.org/wiki/File:RC_Lens_-_Lille_OSC_%2808-10-2023%29_19_%28cropped%29.jpg"}, url: photo31.url },
   { ...{"name": "Yvann Maçon", "author": "Paté kroute", "license": "CC0", "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "source": "https://commons.wikimedia.org/wiki/File:Ma%C3%A7on_asse_psg_2425.png"}, url: photo32.url },
   { ...{"name": "Aïmen Moueffek", "author": "Paté kroute", "license": "CC0", "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "source": "https://commons.wikimedia.org/wiki/File:Moueffek_asse_rcl_2425.jpg"}, url: photo33.url },
+  // Légendaire ALT editions: a different real photo of the same player.
+  { name: "Erling Haaland (ALT)", author: "Hameltion", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:ManCity20240722-031_(cropped).jpg", url: altPhotoHaaland.url },
+  { name: "Kylian Mbappé (ALT)", author: "Bryan Berlin", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Paraguay_4_July_2026-201_(cropped).jpg", url: altPhotoMbappe.url },
+  { name: "Mohamed Salah (ALT)", author: "Franco237 (recadrage : HazemGM)", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Mohamed_Salah_2021_CAN_Final.jpg", url: altPhotoSalah.url },
+  { name: "Jude Bellingham (ALT)", author: "Barcex", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:25th_Laureus_World_Sports_Awards_-_240422_205212_(cropped).jpg", url: altPhotoBellingham.url },
 ];
