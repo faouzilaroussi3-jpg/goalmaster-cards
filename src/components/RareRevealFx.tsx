@@ -135,7 +135,7 @@ export function RareRevealFx({ fx, boomAt, total, anchor }: { fx: RareFx; boomAt
     function spawn(dt: number, t: number, c: ReturnType<typeof center>) {
       const building = t < boomAt;
       const after = (t - boomAt) / Math.max(1, total - boomAt);
-      const rate = building ? 60 + 260 * (t / boomAt) : Math.max(0, 110 * (1 - after));
+      const rate = building ? 60 + 260 * (t / boomAt) : Math.max(0, 170 * (1 - after));
       spawnAcc += rate * dt;
       while (spawnAcc >= 1) {
         spawnAcc -= 1;
@@ -263,7 +263,7 @@ export function RareRevealFx({ fx, boomAt, total, anchor }: { fx: RareFx; boomAt
       // Core glow behind the card: grows during the build-up, swells at the explosion, then breathes.
       const pulse = 1 + Math.sin(t / 90) * 0.06 * build;
       const coreR = (since < 0 ? 80 + 260 * build * build : 420 - Math.min(1, since) * 120) * pulse;
-      const coreA = (since < 0 ? 0.35 + 0.55 * build : Math.max(0.35, 1 - since * 0.5)) * fade;
+      const coreA = (since < 0 ? 0.35 + 0.55 * build : Math.max(0.55, 1 - since * 0.4)) * fade;
       const core = rainbow ? pal.colors[Math.floor(t / 140) % pal.colors.length]! : pal.core;
       const cg = ctx!.createRadialGradient(c.x, c.y, 0, c.x, c.y, coreR);
       cg.addColorStop(0, `rgba(255,255,255,${coreA})`);
