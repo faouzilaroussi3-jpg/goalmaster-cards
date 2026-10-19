@@ -20,8 +20,20 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
     if (!ctx) return;
 
     const css = getComputedStyle(canvas);
-    const light = css.getPropertyValue("--card-light").trim() || "white";
-    const tint = css.getPropertyValue("--pack-light").trim() || light;
+    // Resolve theme colours to RGB so gradients can fade to a transparent version of the same colour (no grey fringe).
+    const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true })!;
+    const rgb = (token: string, fallback: string) => {
+      probe.clearRect(0, 0, 1, 1);
+      probe.fillStyle = css.getPropertyValue(token).trim() || fallback;
+      probe.fillRect(0, 0, 1, 1);
+      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
+      return (a: number) => `rgba(${r}, ${g}, ${b}, ${a})`;
+    };
+    const lightA = rgb("--card-light", "white");
+    const tintA = rgb("--pack-light", "white");
+    const light = lightA(1);
+    const tint = tintA(0.55);
+    const clear = tintA(0);
 
     // Round glow sprite.
     const glow = document.createElement("canvas");
@@ -31,7 +43,7 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
     gg.addColorStop(0, light);
     gg.addColorStop(0.22, light);
     gg.addColorStop(0.5, tint);
-    gg.addColorStop(1, "transparent");
+    gg.addColorStop(1, clear);
     gctx.globalAlpha = 1;
     gctx.fillStyle = gg;
     gctx.fillRect(0, 0, 64, 64);
@@ -43,9 +55,9 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
     sctx.globalCompositeOperation = "lighter";
     for (const horizontal of [true, false]) {
       const lg = horizontal ? sctx.createLinearGradient(0, 0, 64, 0) : sctx.createLinearGradient(0, 0, 0, 64);
-      lg.addColorStop(0, "transparent");
+      lg.addColorStop(0, lightA(0));
       lg.addColorStop(0.5, light);
-      lg.addColorStop(1, "transparent");
+      lg.addColorStop(1, lightA(0));
       sctx.fillStyle = lg;
       if (horizontal) sctx.fillRect(0, 30.5, 64, 3);
       else sctx.fillRect(30.5, 0, 3, 64);
@@ -119,7 +131,7 @@ export function TearSparkles({ progress, torn, tearY, className }: { progress: n
         const bloom = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
         bloom.addColorStop(0, light);
         bloom.addColorStop(0.35, tint);
-        bloom.addColorStop(1, "transparent");
+        bloom.addColorStop(1, clear);
         ctx.globalAlpha = a * 0.85;
         ctx.fillStyle = bloom;
         ctx.fillRect(-r, -r, r * 2, r * 2);
