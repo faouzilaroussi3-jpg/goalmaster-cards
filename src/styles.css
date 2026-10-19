@@ -264,6 +264,8 @@
 .sl-gem-star { fill: var(--card-light); transform-box: fill-box; transform-origin: center; animation: sl-twinkle 1.1s ease-in-out infinite; }
 @keyframes sl-twinkle { 0%, 100% { transform: scale(.3) rotate(0deg); opacity: .3; } 50% { transform: scale(1.1) rotate(45deg); opacity: 1; } }
 .sl-trail { fill: var(--card-light); filter: drop-shadow(0 0 1.5px var(--diamond-ice)); }
+.sl-satellite .sl-gem { filter: drop-shadow(0 0 .8px var(--card-light)) drop-shadow(0 0 2px var(--diamond-ice)); }
+.sl-satellite .sl-gem-star { animation-duration: 1.7s; animation-delay: inherit; }
 .fm-card.is-missing { filter: grayscale(1) brightness(0.45); }
 @keyframes aura-breathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @keyframes sparkle-drift { 0%, 100% { opacity: .3; transform: translateY(3px); } 50% { opacity: 1; transform: translateY(-4px); } }
