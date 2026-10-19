@@ -293,6 +293,9 @@
 @keyframes football-impact { 0%,74% { opacity: 0; transform: scale(.3); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(2.8); } }
 @keyframes football-wash { 0%, 70% { opacity: 0; } 78% { opacity: .22; } 100% { opacity: 0; } }
 @keyframes football-lines { from { transform: translateX(-20%); opacity: 0; } 60% { opacity: .6; } to { transform: translateX(20%); opacity: 0; } }
+/* Glow that bridges the torn pack and the cinematic. */
+.opening-glow { width: 60vmin; height: 60vmin; border-radius: 9999px; background: radial-gradient(circle, var(--card-light) 0%, var(--primary-glow) 25%, color-mix(in oklab, var(--primary) 40%, transparent) 50%, transparent 72%); animation: opening-glow 0.9s ease-out both; }
+@keyframes opening-glow { 0% { transform: scale(.2); opacity: 0; } 35% { opacity: 1; } 100% { transform: scale(2.4); opacity: .85; } }
 /* Swipe-to-open stage on the packs page. */
 .swipe-glow { background: radial-gradient(ellipse at 30% 50%, color-mix(in oklab, var(--primary) 30%, transparent), transparent 65%); transition: opacity 150ms linear; }
 .swipe-hint { animation: swipe-nudge 1.4s ease-in-out infinite; }
@@ -303,7 +306,7 @@
 .tear-handle-idle { animation: tear-handle-slide 1.8s ease-in-out infinite; }
 @keyframes tear-handle-slide { 0% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(60px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .swipe-hint, .tear-handle-idle { animation: none !important; }
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .opening-glow, .swipe-hint, .tear-handle-idle { animation: none !important; }
   .cinema-player-travel { transform: translate(440px,385px); }
   .cinema-ball-travel { transform: translate(540px,450px); }
   .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }

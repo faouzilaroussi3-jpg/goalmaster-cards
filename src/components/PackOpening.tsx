@@ -46,18 +46,12 @@ export function PackOpening({
   const main = result?.cards.filter((c) => !c.is_bonus) ?? [];
   const bonus = result?.cards.find((c) => c.is_bonus);
 
-  // intro -> burst once result arrives
+  // The pack was already torn on the packs page: a short glow, then straight to the cinematic.
   useEffect(() => {
     if (phase !== "intro" || !result) return;
-    const t = setTimeout(() => setPhase("burst"), 1400);
+    const t = setTimeout(() => setPhase("football"), 450);
     return () => clearTimeout(t);
   }, [phase, result]);
-
-  useEffect(() => {
-    if (phase !== "burst") return;
-    const t = setTimeout(() => setPhase("football"), 750);
-    return () => clearTimeout(t);
-  }, [phase]);
 
   const finishFootball = useCallback(() => setPhase((current) => current === "football" ? "reveal" : current), []);
 
@@ -128,16 +122,9 @@ export function PackOpening({
       )}
 
       {(phase === "intro" || phase === "burst") && (
-        <div className="relative flex flex-col items-center">
+        <div className="pointer-events-none fixed inset-0 grid place-items-center" aria-label="Ouverture du pack">
           <div className="rays" />
-          <img
-            src={packImage}
-            alt="Booster"
-            className={cn("relative w-56 sm:w-72", phase === "intro" ? (result ? "anim-shake" : "anim-float") : "anim-burst")}
-          />
-          <p className="relative mt-6 font-display text-2xl tracking-widest text-primary">
-            {result ? "Ouverture…" : "Préparation du booster…"}
-          </p>
+          <div className="opening-glow" />
         </div>
       )}
 
