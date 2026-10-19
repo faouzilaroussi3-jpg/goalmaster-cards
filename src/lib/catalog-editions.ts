@@ -325,7 +325,7 @@ export const CATALOG_EDITIONS = [
     "club": "Angleterre · Sélection",
     "nationality": "Angleterre",
     "pos": "MOC",
-    "image_url": "/__l5e/assets-v1/18f4f851-6770-4174-bced-2d329d3ab1ca/edition-stars-3.jpg",
+    "image_url": "/__l5e/assets-v1/38b8a954-3476-470c-bd12-674e847bec17/bellingham-legendary.jpg",
     "alt_image_url": "/__l5e/assets-v1/ea52f36c-03d7-401d-8f23-5032e2493844/alt-photo-bellingham-kit.jpg"
   },
   {

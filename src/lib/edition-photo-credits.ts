@@ -10,7 +10,7 @@ import photo8 from "@/assets/players/edition-low-8.jpg.asset.json";
 import photo9 from "@/assets/players/edition-stars-0.jpg.asset.json";
 import photo10 from "@/assets/players/edition-stars-1.jpg.asset.json";
 import photo11 from "@/assets/players/edition-stars-2.jpg.asset.json";
-import photo12 from "@/assets/players/edition-stars-3.jpg.asset.json";
+import photo12 from "@/assets/players/bellingham-legendary.jpg.asset.json";
 import photo13 from "@/assets/players/edition-stars-4.jpg.asset.json";
 import photo14 from "@/assets/players/edition-stars-5.jpg.asset.json";
 import photo15 from "@/assets/players/edition-stars-6.jpg.asset.json";
@@ -50,7 +50,7 @@ export const EDITION_PHOTO_CREDITS = [
   { ...{"name": "Erling Haaland", "author": "Jacek Stanislawek", "license": "CC BY-SA 4.0", "license_url": "https://creativecommons.org/licenses/by-sa/4.0", "source": "https://commons.wikimedia.org/wiki/File:Erling_Haaland_2023.jpg"}, url: photo9.url },
   { ...{"name": "Kylian Mbappé", "author": "Biser Todorov", "license": "CC BY 4.0", "license_url": "https://creativecommons.org/licenses/by/4.0", "source": "https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_2017.jpg"}, url: photo10.url },
   { ...{"name": "Mohamed Salah", "author": "Анна Нэсси", "license": "CC BY-SA 3.0", "license_url": "https://creativecommons.org/licenses/by-sa/3.0", "source": "https://commons.wikimedia.org/wiki/File:Mohamed_Salah_2018.jpg"}, url: photo11.url },
-  { ...{"name": "Jude Bellingham", "author": "Hossein Zohrevand", "license": "CC BY 4.0", "license_url": "https://creativecommons.org/licenses/by/4.0", "source": "https://commons.wikimedia.org/wiki/File:Jude_Bellingham_WC2022.jpg"}, url: photo12.url },
+  { ...{"name": "Jude Bellingham", "author": "Bryan Berlin", "license": "CC BY-SA 4.0", "license_url": "https://creativecommons.org/licenses/by-sa/4.0", "source": "https://commons.wikimedia.org/wiki/File:Jude_Bellingham_England_v_Ghana_23_June_2026-168.jpg"}, url: photo12.url },
   { ...{"name": "Vinícius Júnior", "author": "Hossein Zohrevand", "license": "CC BY-SA 4.0", "license_url": "https://creativecommons.org/licenses/by-sa/4.0", "source": "https://commons.wikimedia.org/wiki/File:Vinicius_Junior_WC2022.jpg"}, url: photo13.url },
   { ...{"name": "Harry Kane", "author": "Number 10", "license": "CC BY 2.0", "license_url": "https://creativecommons.org/licenses/by/2.0", "source": "https://commons.wikimedia.org/wiki/File:Harry_Kane_2023.jpg"}, url: photo14.url },
   { ...{"name": "Lionel Messi", "author": "Andy Witchger", "license": "CC BY 2.0", "license_url": "https://creativecommons.org/licenses/by/2.0", "source": "https://commons.wikimedia.org/wiki/File:Lionel_Messi_2025.jpg"}, url: photo15.url },
