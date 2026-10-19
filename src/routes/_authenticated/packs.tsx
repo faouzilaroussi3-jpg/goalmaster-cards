@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMyPacks, useProfile } from "@/lib/auth";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
-import { preloadFootballCinematic } from "@/components/FootballCinematic";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/packs")({
@@ -53,13 +52,11 @@ function PacksPage() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [round, setRound] = useState(0);
 
-  // Warm up the 3D animation so it starts the moment a pack is torn.
-  useEffect(() => { preloadFootballCinematic(); }, []);
 
   async function open(key: string) {
     if (busy) return;
     setBusy(true);
-    // Draw on the server while the light bursts out of the torn pack, then cut straight to the cinematic.
+    // Draw on the server while the light bursts out of the torn pack, then show the face-down cards.
     const burst = new Promise((r) => setTimeout(r, 700));
     const [{ data, error }] = await Promise.all([supabase.rpc("open_pack", { _pack_key: key }), burst]);
     if (error) {
