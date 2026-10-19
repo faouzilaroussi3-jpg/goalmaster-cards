@@ -830,23 +830,38 @@ export type Database = {
       }
       rarities: {
         Row: {
+          builtin: boolean
+          color: string | null
+          created_at: string
           duplicate_coins: number
+          effect: string
           key: string
           label: string
+          rank: number
           short_label: string
           tier: number
         }
         Insert: {
+          builtin?: boolean
+          color?: string | null
+          created_at?: string
           duplicate_coins?: number
+          effect?: string
           key: string
           label: string
+          rank?: number
           short_label: string
           tier: number
         }
         Update: {
+          builtin?: boolean
+          color?: string | null
+          created_at?: string
           duplicate_coins?: number
+          effect?: string
           key?: string
           label?: string
+          rank?: number
           short_label?: string
           tier?: number
         }
@@ -956,6 +971,7 @@ export type Database = {
         Args: { _exclude?: string[]; _rarity: string }
         Returns: string
       }
+      _rarity_fx: { Args: { _key: string }; Returns: string }
       _settle_auctions: { Args: never; Returns: undefined }
       _settle_duels: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
@@ -970,6 +986,21 @@ export type Database = {
           copies: number
           owners: number
         }[]
+      }
+      admin_create_rarity: {
+        Args: {
+          _after_key: string
+          _color: string
+          _duplicate_coins: number
+          _effect: string
+          _label: string
+          _short: string
+        }
+        Returns: string
+      }
+      admin_delete_rarity: {
+        Args: { _key: string; _move_to: string }
+        Returns: number
       }
       admin_grant: {
         Args: {

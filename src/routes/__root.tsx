@@ -17,6 +17,7 @@ import { AuthProvider } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
 import { Toaster } from "@/components/ui/sonner";
 import { installGlobalSounds } from "@/lib/sfx";
+import { RarityRegistry } from "@/components/RarityRegistry";
 
 function NotFoundComponent() {
   return (
@@ -113,6 +114,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <RarityRegistry />
         <AppHeader />
         <main className="pb-16">
           <Outlet />

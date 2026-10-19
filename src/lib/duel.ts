@@ -1,5 +1,6 @@
 // Tactical duel rules. The server (play_card, _duel_power, _duel_deck, _finish_duel) is the source of truth;
 // these pure helpers mirror it so the UI can preview powers and validate a team before sending it.
+import { rarityMeta } from "@/lib/rarity";
 
 export const DECK_SIZE = 5;
 export const DECK_BUDGET = 20;
@@ -35,7 +36,8 @@ export interface DuelCardLike {
   rating: number;
 }
 
-export const duelCost = (rarity: string) => DUEL_COST[rarity] ?? 99;
+// Admin-created rarities play like the built-in rarity whose effect they wear (as _rarity_fx does on the server).
+export const duelCost = (rarity: string) => DUEL_COST[rarityMeta(rarity).fx] ?? 99;
 
 export function positionModifier(pos: string, theme: Theme) {
   const p = pos.toUpperCase();
@@ -50,7 +52,7 @@ export function cardPower(card: DuelCardLike, theme: Theme) {
   const version = card.version ?? "normal";
   return (
     card.rating +
-    (RARITY_BONUS[card.rarity] ?? 0) +
+    (RARITY_BONUS[rarityMeta(card.rarity).fx] ?? 0) +
     (version === "alt" || version === "shiny" ? 2 : 0) +
     positionModifier(card.pos, theme)
   );

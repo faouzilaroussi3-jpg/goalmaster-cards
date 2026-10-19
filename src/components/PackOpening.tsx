@@ -79,7 +79,7 @@ export function PackOpening({
   }, []);
 
   function triggerFlash(c: OpenedCard) {
-    setFlash(c.rarity);
+    setFlash(rarityMeta(c.rarity).fx);
     later(() => setFlash(null), 900);
   }
 
@@ -212,11 +212,11 @@ export function PackOpening({
                     ["--from-x" as string]: `${o.x}px`,
                     ["--from-y" as string]: `${o.y}px`,
                     ["--from-r" as string]: `${o.r}deg`,
-                    ["--rc" as string]: RARITY_VAR[front.rarity] ?? "var(--primary)",
+                    ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] ?? "var(--primary)",
                     ["--charge" as string]: `${charge}ms`,
                   }}
                 >
-                  {front.tier >= 5 && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: RARITY_VAR[front.rarity] }} />}
+                  {front.tier >= 5 && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }} />}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
                       <CardBack bonus={front.is_bonus} className={cn(front.tier >= 4 && "gm-back-charge", fx && "gm-back-rare")} />

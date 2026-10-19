@@ -4,7 +4,7 @@
 export const BREATH_WINDUP_MS = 380;
 /** How long the fire jet pours out, in ms. */
 export const BREATH_FIRE_MS = 1400;
-/** Whole breath, wind-up + fire + the head settling back, in ms (matches the CSS su-head-breath animation). */
+/** Whole breath, wind-up + fire + the head settling back, in ms (the canvas head rears and settles over it). */
 export const BREATH_TOTAL_MS = 2000;
 /** Pause between two breaths of the same card, in ms. */
 export const BREATH_PAUSE_MS = [3200, 7200] as const;
