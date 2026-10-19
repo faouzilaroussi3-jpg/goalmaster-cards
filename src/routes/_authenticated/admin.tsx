@@ -121,17 +121,17 @@ function PacksAdmin() {
   );
 }
 
-type Pack = { id: string; name: string; slot_rates: unknown; bonus_rates: unknown; regen_minutes: number; max_stock: number; price_coins: number; xp_reward: number; active: boolean };
+type Pack = { id: string; name: string; slot_rates: unknown; version_rates: unknown; regen_minutes: number; max_stock: number; price_coins: number; xp_reward: number; active: boolean };
 
 function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
   const [slot, setSlot] = useState<Record<string, number>>(p.slot_rates as Record<string, number>);
-  const [bonus, setBonus] = useState<Record<string, number>>(p.bonus_rates as Record<string, number>);
+  const [versions, setVersions] = useState<Record<string, number>>({ alt: 0, shiny: 0, ...(p.version_rates as Record<string, number>) });
   const [cfg, setCfg] = useState({ regen_minutes: p.regen_minutes, max_stock: p.max_stock, price_coins: p.price_coins, xp_reward: p.xp_reward, active: p.active });
   const sum = (o: Record<string, number>) => Object.values(o).reduce((a, b) => a + (Number(b) || 0), 0);
 
   async function save() {
     const clean = (o: Record<string, number>) => Object.fromEntries(Object.entries(o).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)]));
-    const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), bonus_rates: clean(bonus) }).eq("id", p.id);
+    const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), version_rates: { alt: Number(versions["alt"]) || 0, shiny: Number(versions["shiny"]) || 0 } }).eq("id", p.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Pack enregistré");
     onSaved();
@@ -150,11 +150,12 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
         ))}
       </div>
       <div>
-        <p className="mb-1 text-xs uppercase text-muted-foreground">Carte bonus (total {sum(bonus).toFixed(1)}%)</p>
-        {([["normal", "Normale"], ["alt", "ALT"], ["shiny", "Shiny"], ["ultimate", "Secrète Ultime"]] as const).map(([k, l]) => (
+        <p className="mb-1 text-xs uppercase text-muted-foreground">Versions spéciales</p>
+        <p className="mb-1 text-xs text-muted-foreground">Chance (en %) qu'une carte tirée sorte dans sa version spéciale, si le joueur en a une.</p>
+        {([["alt", "Légendaire → ALT"], ["shiny", "Secrète Légendaire → Shiny"]] as const).map(([k, l]) => (
           <label key={k} className="flex items-center justify-between gap-2 py-0.5 text-sm">
             {l}
-            <input className={`${inp} w-24`} type="number" step="0.1" min={0} value={bonus[k] ?? 0} onChange={(e) => setBonus({ ...bonus, [k]: +e.target.value })} />
+            <input className={`${inp} w-24`} type="number" step="0.1" min={0} max={100} value={versions[k] ?? 0} onChange={(e) => setVersions({ ...versions, [k]: Math.min(100, Math.max(0, +e.target.value)) })} />
           </label>
         ))}
       </div>

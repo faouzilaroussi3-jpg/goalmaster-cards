@@ -197,6 +197,7 @@ export type Database = {
           slot_count: number
           slot_rates: Json
           sort_order: number
+          version_rates: Json
           xp_reward: number
         }
         Insert: {
@@ -213,6 +214,7 @@ export type Database = {
           slot_count?: number
           slot_rates: Json
           sort_order?: number
+          version_rates?: Json
           xp_reward?: number
         }
         Update: {
@@ -229,6 +231,7 @@ export type Database = {
           slot_count?: number
           slot_rates?: Json
           sort_order?: number
+          version_rates?: Json
           xp_reward?: number
         }
         Relationships: []
