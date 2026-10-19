@@ -1,29 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { dragOffset, shouldOpen, swipeProgress } from "@/lib/pack-swipe";
+import { shouldTear, tearProgress } from "@/lib/pack-swipe";
 
-describe("pack swipe", () => {
-  it("opens once the pack travels 35% of the stage to the left", () => {
-    expect(shouldOpen(-140, 0, 400)).toBe(true);
-    expect(shouldOpen(-130, 0, 400)).toBe(false);
+describe("pack tear", () => {
+  it("tears once the finger crosses 80% of the pack width to the right", () => {
+    expect(shouldTear(160, 0, 200)).toBe(true);
+    expect(shouldTear(150, 0, 200)).toBe(false);
   });
 
-  it("never needs more than 160px on wide screens", () => {
-    expect(shouldOpen(-160, 0, 1200)).toBe(true);
-    expect(shouldOpen(-150, 0, 1200)).toBe(false);
+  it("finishes on a fast rightward flick past half way", () => {
+    expect(shouldTear(90, 0.8, 200)).toBe(true);
+    expect(shouldTear(60, 0.8, 200)).toBe(false);
   });
 
-  it("opens on a fast leftward flick even if short", () => {
-    expect(shouldOpen(-60, -0.9, 400)).toBe(true);
-  });
-
-  it("never opens when dragged right or tapped", () => {
-    expect(shouldOpen(200, -2, 400)).toBe(false);
-    expect(shouldOpen(-10, -2, 400)).toBe(false);
-  });
-
-  it("resists dragging to the right", () => {
-    expect(dragOffset(100)).toBe(20);
-    expect(dragOffset(-100)).toBe(-100);
-    expect(swipeProgress(50, 400)).toBe(0);
+  it("never tears when dragging right to left", () => {
+    expect(shouldTear(-200, -2, 200)).toBe(false);
+    expect(tearProgress(-50, 200)).toBe(0);
   });
 });
