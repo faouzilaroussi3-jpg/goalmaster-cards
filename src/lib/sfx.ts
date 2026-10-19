@@ -400,6 +400,27 @@ export const sfx = {
     }
   }),
 
+  // ---------- Friends & messages ----------
+  messageSend: () => play((e) => {
+    special();
+    noise(e, { dur: 0.12, freq: 900, to: 4200, q: 1, gain: 0.08, attack: 0.04, reverb: 0.1 });
+    tone(e, { start: 0.04, freq: 660, to: 1320, dur: 0.12, gain: 0.12, reverb: 0.2 });
+  }),
+  messageIn: () => play((e) => {
+    special();
+    tone(e, { freq: 1046.5, dur: 0.22, gain: 0.12, reverb: 0.35, pan: -0.1 });
+    tone(e, { start: 0.1, freq: 1567.98, dur: 0.35, gain: 0.11, reverb: 0.4, pan: 0.1 });
+  }),
+  friendRequest: () => play((e) => {
+    special();
+    [783.99, 987.77, 1174.66].forEach((f, i) => tone(e, { freq: f, start: i * 0.09, dur: 0.3, type: "triangle", gain: 0.1, reverb: 0.35 }));
+  }),
+  friendAccept: () => play((e) => {
+    special();
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(e, { freq: f, start: i * 0.07, dur: 0.35, type: "triangle", gain: 0.09, reverb: 0.4 }));
+    bell(e, 2093, 0.3, 1.1, 0.05);
+  }),
+
   // ---------- Duels ----------
   playCard: () => play((e) => {
     special();

@@ -68,6 +68,20 @@ export function useMyChallenges() {
   });
 }
 
+export function useFriends() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["friends", session?.user.id],
+    enabled: !!session,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_friends");
+      if (error) throw error;
+      return (data ?? []) as import("@/lib/friends").Friend[];
+    },
+  });
+}
+
 export interface MyDuel {
   duel_id: string; status: string; is_challenger: boolean; opponent_id: string | null; opponent_name: string | null;
   my_score: number; their_score: number; round: number; my_turn: boolean; they_played: boolean; incoming: boolean;

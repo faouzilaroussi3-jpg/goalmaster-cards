@@ -529,6 +529,90 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_id_fkey"
+            columns: ["addressee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pack_openings: {
         Row: {
           created_at: string
@@ -902,6 +986,22 @@ export type Database = {
           wins: number
         }[]
       }
+      get_friends: {
+        Args: never
+        Returns: {
+          created_at: string
+          friendship_id: string
+          incoming: boolean
+          last_at: string
+          last_from_me: boolean
+          last_message: string
+          level: number
+          status: string
+          unread: number
+          user_id: string
+          username: string
+        }[]
+      }
       get_leaderboard: {
         Args: { _limit?: number; _sort?: string }
         Returns: {
@@ -1008,12 +1108,29 @@ export type Database = {
         Returns: boolean
       }
       leave_duel: { Args: { _duel_id: string }; Returns: undefined }
+      mark_messages_read: { Args: { _from: string }; Returns: undefined }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
       place_bid: {
         Args: { _amount: number; _auction_id: string }
         Returns: undefined
       }
       play_card: { Args: { _duel_id: string; _slot: number }; Returns: Json }
+      remove_friend: { Args: { _friendship_id: string }; Returns: undefined }
+      respond_friend_request: {
+        Args: { _accept: boolean; _friendship_id: string }
+        Returns: undefined
+      }
+      search_players: {
+        Args: { _q: string }
+        Returns: {
+          level: number
+          relation: string
+          user_id: string
+          username: string
+        }[]
+      }
+      send_friend_request: { Args: { _to: string }; Returns: string }
+      send_message: { Args: { _body: string; _to: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
