@@ -293,8 +293,12 @@
 @keyframes football-impact { 0%,74% { opacity: 0; transform: scale(.3); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(2.8); } }
 @keyframes football-wash { 0%, 70% { opacity: 0; } 78% { opacity: .22; } 100% { opacity: 0; } }
 @keyframes football-lines { from { transform: translateX(-20%); opacity: 0; } 60% { opacity: .6; } to { transform: translateX(20%); opacity: 0; } }
+/* Swipe-to-open stage on the packs page. */
+.swipe-glow { background: radial-gradient(ellipse at 30% 50%, color-mix(in oklab, var(--primary) 30%, transparent), transparent 65%); transition: opacity 150ms linear; }
+.swipe-hint { animation: swipe-nudge 1.4s ease-in-out infinite; }
+@keyframes swipe-nudge { 0%,100% { transform: translateX(0); opacity: .6; } 50% { transform: translateX(-8px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays { animation: none !important; }
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .swipe-hint { animation: none !important; }
   .cinema-player-travel { transform: translate(440px,385px); }
   .cinema-ball-travel { transform: translate(540px,450px); }
   .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }
