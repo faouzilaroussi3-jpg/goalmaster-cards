@@ -70,10 +70,10 @@ function getScaleTile() {
 function scaleSkin(mat: THREE.MeshStandardMaterial, deep: THREE.Color, light: THREE.Color, freq: number) {
   mat.color.set(1, 1, 1);
   mat.onBeforeCompile = (shader) => {
-    shader.uniforms.uScales = { value: getScaleTile() };
-    shader.uniforms.uDeep = { value: deep };
-    shader.uniforms.uLight = { value: light };
-    shader.uniforms.uFreq = { value: freq };
+    shader.uniforms["uScales"] = { value: getScaleTile() };
+    shader.uniforms["uDeep"] = { value: deep };
+    shader.uniforms["uLight"] = { value: light };
+    shader.uniforms["uFreq"] = { value: freq };
     shader.vertexShader = shader.vertexShader
       .replace("#include <common>", "#include <common>\nvarying vec3 vSkinPos;\nvarying vec3 vSkinN;")
       .replace("#include <begin_vertex>", "#include <begin_vertex>\nvSkinPos = position;\nvSkinN = normal;");
