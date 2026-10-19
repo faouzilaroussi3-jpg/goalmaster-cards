@@ -53,7 +53,7 @@ export function CardFire({ className }: { className?: string }) {
       const sx = s.getContext("2d")!;
       const grad = sx.createRadialGradient(24, 24, 0, 24, 24, 24);
       grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
-      grad.addColorStop(0.35, `rgba(${r},${g},${b},0.55)`);
+      grad.addColorStop(0.3, `rgba(${r},${g},${b},0.75)`);
       grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
       sx.fillStyle = grad;
       sx.fillRect(0, 0, 48, 48);
@@ -79,10 +79,10 @@ export function CardFire({ className }: { className?: string }) {
       if (pick < 0.34) {
         // left edge, licking up and slightly inward
         x = Math.random() * 3 * u; y = h * (0.18 + Math.random() * 0.86);
-        vx = (Math.random() * 6 - 1) * u; vy = -(18 + Math.random() * 22) * u; life = 0.45 + Math.random() * 0.5; size = (7 + Math.random() * 9) * u;
+        vx = (Math.random() * 6 - 1) * u; vy = -(22 + Math.random() * 28) * u; life = 0.45 + Math.random() * 0.55; size = (8 + Math.random() * 11) * u;
       } else if (pick < 0.68) {
         x = w - Math.random() * 3 * u; y = h * (0.18 + Math.random() * 0.86);
-        vx = -(Math.random() * 6 - 1) * u; vy = -(18 + Math.random() * 22) * u; life = 0.45 + Math.random() * 0.5; size = (7 + Math.random() * 9) * u;
+        vx = -(Math.random() * 6 - 1) * u; vy = -(22 + Math.random() * 28) * u; life = 0.45 + Math.random() * 0.55; size = (8 + Math.random() * 11) * u;
       } else if (pick < 0.94) {
         // bottom edge: short flames that stay below the card text
         x = Math.random() * w; y = h + 2 * u;
@@ -99,8 +99,8 @@ export function CardFire({ className }: { className?: string }) {
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now; t += dt;
-      // ~1 particle per second per pixel of card width keeps density constant at every card size.
-      acc += dt * Math.max(220, w * 2.6);
+      // A few particles per second per pixel of card width keeps density constant at every card size.
+      acc += dt * Math.max(320, w * 3.6);
       while (acc > 1) { spawn(); acc -= 1; }
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, w, h);
@@ -117,10 +117,10 @@ export function CardFire({ className }: { className?: string }) {
         p.y += p.vy * dt;
         p.vy *= 1 + dt * 0.8; // accelerates as hot air rises
         const size = p.size * (k < 0.2 ? 0.6 + k * 2 : 1 - (k - 0.2) * 0.85);
-        const alpha = (k < 0.1 ? k * 10 : 1 - k) * 0.55;
+        const alpha = (k < 0.1 ? k * 10 : 1 - k) * 0.85;
         const sprite = sprites[Math.min(STEPS - 1, Math.floor(k * STEPS))]!;
         ctx.globalAlpha = alpha;
-        ctx.drawImage(sprite, p.x - size / 2, p.y - size * 0.9, size, size * 1.7);
+        ctx.drawImage(sprite, p.x - size / 2, p.y - size * 1.2, size, size * 2.2);
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
