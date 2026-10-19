@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { RARITIES, rarityMeta } from "@/lib/rarity";
+import { rarityMeta, useRarities } from "@/lib/rarity";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PhotoCredits } from "@/components/PhotoCredits";
 import { CardViewer } from "@/components/CardViewer";
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/collection")({
 });
 
 function CollectionPage() {
+  const rarities = useRarities();
   const { session } = useAuth();
   const uid = session!.user.id;
   const { data: catalog = [] } = useQuery({
@@ -76,7 +77,7 @@ function CollectionPage() {
   const uniqueOwned = entries.filter((e) => e.count > 0).length;
   // Secret Ultimate cards only come back for their owners (and the admin), so the tier stays invisible until pulled.
   const hasUltimate = catalog.some((c) => c.rarity === "secret_ultimate");
-  const visibleRarities = RARITIES.filter((r) => r.key !== "secret_ultimate" || hasUltimate);
+  const visibleRarities = rarities.filter((r) => r.key !== "secret_ultimate" || hasUltimate);
   const sel = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 
   return (

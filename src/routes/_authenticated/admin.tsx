@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/auth";
-import { RARITIES } from "@/lib/rarity";
+import { useRarities } from "@/lib/rarity";
 import { CardsAdmin } from "@/components/admin/CardsAdmin";
 import { GiftsAdmin } from "@/components/admin/GiftsAdmin";
 
@@ -64,6 +64,7 @@ function PacksAdmin() {
 type Pack = { id: string; name: string; slot_rates: unknown; version_rates: unknown; regen_minutes: number; max_stock: number; price_coins: number; xp_reward: number; active: boolean };
 
 function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
+  const rarities = useRarities();
   const [slot, setSlot] = useState<Record<string, number>>(p.slot_rates as Record<string, number>);
   const [versions, setVersions] = useState<Record<string, number>>({ alt: 0, shiny: 0, ...(p.version_rates as Record<string, number>) });
   const [cfg, setCfg] = useState({ regen_minutes: p.regen_minutes, max_stock: p.max_stock, price_coins: p.price_coins, xp_reward: p.xp_reward, active: p.active });
@@ -82,7 +83,7 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
       <h3 className="text-2xl">{p.name}</h3>
       <div>
         <p className="mb-1 text-xs uppercase text-muted-foreground">Taux par carte (total {sum(slot).toFixed(1)}%)</p>
-        {RARITIES.map((r) => (
+        {rarities.map((r) => (
           <label key={r.key} className="flex items-center justify-between gap-2 py-0.5 text-sm">
             {r.label}
             <input className={`${inp} w-24`} type="number" step="0.1" min={0} value={slot[r.key] ?? 0} onChange={(e) => setSlot({ ...slot, [r.key]: +e.target.value })} />

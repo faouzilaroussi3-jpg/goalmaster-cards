@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Clock, Coins, Gavel, Plus, Search, Tag, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useProfile } from "@/lib/auth";
-import { RARITIES, rarityMeta, VERSION_LABEL } from "@/lib/rarity";
+import { rarityMeta, useRarities, VERSION_LABEL } from "@/lib/rarity";
 import { AUCTION_DURATIONS, bidCost, formatTimeLeft, MIN_START_PRICE, minBid, sellerPayout, TRANSFER_TAX } from "@/lib/transfer-market";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,7 @@ function TransfersPage() {
 }
 
 function Market({ onBid }: { onBid: (a: Auction) => void }) {
+  const rarities = useRarities();
   const { data = [], isLoading } = useAuctions("market");
   const [q, setQ] = useState("");
   const [rarity, setRarity] = useState("");
@@ -126,7 +127,7 @@ function Market({ onBid }: { onBid: (a: Auction) => void }) {
         </label>
         <select className={sel} value={rarity} onChange={(e) => setRarity(e.target.value)} aria-label="Rareté">
           <option value="">Toutes raretés</option>
-          {RARITIES.filter((r) => r.key !== "secret_ultimate").map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+          {rarities.filter((r) => r.key !== "secret_ultimate").map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
         </select>
         <select className={sel} value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label="Trier">
           <option value="ending">Fin la plus proche</option>

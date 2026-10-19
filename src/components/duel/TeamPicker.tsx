@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { RARITIES, rarityMeta } from "@/lib/rarity";
+import { rarityMeta, useRarities } from "@/lib/rarity";
 import { cardPower, DECK_BUDGET, DECK_SIZE, deckCost, deckProblem, duelCost, THEMES, type Theme } from "@/lib/duel";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
   busy?: boolean;
   onSubmit: (cards: PickedCard[]) => void;
 }) {
+  const rarities = useRarities();
   const { session } = useAuth();
   const uid = session!.user.id;
   const { data: copies = [], isLoading } = useQuery({
@@ -105,7 +106,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
         <Input className="min-w-40 flex-1" placeholder="Chercher un joueur, un club, un poste…" value={q} onChange={(e) => setQ(e.target.value)} />
         <select value={rarity} onChange={(e) => setRarity(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm" aria-label="Rareté">
           <option value="all">Toutes raretés</option>
-          {RARITIES.filter((r) => r.key !== "secret_ultimate").map((r) => (
+          {rarities.filter((r) => r.key !== "secret_ultimate").map((r) => (
             <option key={r.key} value={r.key}>{r.label} · {duelCost(r.key)} pt{duelCost(r.key) > 1 ? "s" : ""}</option>
           ))}
         </select>

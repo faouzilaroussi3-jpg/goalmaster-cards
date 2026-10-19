@@ -4,7 +4,7 @@ import { ImageUp, Loader2, Pencil, Replace, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import { RARITIES, rarityMeta } from "@/lib/rarity";
+import { rarityMeta, useRarities } from "@/lib/rarity";
 import { CARD_PHOTO_BUCKET, cardPhotoUrl, fitWithin, rarityEffects } from "@/lib/card-photo";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -44,6 +44,7 @@ const ownersLabel = (s?: { owners: number; copies: number }) =>
   !s || s.copies === 0 ? "Aucun joueur ne la possède." : `${s.owners} joueur${s.owners > 1 ? "s" : ""} la possède${s.owners > 1 ? "nt" : ""} (${s.copies} exemplaire${s.copies > 1 ? "s" : ""}).`;
 
 export function CardsAdmin() {
+  const rarities = useRarities();
   const qc = useQueryClient();
   const { data: cards = [] } = useQuery({
     queryKey: ["admin-cards"],
@@ -92,7 +93,7 @@ export function CardsAdmin() {
         <input className={`${inp} min-w-48 flex-1`} placeholder="Rechercher un joueur, un club, un pays…" value={q} onChange={(e) => { setQ(e.target.value); setLimit(PAGE); }} />
         <select className={inp} value={rarity} onChange={(e) => { setRarity(e.target.value); setLimit(PAGE); }}>
           <option value="">Toutes les raretés</option>
-          {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+          {rarities.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
         </select>
         <span className="text-sm text-muted-foreground">{filtered.length} carte{filtered.length > 1 ? "s" : ""}</span>
         <button onClick={() => setEditing("new")} className="rounded-lg bg-gold px-4 py-2 text-sm font-bold text-primary-foreground">+ Nouvelle carte</button>
@@ -161,6 +162,7 @@ export function CardsAdmin() {
 }
 
 function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: () => void; onSaved: () => void }) {
+  const rarities = useRarities();
   const [f, setF] = useState<Form>(card ? toForm(card) : EMPTY);
   const [busy, setBusy] = useState(false);
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
@@ -194,7 +196,7 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
             <label className="text-xs text-muted-foreground">Note (1-99)<input className={`${inp} w-full`} type="number" min={1} max={99} value={f.rating} onChange={(e) => set("rating", +e.target.value)} /></label>
             <label className="text-xs text-muted-foreground">Rareté
               <select className={`${inp} w-full`} value={f.rarity} onChange={(e) => set("rarity", e.target.value)}>
-                {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+                {rarities.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
             </label>
             <PhotoField label="Photo du joueur" value={f.image_url} onChange={(v) => set("image_url", v)} />
