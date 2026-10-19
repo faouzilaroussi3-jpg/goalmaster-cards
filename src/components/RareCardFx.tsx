@@ -42,7 +42,7 @@ function Part({ src, className, w, h }: { src: string; className: string; w: num
  * sides, and its head rises over the top edge, breathing a particle fire jet every few seconds (random per card)
  * that floods the card with flame light. The shell is unclipped so the limbs can stick out of the card.
  */
-export function SuDragonShell({ className, missing, children }: { className?: string; missing?: boolean; children: ReactNode }) {
+export function SuDragonShell({ className, missing, children }: { className?: string | undefined; missing?: boolean | undefined; children: ReactNode }) {
   const shell = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLImageElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
