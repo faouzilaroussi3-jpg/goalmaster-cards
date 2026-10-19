@@ -428,6 +428,7 @@ export function installGlobalSounds(): () => void {
   if (typeof document === "undefined") return () => {};
   const onPointer = () => unlockAudio();
   const onClick = (ev: MouseEvent) => {
+    unlockAudio();
     const el = (ev.target as Element | null)?.closest?.(
       "[data-sfx], button, a[href], [role=button], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=option], [role=menuitem], summary, label, select",
     ) as HTMLElement | null;
@@ -459,11 +460,12 @@ export function installGlobalSounds(): () => void {
     }
   });
   obs.observe(document.body, { childList: true, subtree: true });
-  document.addEventListener("pointerdown", onPointer, { capture: true, passive: true });
+  const unlockEvents = ["pointerdown", "touchend", "keydown"] as const;
+  unlockEvents.forEach((t) => document.addEventListener(t, onPointer, { capture: true, passive: true }));
   document.addEventListener("click", onClick, { capture: true });
   return () => {
     obs.disconnect();
-    document.removeEventListener("pointerdown", onPointer, { capture: true });
+    unlockEvents.forEach((t) => document.removeEventListener(t, onPointer, { capture: true }));
     document.removeEventListener("click", onClick, { capture: true });
   };
 }
