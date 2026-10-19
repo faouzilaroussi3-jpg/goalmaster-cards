@@ -263,7 +263,7 @@
 .fm-card[data-rarity="secret_ultimate"]::after { display: none; }
 .fm-card[data-rarity="secret_ultimate"] { border-color: var(--su-metal); }
 /* Brushed red-metal frame whose glint travels round, and a slow metallic sheen gliding over the face. */
-.fm-card[data-rarity="secret_ultimate"] .card-foil-border { padding: 4px; background: linear-gradient(115deg, var(--su-metal-deep) 0%, var(--su-metal) 14%, var(--su-metal-bright) 22%, var(--su-metal-spec) 25%, var(--su-metal-bright) 28%, var(--su-metal) 38%, var(--su-metal-deep) 50%, var(--su-metal) 64%, var(--su-metal-bright) 72%, var(--su-metal-spec) 75%, var(--su-metal-bright) 78%, var(--su-metal) 88%, var(--su-metal-deep) 100%); background-size: 200% 200%; animation: su-metal-glint 4.5s linear infinite; }
+.fm-card[data-rarity="secret_ultimate"] .card-foil-border { padding: max(4px, 1.8cqw); filter: drop-shadow(0 0 3px color-mix(in oklab, var(--su-metal-bright) 60%, transparent)); background: linear-gradient(115deg, var(--su-metal-deep) 0%, var(--su-metal) 14%, var(--su-metal-bright) 22%, var(--su-metal-spec) 25%, var(--su-metal-bright) 28%, var(--su-metal) 38%, var(--su-metal-deep) 50%, var(--su-metal) 64%, var(--su-metal-bright) 72%, var(--su-metal-spec) 75%, var(--su-metal-bright) 78%, var(--su-metal) 88%, var(--su-metal-deep) 100%); background-size: 200% 200%; animation: su-metal-glint 4.5s linear infinite; }
 .fm-card[data-rarity="secret_ultimate"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; mix-blend-mode: soft-light; background:
   linear-gradient(112deg, transparent 30%, color-mix(in oklab, var(--su-metal-bright) 70%, transparent) 42%, color-mix(in oklab, var(--su-metal-spec) 85%, transparent) 48%, color-mix(in oklab, var(--su-metal-bright) 70%, transparent) 54%, transparent 66%) 0 0 / 260% 100% no-repeat,
   radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, color-mix(in oklab, var(--su-metal) 75%, transparent)); animation: su-metal-sheen 5.5s ease-in-out infinite; }
@@ -293,10 +293,12 @@
 /* Where the talons dig in: the card is pressed darker under each grip and lit red by the scales. */
 .su-grip { position: absolute; inset: 0; border-radius: 8px; overflow: hidden; pointer-events: none; }
 .su-grip::before { content: ""; position: absolute; inset: 0; background:
-  radial-gradient(ellipse 14% 8% at 4% 43%, var(--card-shadow), transparent 70%),
-  radial-gradient(ellipse 11% 6% at 3% 70%, var(--card-shadow), transparent 70%); }
-.su-claw-fore { width: 27%; left: -12%; top: 35%; rotate: -52deg; }
-.su-claw-hind { width: 20%; left: -8%; top: 65%; rotate: -38deg; }
+  radial-gradient(ellipse 16% 9% at 9% 45%, var(--card-shadow), transparent 70%),
+  radial-gradient(ellipse 12% 7% at 8% 71%, var(--card-shadow), transparent 70%),
+  radial-gradient(ellipse 16% 9% at 91% 45%, var(--card-shadow), transparent 70%),
+  radial-gradient(ellipse 12% 7% at 92% 71%, var(--card-shadow), transparent 70%); }
+.su-claw-fore { width: 27%; left: -7%; top: 35%; rotate: -52deg; }
+.su-claw-hind { width: 20%; left: -4%; top: 65%; rotate: -38deg; }
 .su-breath { position: absolute; left: 20%; top: -40%; width: 110%; height: 100%; pointer-events: none; }
 .su-breath-glow { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--su-metal-spec) 45%, transparent), color-mix(in oklab, var(--su-metal-bright) 50%, transparent) 30%, color-mix(in oklab, var(--su-metal) 30%, transparent) 58%, transparent 82%); }
 .su-shell.is-breathing > .fm-card { filter: brightness(1.05) saturate(1.08); }
