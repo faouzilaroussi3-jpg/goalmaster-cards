@@ -61,9 +61,9 @@ const TRAIL = [1, 2, 3, 4, 5];
 // each one shrinks and dims on the far side of its ring to read as a 3D orbit.
 type Ring = { rx: number; ry: number; tilt: number; lap: number; cw: boolean; gems: number; size: number };
 const RINGS: Ring[] = [
-  { rx: 41, ry: 58, tilt: 0, lap: 16, cw: true, gems: 3, size: 0.75 },
-  { rx: 33, ry: 47, tilt: 24, lap: 12, cw: false, gems: 3, size: 0.6 },
-  { rx: 22, ry: 34, tilt: -28, lap: 9, cw: true, gems: 2, size: 0.5 },
+  { rx: 41, ry: 58, tilt: 0, lap: 16, cw: true, gems: 3, size: 0.9 },
+  { rx: 33, ry: 47, tilt: 24, lap: 12, cw: false, gems: 3, size: 0.75 },
+  { rx: 22, ry: 34, tilt: -28, lap: 9, cw: true, gems: 2, size: 0.62 },
 ];
 const ellipse = ({ rx, ry, cw }: Ring) => {
   const sweep = cw ? 1 : 0;
