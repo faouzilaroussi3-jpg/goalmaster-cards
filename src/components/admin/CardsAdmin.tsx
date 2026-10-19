@@ -196,19 +196,21 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
                 {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
             </label>
-            <label className="text-xs text-muted-foreground sm:col-span-2">Lien de la photo (adresse d'une image, pas d'une page web)
-              <input className={`${inp} w-full`} placeholder="https://…/photo.jpg" value={f.image_url} onChange={(e) => set("image_url", e.target.value)} />
-            </label>
-            <label className="text-xs text-muted-foreground sm:col-span-2">Lien de la photo ALT (optionnel)
-              <input className={`${inp} w-full`} placeholder="https://…/photo-alt.jpg" value={f.alt_image_url} onChange={(e) => set("alt_image_url", e.target.value)} />
-            </label>
+            <PhotoField label="Photo du joueur" value={f.image_url} onChange={(v) => set("image_url", v)} />
+            <PhotoField label="Photo ALT (optionnel, une autre photo du joueur)" value={f.alt_image_url} onChange={(v) => set("alt_image_url", v)} />
             <div className="flex flex-wrap items-center gap-4 text-sm sm:col-span-2">
               <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_alt} onChange={(e) => set("has_alt", e.target.checked)} /> Version ALT</label>
               <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.has_shiny} onChange={(e) => set("has_shiny", e.target.checked)} /> Version Shiny</label>
               <label className="flex items-center gap-1.5"><input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} /> Active (peut sortir des packs)</label>
             </div>
+            <div className="rounded-lg border border-border bg-background/40 p-3 text-xs sm:col-span-2">
+              <p className="mb-1.5 font-bold text-foreground">Effets appliqués automatiquement ({rarityMeta(f.rarity).label})</p>
+              <EffectList items={rarityEffects(f.rarity)} />
+              {f.has_alt && <><p className="mb-1.5 mt-2 font-bold text-foreground">Version ALT</p><EffectList items={rarityEffects(f.rarity, "alt")} /></>}
+              {f.has_shiny && <><p className="mb-1.5 mt-2 font-bold text-foreground">Version Shiny</p><EffectList items={rarityEffects(f.rarity, "shiny")} /></>}
+            </div>
           </div>
-          <div className="flex justify-center gap-3 sm:flex-col">
+          <div className="flex flex-wrap justify-center gap-3 sm:flex-col sm:flex-nowrap">
             <div className="w-36">
               <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu</p>
               <PlayerCard card={preview} />
@@ -217,6 +219,12 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
               <div className="w-36">
                 <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu ALT</p>
                 <PlayerCard card={{ ...preview, version: "alt" }} />
+              </div>
+            )}
+            {f.has_shiny && (
+              <div className="w-36">
+                <p className="mb-1 text-center text-xs text-muted-foreground">Aperçu Shiny</p>
+                <PlayerCard card={{ ...preview, version: "shiny" }} />
               </div>
             )}
           </div>
