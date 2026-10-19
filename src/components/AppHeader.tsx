@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useAuth, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
 import { claimableSummary } from "@/lib/challenges";
 
-const linkCls = "rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
+const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
 
 export function AppHeader() {
@@ -69,7 +69,7 @@ export function AppHeader() {
         <Link to="/" className="font-display text-2xl tracking-widest text-gold sm:text-3xl">
           GOALMASTER
         </Link>
-        <nav className="hidden flex-1 items-center gap-1 md:flex">
+        <nav className="hidden flex-1 items-center gap-1 lg:flex">
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
@@ -101,7 +101,7 @@ export function AppHeader() {
           )}
         </div>
       </div>
-      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 md:hidden [&>a]:shrink-0 [&>a]:px-2">
+      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 lg:hidden [&>a]:shrink-0 [&>a]:px-2">
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
