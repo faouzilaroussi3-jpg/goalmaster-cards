@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as DragonDebugRouteImport } from './routes/dragon-debug'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
@@ -31,11 +30,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DragonDebugRoute = DragonDebugRouteImport.update({
-  id: '/dragon-debug',
-  path: '/dragon-debug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -67,7 +61,6 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/dragon-debug': typeof DragonDebugRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/collection': typeof AuthenticatedCollectionRoute
@@ -77,7 +70,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/dragon-debug': typeof DragonDebugRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/collection': typeof AuthenticatedCollectionRoute
@@ -89,7 +81,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/dragon-debug': typeof DragonDebugRoute
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
@@ -101,7 +92,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/dragon-debug'
     | '/leaderboard'
     | '/admin'
     | '/collection'
@@ -111,7 +101,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/dragon-debug'
     | '/leaderboard'
     | '/admin'
     | '/collection'
@@ -122,7 +111,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/dragon-debug'
     | '/leaderboard'
     | '/_authenticated/admin'
     | '/_authenticated/collection'
@@ -134,7 +122,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  DragonDebugRoute: typeof DragonDebugRoute
   LeaderboardRoute: typeof LeaderboardRoute
 }
 
@@ -159,13 +146,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dragon-debug': {
-      id: '/dragon-debug'
-      path: '/dragon-debug'
-      fullPath: '/dragon-debug'
-      preLoaderRoute: typeof DragonDebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -227,7 +207,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  DragonDebugRoute: DragonDebugRoute,
   LeaderboardRoute: LeaderboardRoute,
 }
 export const routeTree = rootRouteImport
