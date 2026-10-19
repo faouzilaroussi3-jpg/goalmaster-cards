@@ -14,8 +14,10 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedDefisRouteImport } from './routes/_authenticated/defis'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
@@ -47,6 +49,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAmisRoute = AuthenticatedAmisRouteImport.update({
+  id: '/amis',
+  path: '/amis',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
@@ -55,6 +62,11 @@ const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
 const AuthenticatedDefisRoute = AuthenticatedDefisRouteImport.update({
   id: '/defis',
   path: '/defis',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
@@ -94,8 +106,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/amis': typeof AuthenticatedAmisRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
@@ -108,8 +122,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/amis': typeof AuthenticatedAmisRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
@@ -124,8 +140,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/amis': typeof AuthenticatedAmisRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/defis': typeof AuthenticatedDefisRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
@@ -140,8 +158,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/leaderboard'
     | '/admin'
+    | '/amis'
     | '/collection'
     | '/defis'
+    | '/messages'
     | '/packs'
     | '/profile'
     | '/transferts'
@@ -154,8 +174,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/leaderboard'
     | '/admin'
+    | '/amis'
     | '/collection'
     | '/defis'
+    | '/messages'
     | '/packs'
     | '/profile'
     | '/transferts'
@@ -169,8 +191,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/leaderboard'
     | '/_authenticated/admin'
+    | '/_authenticated/amis'
     | '/_authenticated/collection'
     | '/_authenticated/defis'
+    | '/_authenticated/messages'
     | '/_authenticated/packs'
     | '/_authenticated/profile'
     | '/_authenticated/transferts'
@@ -224,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/amis': {
+      id: '/_authenticated/amis'
+      path: '/amis'
+      fullPath: '/amis'
+      preLoaderRoute: typeof AuthenticatedAmisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/collection': {
       id: '/_authenticated/collection'
       path: '/collection'
@@ -236,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/defis'
       fullPath: '/defis'
       preLoaderRoute: typeof AuthenticatedDefisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/packs': {
@@ -285,8 +323,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAmisRoute: typeof AuthenticatedAmisRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDefisRoute: typeof AuthenticatedDefisRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
@@ -296,8 +336,10 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAmisRoute: AuthenticatedAmisRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDefisRoute: AuthenticatedDefisRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
