@@ -112,6 +112,65 @@ export type Database = {
           },
         ]
       }
+      big_pulls: {
+        Row: {
+          card_id: string
+          club: string
+          id: string
+          image_url: string | null
+          name: string
+          nationality: string
+          opening_id: string | null
+          pack_key: string | null
+          pos: string
+          pulled_at: string
+          rarity: string
+          rating: number
+          user_id: string
+          version: string
+        }
+        Insert: {
+          card_id: string
+          club: string
+          id?: string
+          image_url?: string | null
+          name: string
+          nationality: string
+          opening_id?: string | null
+          pack_key?: string | null
+          pos: string
+          pulled_at?: string
+          rarity: string
+          rating: number
+          user_id: string
+          version?: string
+        }
+        Update: {
+          card_id?: string
+          club?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          nationality?: string
+          opening_id?: string | null
+          pack_key?: string | null
+          pos?: string
+          pulled_at?: string
+          rarity?: string
+          rating?: number
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "big_pulls_opening_id_fkey"
+            columns: ["opening_id"]
+            isOneToOne: false
+            referencedRelation: "pack_openings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cards: {
         Row: {
           active: boolean
@@ -808,6 +867,24 @@ export type Database = {
           start_price: number
           status: string
           tier: number
+          version: string
+        }[]
+      }
+      get_big_pulls: {
+        Args: { _limit?: number }
+        Returns: {
+          card_id: string
+          club: string
+          id: string
+          image_url: string
+          name: string
+          nationality: string
+          pack_key: string
+          pos: string
+          pulled_at: string
+          rarity: string
+          rating: number
+          username: string
           version: string
         }[]
       }
