@@ -82,6 +82,10 @@ function Dragon({ glow }: { glow: string }) {
     g.position.copy(pos);
     g.lookAt(ahead); // the model's +Z (its nose) follows the flight path
     g.rotateZ(BANK);
+    if (Math.floor(t * 2) !== Math.floor((t - state.clock.getDelta()) * 2) && Math.random() < 0.2) {
+      g.updateMatrixWorld(true);
+      g.traverse((n) => { const sm = n as THREE.SkinnedMesh; if (sm.isSkinnedMesh) { sm.computeBoundingBox(); const bb = sm.boundingBox!.clone().applyMatrix4(sm.matrixWorld); console.log('DRAGONDBG frame', g.position.toArray().map((v) => v.toFixed(2)).join(','), bb.getSize(new THREE.Vector3()).toArray().map((v) => v.toFixed(2)).join(','), sm.bindMode); } });
+    }
   });
 
   return (
