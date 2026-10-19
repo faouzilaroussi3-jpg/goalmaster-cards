@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { sfx } from "@/lib/sfx";
 
 export const Route = createFileRoute("/_authenticated/transferts")({
   head: () => ({
@@ -256,6 +257,7 @@ function BidDialog({ auction, onClose }: { auction: Auction | null; onClose: () 
       if (error) throw error;
     },
     onSuccess: () => {
+      sfx.gavel();
       toast.success(`Enchère de ${value} pièces placée !`);
       qc.invalidateQueries({ queryKey: ["auctions"] });
       qc.invalidateQueries({ queryKey: ["profile"] });

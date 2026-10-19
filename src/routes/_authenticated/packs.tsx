@@ -12,6 +12,7 @@ import { newlyClaimable, type Challenge } from "@/lib/challenges";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
 import { LivePulls } from "@/components/LivePulls";
+import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/packs")({
@@ -79,6 +80,7 @@ function PacksPage() {
   async function buy(key: string) {
     const { error } = await supabase.rpc("buy_pack", { _pack_key: key });
     if (error) { toast.error(error.message); return; }
+    sfx.coins(4);
     toast.success("Pack acheté !");
     qc.invalidateQueries({ queryKey: ["packs"] });
     qc.invalidateQueries({ queryKey: ["profile"] });
@@ -93,6 +95,7 @@ function PacksPage() {
     await qc.invalidateQueries();
     const fresh = newlyClaimable(before, qc.getQueryData<Challenge[]>(key) ?? []);
     if (fresh.length > 0) {
+      sfx.sparkle();
       const coins = fresh.reduce((s, c) => s + c.reward_coins, 0);
       toast.success(fresh.length > 1 ? `${fresh.length} défis accomplis !` : `Défi accompli : ${fresh[0]?.title ?? ""}`, {
         description: `${coins} pièces à récupérer`,

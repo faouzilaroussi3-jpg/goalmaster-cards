@@ -5,23 +5,40 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { CardBack } from "@/components/CardBack";
 import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { dragRotation, flipRotation, type Rotation } from "@/lib/card-viewer";
+import { sfx } from "@/lib/sfx";
 
 /** Enlarged card you can drag to rotate in 3D (front + Goalmaster back). */
 export function CardViewer({ card, missing, count, onClose }: { card: CardData | null; missing?: boolean | undefined; count?: number | undefined; onClose: () => void }) {
   const [rot, setRot] = useState<Rotation>({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ px: number; py: number; start: Rotation } | null>(null);
+  // Rotation sound: a swish each time the card has turned another ~35°, louder when spun fast.
+  const spin = useRef({ acc: 0, lastY: 0, lastT: 0 });
 
-  useEffect(() => setRot({ x: 0, y: 0 }), [card]);
+  useEffect(() => { setRot({ x: 0, y: 0 }); if (card) sfx.open(); }, [card]);
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     drag.current = { px: e.clientX, py: e.clientY, start: rot };
+    spin.current = { acc: 0, lastY: rot.y, lastT: performance.now() };
     setDragging(true);
   };
   const move = (e: PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
-    if (d) setRot(dragRotation(d.start, e.clientX - d.px, e.clientY - d.py));
+    if (!d) return;
+    const next = dragRotation(d.start, e.clientX - d.px, e.clientY - d.py);
+    const s = spin.current;
+    const now = performance.now();
+    const delta = Math.abs(next.y - s.lastY);
+    s.acc += delta;
+    if (s.acc > 35) {
+      const speed = delta / Math.max(8, now - s.lastT);
+      sfx.whoosh(0.3 + speed * 0.6);
+      s.acc = 0;
+    }
+    s.lastY = next.y;
+    s.lastT = now;
+    setRot(next);
   };
   const up = () => {
     drag.current = null;
@@ -70,10 +87,10 @@ export function CardViewer({ card, missing, count, onClose }: { card: CardData |
               </div>
               <p className="text-xs text-muted-foreground">Fais glisser la carte pour la faire pivoter</p>
               <div className="flex gap-2">
-                <button type="button" className={btn} onClick={() => setRot(flipRotation(rot))}>
+                <button type="button" data-sfx="none" className={btn} onClick={() => { sfx.cardFlip(); setRot(flipRotation(rot)); }}>
                   <Repeat2 className="h-4 w-4" /> Retourner
                 </button>
-                <button type="button" className={btn} onClick={() => setRot({ x: 0, y: 0 })}>
+                <button type="button" data-sfx="none" className={btn} onClick={() => { sfx.whoosh(0.5); setRot({ x: 0, y: 0 }); }}>
                   <RotateCcw className="h-4 w-4" /> Remettre de face
                 </button>
               </div>

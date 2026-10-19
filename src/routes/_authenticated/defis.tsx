@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMyChallenges } from "@/lib/auth";
 import { challengeState, claimableSummary, goalText, groupChallenges, progressRatio, type Challenge } from "@/lib/challenges";
 import { Button } from "@/components/ui/button";
+import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/defis")({
@@ -54,7 +55,7 @@ function ChallengesPage() {
       if (error) throw error;
       return data as number;
     },
-    onSuccess: (coins, c) => { toast.success(`Défi « ${c.title} » : +${coins} pièces`); refresh(); },
+    onSuccess: (coins, c) => { sfx.coins(6); toast.success(`Défi « ${c.title} » : +${coins} pièces`); refresh(); },
     onError: (e: Error) => { toast.error(e.message); refresh(); },
   });
 
@@ -64,7 +65,7 @@ function ChallengesPage() {
       if (error) throw error;
       return data as { claimed: number; coins: number };
     },
-    onSuccess: (r) => { toast.success(`${r.claimed} défi${r.claimed > 1 ? "s" : ""} récupéré${r.claimed > 1 ? "s" : ""} : +${r.coins} pièces`); refresh(); },
+    onSuccess: (r) => { sfx.coins(Math.min(14, 4 + r.claimed)); toast.success(`${r.claimed} défi${r.claimed > 1 ? "s" : ""} récupéré${r.claimed > 1 ? "s" : ""} : +${r.coins} pièces`); refresh(); },
     onError: (e: Error) => { toast.error(e.message); refresh(); },
   });
 

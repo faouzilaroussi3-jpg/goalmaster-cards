@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { AcceptDuelDialog } from "@/components/duel/AcceptDuelDialog";
 import { NewDuelDialog } from "@/components/duel/NewDuelDialog";
 import { cn } from "@/lib/utils";
+import { sfx } from "@/lib/sfx";
 
 export const Route = createFileRoute("/_authenticated/duels/$duelId")({
   head: () => ({
@@ -75,6 +76,17 @@ function DuelPage() {
     seen.current = d.rounds.length;
   }, [d]);
   useEffect(() => { setSelected(null); }, [d?.round]);
+  // Victory / defeat jingle when the duel ends while the page is open.
+  const lastStatus = useRef<string | null>(null);
+  useEffect(() => {
+    if (!d) return;
+    if (lastStatus.current === "active" && d.status === "finished") {
+      const me = d[d.side ?? "opponent"];
+      const delay = d.rounds.length ? 2600 : 0;
+      setTimeout(() => (d.winner_id === null ? sfx.roundDraw() : d.winner_id === me.id ? sfx.duelWin() : sfx.duelLose()), delay);
+    }
+    lastStatus.current = d.status;
+  }, [d]);
 
   const play = useMutation({
     mutationFn: async (slot: number) => {
@@ -82,7 +94,7 @@ function DuelPage() {
       if (error) throw error;
       return data as unknown as DuelView;
     },
-    onSuccess: (view) => { qc.setQueryData(["duel", duelId], view); qc.invalidateQueries({ queryKey: ["duels"] }); },
+    onSuccess: (view) => { sfx.playCard(); qc.setQueryData(["duel", duelId], view); qc.invalidateQueries({ queryKey: ["duels"] }); },
     onError: (e: Error) => { toast.error(e.message); qc.invalidateQueries({ queryKey: ["duel", duelId] }); },
   });
   const leave = useMutation({
@@ -218,7 +230,8 @@ function DuelPage() {
                   key={c.slot}
                   type="button"
                   disabled={!canPick}
-                  onClick={() => setSelected(c.slot === selected ? null : c.slot)}
+                  data-sfx="none"
+                  onClick={() => { sfx.select(); setSelected(c.slot === selected ? null : c.slot); }}
                   aria-pressed={selected === c.slot}
                   aria-label={`Choisir ${c.name}`}
                   className={cn("relative rounded-lg text-left transition",
@@ -256,7 +269,7 @@ function DuelPage() {
                   <Button size="sm" variant="ghost" onClick={() => setConfirmLeave(true)}><Flag className="h-4 w-4" /> Abandonner</Button>
                 )}
                 {!iPlayed && (
-                  <Button disabled={selected === null || play.isPending} onClick={() => selected !== null && play.mutate(selected)} className="bg-gold font-display text-lg text-primary-foreground shadow-gold">
+                  <Button data-sfx="none" disabled={selected === null || play.isPending} onClick={() => selected !== null && play.mutate(selected)} className="bg-gold font-display text-lg text-primary-foreground shadow-gold">
                     Jouer cette carte
                   </Button>
                 )}
@@ -334,6 +347,11 @@ function RevealOverlay({ r, mySide, onDone }: { r: RoundResult; mySide: Side; on
   const won = r.winner === mySide;
   const lost = r.winner !== null && !won;
   useEffect(() => { const t = setTimeout(onDone, 3800); return () => clearTimeout(t); }, [onDone]);
+  useEffect(() => {
+    sfx.cardFlip();
+    const t = setTimeout(() => (won ? sfx.roundWin() : lost ? sfx.roundLose() : sfx.roundDraw()), 600);
+    return () => clearTimeout(t);
+  }, [won, lost]);
   return (
     <button type="button" onClick={onDone} aria-label="Fermer la révélation" className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-background/90 p-4 backdrop-blur-sm animate-in fade-in duration-300">
       <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Manche {r.round} · {THEMES[r.theme].label}</p>

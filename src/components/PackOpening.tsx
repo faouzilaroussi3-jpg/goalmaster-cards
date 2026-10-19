@@ -7,6 +7,7 @@ import { CardBack } from "@/components/CardBack";
 import { RARITY_VAR } from "@/lib/card-reveal";
 import { revealTiming, type RareFx } from "@/lib/rare-reveal";
 import { RareRevealFx } from "@/components/RareRevealFx";
+import { sfx } from "@/lib/sfx";
 
 export interface OpenedCard {
   slot: number;
@@ -67,6 +68,7 @@ export function PackOpening({
   useEffect(() => {
     if (phase === "intro" && result) setPhase("reveal");
   }, [phase, result]);
+  useEffect(() => { if (phase === "reveal") sfx.stackAppear(); }, [phase]);
 
   function triggerFlash(c: OpenedCard) {
     setFlash(c.rarity);
@@ -84,22 +86,36 @@ export function PackOpening({
   /** One tap: the face-up card goes to the tray and the next card comes forward and turns over. */
   function revealNext() {
     if (busy || phase !== "reveal") return;
-    if (turned >= total) { setPhase("done"); return; }
+    if (turned >= total) { sfx.packSummary(result?.coins_gained ?? 0); setPhase("done"); return; }
     const next = cards[turned];
     if (!next) return;
     const timing = revealTiming(next);
     if (turned > 0) setLeaving(turned - 1);
     setTurned(turned + 1);
     setBusy(true);
-    if (timing.fx) playRare(timing.fx, turned + 1, timing.boom, timing.total);
-    else if (next.tier >= 4) later(() => triggerFlash(next), timing.boom);
+    if (turned > 0) sfx.cardSlide();
+    if (timing.fx) {
+      sfx.rareBuild(timing.fx, timing.charge);
+      later(() => sfx.cardFlip(), timing.charge);
+      later(() => sfx.rareBoom(timing.fx!), timing.boom);
+      playRare(timing.fx, turned + 1, timing.boom, timing.total);
+    } else {
+      if (next.tier >= 4) { sfx.charge(timing.charge, next.tier); later(() => triggerFlash(next), timing.boom); }
+      later(() => sfx.cardFlip(), timing.charge);
+      later(() => sfx.reveal(next.tier, next.is_new), timing.boom);
+    }
     later(() => setBusy(false), timing.lock);
   }
 
   function skip() {
     if (!result) return;
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
     setTurned(total);
     setRare(null);
+    setBusy(false);
+    sfx.whoosh(0.8);
+    sfx.packSummary(result.coins_gained);
     setPhase("done");
   }
 
@@ -148,6 +164,7 @@ export function PackOpening({
           <button
             type="button"
             ref={stackRef}
+            data-sfx="none"
             onClick={revealNext}
             aria-label={lastShown ? "Voir le résumé du pack" : "Révéler la carte suivante"}
             className={cn("reveal-stack relative aspect-[5/7] w-52 cursor-pointer rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-64", rare?.shake && "rare-shake")}
@@ -255,7 +272,7 @@ export function PackOpening({
       )}
 
       {result && phase !== "done" && (
-        <Button variant="secondary" onClick={skip} className="fixed bottom-4 right-4 z-30 px-4 py-2 text-xs font-bold uppercase text-muted-foreground">
+        <Button variant="secondary" data-sfx="none" onClick={skip} className="fixed bottom-4 right-4 z-30 px-4 py-2 text-xs font-bold uppercase text-muted-foreground">
           Passer
         </Button>
       )}
