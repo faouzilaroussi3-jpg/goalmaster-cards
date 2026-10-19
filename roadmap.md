@@ -10,3 +10,4 @@
 - [x] Choisir son pack et le glisser vers la gauche pour l'ouvrir
 - [x] Ouvrir en arrachant le haut du pack de gauche à droite
 - [x] Lueur qui sort de la déchirure pendant le glissement, puis animation 3D directe (sans pack ni « Préparation »)
+- [x] Pack Premium : remplacer la lueur rectangulaire par des flammes dorées animées

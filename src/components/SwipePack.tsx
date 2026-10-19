@@ -93,7 +93,7 @@ export function SwipePack({
   const ease = dragging ? "none" : "clip-path 420ms cubic-bezier(.2,1.2,.4,1), transform 420ms cubic-bezier(.2,1.2,.4,1)";
 
   return (
-    <div className="relative flex w-full flex-col items-center py-4">
+    <div className="relative flex w-full flex-col items-center pb-4 pt-12">
       <div className="swipe-glow pointer-events-none absolute inset-0" style={{ opacity: 0.25 + progress * 0.75 }} aria-hidden />
 
       <div
