@@ -18,7 +18,7 @@
 - Catalog edition data is curated in a browser-safe module and applied to existing card IDs; tests validate player-tier eligibility and distinct star-edition photographs without changing pack probabilities.
 - Tearing a pack goes straight from the light burst to the face-down reveal stack (no cinematic in between), so opening stays fast and lightweight.
 - Pack tear-to-open thresholds (left-to-right on the top strip) live in src/lib/pack-swipe.ts as pure functions with tests, so gesture tuning never touches the component or the server draw.
-- Pack results are revealed from a tap-to-flip stack (CardBack + src/lib/card-reveal.ts timings, bonus card last); reveal suspense is presentation only and never affects the server draw.
+- Pack results are revealed from a tap-to-flip stack (CardBack + src/lib/card-reveal.ts timings) in the order open_pack returns (least rare first, slot field); ALT/Shiny chances are per-pack data in pack_types.version_rates, bonus_rates is deprecated; reveal suspense is presentation only and never affects the server draw.
 - Bulk catalog expansions are recorded in src/data/*.json (Wikidata ID, licensed Commons photo pointer, credit fields) and inserted as card rows carrying photo_author/photo_license/photo_source, so credits come from the database instead of hand-written modules.
 - Secret Ultimate secrecy is enforced by the cards SELECT policy (owner or admin only) and by excluding the tier from public feeds/leaderboard UI, so the tier never leaks through client code.
 - ALT editions store their own art in cards.alt_image_url; open_pack/get_recent_drops resolve the image per version server-side, and PlayerCard falls back to the normal art only when no ALT art exists.
