@@ -15,9 +15,9 @@ const CAM_Z = 16;
 const FOV = (2 * Math.atan(VIEW_H / 2 / CAM_Z) * 180) / Math.PI;
 
 const LAP_S = 6.5;
-const RX = 3.9; // orbit half-width (card half-width is 2.5)
-const RZ = 3; // orbit depth in front of / behind the card
-const DRAGON_LEN = 3;
+const RX = 3.1; // orbit half-width (card half-width is 2.5)
+const RZ = 2.7; // orbit depth in front of / behind the card
+const DRAGON_LEN = 2.4;
 const BANK = -0.45; // roll into the (always left-handed) turn
 
 /** Point on the 3D orbit at time t: swoops low in front of the card and high behind it. */
@@ -54,7 +54,6 @@ function Dragon({ glow }: { glow: string }) {
     };
     const box = measure();
     const size = box.getSize(new THREE.Vector3());
-    console.log('DRAGONDBG size', size.toArray().join(','));
     o.scale.setScalar(DRAGON_LEN / (Math.max(size.x, size.z) || 1));
     const centered = measure().getCenter(new THREE.Vector3());
     o.position.sub(centered);
@@ -67,7 +66,7 @@ function Dragon({ glow }: { glow: string }) {
   useEffect(() => {
     const name = names.find((n) => /Fast_Flying/i.test(n)) ?? names.find((n) => /Fly/i.test(n)) ?? names[0];
     const action = name ? actions[name] : undefined;
-    if (!(window as unknown as { __noanim?: boolean }).__noanim) action?.reset().setEffectiveTimeScale(1.15).play();
+    action?.reset().setEffectiveTimeScale(1.15).play();
     return () => { action?.stop(); };
   }, [actions, names]);
 
@@ -82,10 +81,6 @@ function Dragon({ glow }: { glow: string }) {
     g.position.copy(pos);
     g.lookAt(ahead); // the model's +Z (its nose) follows the flight path
     g.rotateZ(BANK);
-    if (Math.random() < 0.01) {
-      g.updateMatrixWorld(true);
-      g.traverse((n) => { const sm = n as THREE.SkinnedMesh; if (sm.isSkinnedMesh) { sm.computeBoundingBox(); const bb = sm.boundingBox!.clone().applyMatrix4(sm.matrixWorld); console.log('DRAGONDBG frame', g.position.toArray().map((v) => v.toFixed(2)).join(','), bb.getSize(new THREE.Vector3()).toArray().map((v) => v.toFixed(2)).join(','), sm.bindMode); } });
-    }
   });
 
   return (
