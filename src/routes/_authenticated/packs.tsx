@@ -11,6 +11,7 @@ import { useAuth, useMyPacks, useProfile } from "@/lib/auth";
 import { newlyClaimable, type Challenge } from "@/lib/challenges";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
+import { LivePulls } from "@/components/LivePulls";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/packs")({
@@ -136,6 +137,7 @@ function PacksPage() {
           )}
         </div>
       )}
+      <LivePulls />
       {opening && <PackOpening packImage={IMG[opening.key] ?? packClassic} result={opening.result} onClose={close} />}
     </div>
   );
