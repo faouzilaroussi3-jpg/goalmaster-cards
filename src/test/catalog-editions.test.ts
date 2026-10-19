@@ -36,7 +36,7 @@ describe("Player edition eligibility", () => {
     }
   });
 
-  it("uses a dedicated illustration for every Secret Ultimate edition", () => {
+  it("uses a dedicated celebration photo for every Secret Ultimate edition", () => {
     const ultimates = CATALOG_EDITIONS.filter((c) => c.rarity === "secret_ultimate");
     expect(ultimates.map((c) => c.name)).toEqual(["Lionel Messi", "Cristiano Ronaldo", "Kylian Mbappé", "Erling Haaland"]);
     const otherArt = new Set<string>(CATALOG_EDITIONS.filter((c) => c.rarity !== "secret_ultimate").map((c) => c.image_url));
