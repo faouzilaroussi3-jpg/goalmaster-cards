@@ -11,4 +11,4 @@
 - [x] Ouvrir en arrachant le haut du pack de gauche à droite
 - [x] Lueur qui sort de la déchirure pendant le glissement, puis animation 3D directe (sans pack ni « Préparation »)
 - [x] Pack Premium : remplacer la lueur rectangulaire par des flammes dorées animées
-- [ ] 30 cartes Légendaires de clubs : photo du logo (normale) + photo du plus beau maillot (ALT)
+- [x] 30 cartes Légendaires de clubs : photo du logo (normale) + photo du plus beau maillot (ALT)
