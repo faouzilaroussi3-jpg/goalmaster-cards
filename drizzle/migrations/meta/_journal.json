@@ -57,6 +57,13 @@
       "when": 1792439634959,
       "tag": "0007_card_alt_photo_credits",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792441142479,
+      "tag": "0008_transfer_market_auctions",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      auction_bids: {
+        Row: {
+          amount: number
+          auction_id: string
+          bidder_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          amount: number
+          auction_id: string
+          bidder_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          amount?: number
+          auction_id?: string
+          bidder_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auctions: {
+        Row: {
+          bid_count: number
+          card_id: string
+          created_at: string
+          current_bid: number | null
+          current_bidder: string | null
+          ends_at: string
+          id: string
+          seller_id: string
+          seller_received: number | null
+          settled_at: string | null
+          start_price: number
+          status: string
+          user_card_id: string
+          version: string
+        }
+        Insert: {
+          bid_count?: number
+          card_id: string
+          created_at?: string
+          current_bid?: number | null
+          current_bidder?: string | null
+          ends_at: string
+          id?: string
+          seller_id: string
+          seller_received?: number | null
+          settled_at?: string | null
+          start_price: number
+          status?: string
+          user_card_id: string
+          version?: string
+        }
+        Update: {
+          bid_count?: number
+          card_id?: string
+          created_at?: string
+          current_bid?: number | null
+          current_bidder?: string | null
+          ends_at?: string
+          id?: string
+          seller_id?: string
+          seller_received?: number | null
+          settled_at?: string | null
+          start_price?: number
+          status?: string
+          user_card_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auctions_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auctions_user_card_id_fkey"
+            columns: ["user_card_id"]
+            isOneToOne: false
+            referencedRelation: "user_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cards: {
         Row: {
           active: boolean
@@ -372,6 +470,7 @@ export type Database = {
         Args: { _exclude?: string[]; _rarity: string }
         Returns: string
       }
+      _settle_auctions: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
       admin_card_stats: {
         Args: never
@@ -385,7 +484,46 @@ export type Database = {
         Args: { _from: string; _to: string }
         Returns: number
       }
+      auction_min_bid: {
+        Args: { _current: number; _start: number }
+        Returns: number
+      }
+      auction_payout: { Args: { _amount: number }; Returns: number }
       buy_pack: { Args: { _pack_key: string }; Returns: undefined }
+      cancel_auction: { Args: { _auction_id: string }; Returns: undefined }
+      create_auction: {
+        Args: { _hours: number; _start_price: number; _user_card_id: string }
+        Returns: string
+      }
+      get_auctions: {
+        Args: { _scope?: string }
+        Returns: {
+          auction_id: string
+          bid_count: number
+          bidder_name: string
+          card_id: string
+          club: string
+          created_at: string
+          current_bid: number
+          ends_at: string
+          i_bid: boolean
+          i_lead: boolean
+          image_url: string
+          is_mine: boolean
+          min_bid: number
+          name: string
+          nationality: string
+          pos: string
+          rarity: string
+          rating: number
+          seller_name: string
+          seller_received: number
+          start_price: number
+          status: string
+          tier: number
+          version: string
+        }[]
+      }
       get_leaderboard: {
         Args: { _limit?: number; _sort?: string }
         Returns: {
@@ -397,6 +535,12 @@ export type Database = {
           unique_cards: number
           user_id: string
           username: string
+        }[]
+      }
+      get_my_listed_copies: {
+        Args: never
+        Returns: {
+          user_card_id: string
         }[]
       }
       get_my_packs: {
@@ -435,6 +579,10 @@ export type Database = {
         Returns: boolean
       }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
+      place_bid: {
+        Args: { _amount: number; _auction_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
