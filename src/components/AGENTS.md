@@ -6,4 +6,4 @@
 - The collection's enlarged card view (CardViewer.tsx) reuses PlayerCard + CardBack on two 3D faces; drag/flip math lives in src/lib/card-viewer.ts with tests, so rotation tuning never touches card rendering.
 - Légendaire-or-better reveals play a full-screen canvas build-up/explosion (RareRevealFx.tsx) themed from the card-frame tokens; per-variant durations and the tap lock live in src/lib/rare-reveal.ts with tests, so the animation always plays out (Passer still skips) and never touches the server draw.
 - Duel UI lives in components/duel (TeamPicker, NewDuelDialog, AcceptDuelDialog) and the duels routes; powers/budget shown there come from src/lib/duel.ts, which mirrors the SQL rules, and AppHeader owns the single realtime subscription on duels.
-- LivePulls shows big_pulls (filled by a pack_openings trigger, Légendaire+ only, Secrète Ultime excluded) and owns its own realtime subscription on that table.
+- LivePulls shows big_pulls (filled by a pack_openings trigger, Légendaire+ only, Secrète Ultime and admin accounts excluded in both the trigger and get_big_pulls) and owns its own realtime subscription on that table.
