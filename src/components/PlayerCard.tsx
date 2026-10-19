@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
-import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
+import { useRarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragonShell, useNeonFilterId } from "@/components/RareCardFx";
 
@@ -15,7 +15,8 @@ export function PlayerCard({
   count?: number;
   className?: string;
 }) {
-  const r = rarityMeta(card.rarity);
+  // Admin-created rarities wear the visual effect (fx) and optional tint chosen for them.
+  const r = useRarityMeta(card.rarity);
   const version = card.version ?? "normal";
   // ALT cards carry their own illustration; fall back to the normal one (re-framed) when none exists yet.
   const image = version === "alt" ? (card.alt_image_url ?? card.image_url) : card.image_url;
@@ -24,11 +25,13 @@ export function PlayerCard({
   const neonId = useNeonFilterId();
   const shiny = version === "shiny";
   const Emblem = r.tier >= 5 ? Crown : r.tier >= 3 ? Star : Shield;
-  const ultimate = card.rarity === "secret_ultimate";
+  const ultimate = r.fx === "secret_ultimate";
   const body = (
     <div
       className={cn("fm-card select-none", missing && "is-missing", !ultimate && className)}
-      data-rarity={card.rarity}
+      data-rarity={r.fx}
+      data-rarity-key={card.rarity === r.fx ? undefined : card.rarity}
+      style={r.color ? ({ "--rc": r.color } as React.CSSProperties) : undefined}
       data-version={version}
       data-reused-art={reusedArt || undefined}
     >
@@ -68,7 +71,7 @@ export function PlayerCard({
       {r.tier >= 5 && <div className="card-border-glitter" aria-hidden="true" />}
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
-      {card.rarity === "secret_legendary" && version === "normal" && <DiamondOrbitFx />}
+      {r.fx === "secret_legendary" && version === "normal" && <DiamondOrbitFx />}
       {ultimate && <SecretUltimateFx />}
     </div>
   );

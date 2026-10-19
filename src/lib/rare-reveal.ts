@@ -3,6 +3,7 @@
  * Presentation only: the card was already drawn on the server.
  */
 import { chargeDelay, FLIP_MS } from "@/lib/card-reveal";
+import { rarityMeta } from "@/lib/rarity";
 
 export type RareFx = "legendary" | "alt" | "secret_legendary" | "shiny" | "secret_ultimate";
 
@@ -34,7 +35,8 @@ export function rareFx(rarity: string, version = "normal"): RareFx | null {
  * and how long taps are ignored (lock) so the animation always plays out in full.
  */
 export function revealTiming(card: { rarity: string; version: string; tier: number; is_bonus: boolean }) {
-  const fx = rareFx(card.rarity, card.version);
+  // Admin-created rarities get the big reveal of the effect they wear.
+  const fx = rareFx(rarityMeta(card.rarity).fx, card.version);
   if (!fx) {
     const charge = chargeDelay(card.tier, card.is_bonus, card.version);
     return { fx, charge, boom: charge + FLIP_MS * 0.4, lock: charge + FLIP_MS, total: 0 };
