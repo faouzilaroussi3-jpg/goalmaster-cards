@@ -260,6 +260,19 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       }
       pmx = mx; pmy = my; pHeading = heading;
       ctx.globalAlpha = 1;
+      // Feather the overlay's outer edges so flames and light drifting outwards fade out instead of being cut off square.
+      ctx.globalCompositeOperation = "destination-out";
+      const band = Math.min(0.045 * cw, w / 4, h / 4);
+      const fade = (x0: number, y0: number, x1: number, y1: number, rx: number, ry: number, rw: number, rh: number) => {
+        const g = ctx.createLinearGradient(x0, y0, x1, y1);
+        g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g; ctx.fillRect(rx, ry, rw, rh);
+      };
+      fade(0, 0, 0, band, 0, 0, w, band);
+      fade(0, h, 0, h - band, 0, h - band, w, band);
+      fade(0, 0, band, 0, 0, 0, band, h);
+      fade(w, 0, w - band, 0, w - band, 0, band, h);
+      ctx.globalCompositeOperation = "source-over";
     };
 
     if (still) {
