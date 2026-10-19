@@ -9,3 +9,4 @@
 - [x] Enlever les contours blancs bizarres visibles sur les deux packs.
 - [x] Choisir son pack et le glisser vers la gauche pour l'ouvrir
 - [x] Ouvrir en arrachant le haut du pack de gauche à droite
+- [x] Lueur qui sort de la déchirure pendant le glissement, puis animation 3D directe (sans pack ni « Préparation »)

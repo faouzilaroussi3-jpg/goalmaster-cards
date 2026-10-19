@@ -6,6 +6,8 @@ import { AnimationMixer, Box3, Vector3, Group, Mesh, Bone, MeshStandardMaterial 
 import modelAsset from "@/assets/models/goalmaster-athlete.glb.asset.json";
 import type { CinemaPalette } from "@/lib/cinematic-3d";
 
+export function preloadAthlete() { useGLTF.preload(modelAsset.url); }
+
 export function Athlete({ time, tier, palette, onReady }: { time: React.RefObject<number>; tier: number; palette: CinemaPalette; onReady: () => void }) {
   const source = useGLTF(modelAsset.url);
   const root = useRef<Group>(null);
