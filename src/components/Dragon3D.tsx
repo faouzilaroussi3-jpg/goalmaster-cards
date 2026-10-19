@@ -75,6 +75,7 @@ function Dragon({ glow }: { glow: string }) {
     g.position.copy(pos);
     g.lookAt(ahead); // the model's +Z (its nose) follows the flight path
     g.rotateZ(BANK);
+    (window as unknown as Record<string, unknown>).__dragonDbg = { p: g.position.toArray(), box: new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()).toArray(), s: model.children[0]?.scale.x };
   });
 
   return (
