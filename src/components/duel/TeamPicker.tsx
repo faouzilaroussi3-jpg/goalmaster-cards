@@ -52,7 +52,7 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
       const k = `${c.cards.id}:${c.version}`;
       if (!m.has(k)) m.set(k, { ...c.cards, card_id: c.cards.id, user_card_id: c.id, version: c.version });
     }
-    return [...m.values()].sort((a, b) => rarityMeta(b.rarity).tier - rarityMeta(a.rarity).tier || b.rating - a.rating);
+    return [...m.values()].sort((a, b) => rarityMeta(b.rarity).rank - rarityMeta(a.rarity).rank || b.rating - a.rating);
   }, [copies]);
 
   const [picked, setPicked] = useState<PickedCard[]>([]);

@@ -358,7 +358,7 @@ function SellDialog({ open, onClose, onListed }: { open: boolean; onClose: () =>
       if (!taken.has(c.id)) g.free.push(c.id);
       m.set(k, g);
     }
-    return [...m.values()].sort((a, b) => rarityMeta(b.card.rarity).tier - rarityMeta(a.card.rarity).tier || b.card.rating - a.card.rating);
+    return [...m.values()].sort((a, b) => rarityMeta(b.card.rarity).rank - rarityMeta(a.card.rarity).rank || b.card.rating - a.card.rating);
   }, [copies, listed]);
 
   const [q, setQ] = useState("");

@@ -68,7 +68,7 @@ function CollectionPage() {
     .filter((e) => !rarity || e.card.rarity === rarity)
     .filter((e) => !version || e.version === version)
     .sort((a, b) => {
-      const d = rarityMeta(a.card.rarity).tier - rarityMeta(b.card.rarity).tier || a.card.rating - b.card.rating;
+      const d = rarityMeta(a.card.rarity).rank - rarityMeta(b.card.rarity).rank || a.card.rating - b.card.rating;
       return sortDesc ? -d : d;
     });
 
