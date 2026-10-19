@@ -25,6 +25,10 @@ export type Database = {
           image_url: string | null
           name: string
           nationality: string
+          photo_author: string | null
+          photo_license: string | null
+          photo_license_url: string | null
+          photo_source: string | null
           pos: string
           rarity: string
           rating: number
@@ -40,6 +44,10 @@ export type Database = {
           image_url?: string | null
           name: string
           nationality: string
+          photo_author?: string | null
+          photo_license?: string | null
+          photo_license_url?: string | null
+          photo_source?: string | null
           pos: string
           rarity: string
           rating: number
@@ -55,6 +63,10 @@ export type Database = {
           image_url?: string | null
           name?: string
           nationality?: string
+          photo_author?: string | null
+          photo_license?: string | null
+          photo_license_url?: string | null
+          photo_source?: string | null
           pos?: string
           rarity?: string
           rating?: number
