@@ -308,3 +308,62 @@ function ReplaceDialog({ card, cards, stats, onClose, onDone }: { card: Card; ca
     </Dialog>
   );
 }
+
+function EffectList({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-1.5">
+      {items.map((t) => <li key={t} className="rounded-full bg-secondary px-2 py-0.5 text-foreground">{t}</li>)}
+    </ul>
+  );
+}
+
+/** Shrinks the picked photo in the browser, then stores it in the private card-photos bucket. */
+async function uploadCardPhoto(file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("Ce fichier n'est pas une image.");
+  const bitmap = await createImageBitmap(file);
+  const { width, height } = fitWithin(bitmap.width, bitmap.height);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/jpeg", 0.86));
+  if (!blob) throw new Error("Impossible de lire cette image.");
+  const name = `${crypto.randomUUID()}.jpg`;
+  const { error } = await supabase.storage.from(CARD_PHOTO_BUCKET).upload(name, blob, { contentType: "image/jpeg" });
+  if (error) throw error;
+  return cardPhotoUrl(name);
+}
+
+function PhotoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  async function pick(file?: File) {
+    if (!file) return;
+    setBusy(true);
+    try {
+      onChange(await uploadCardPhoto(file));
+      toast.success("Photo importée");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Import impossible");
+    } finally {
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
+    }
+  }
+  return (
+    <div className="text-xs text-muted-foreground sm:col-span-2">
+      <span>{label}</span>
+      <div className="mt-1 flex flex-wrap gap-2">
+        <button type="button" disabled={busy} onClick={() => ref.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-sm font-bold text-foreground disabled:opacity-60">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />} Photo depuis ce PC
+        </button>
+        <input ref={ref} type="file" accept="image/*" className="hidden" aria-label={`${label} : fichier`} onChange={(e) => pick(e.target.files?.[0])} />
+        <input className={`${inp} min-w-48 flex-1`} placeholder="ou colle un lien https://…/photo.jpg" aria-label={`${label} : lien`} value={value} onChange={(e) => onChange(e.target.value)} />
+        {value && (
+          <button type="button" onClick={() => onChange("")} className="rounded-lg p-2 hover:bg-secondary" aria-label="Retirer la photo" title="Retirer la photo"><X className="h-4 w-4" /></button>
+        )}
+      </div>
+    </div>
+  );
+}
