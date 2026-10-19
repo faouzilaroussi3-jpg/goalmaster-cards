@@ -286,18 +286,18 @@
 .su-back { z-index: -1; }
 .su-side.is-mirror { transform: scaleX(-1); }
 .su-part { position: absolute; max-width: none; height: auto; user-select: none; filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 6px color-mix(in oklab, var(--flame-outer) 55%, transparent)); }
-.su-head { width: 52%; left: 25%; top: -23%; transform-origin: 35% 95%; transition: filter .3s ease; }
-.su-wing { width: 46%; left: -22%; top: -12%; transform-origin: 93% 98%; }
-.su-tail { width: 30%; right: -9%; top: 86%; transform-origin: 40% 0; }
+.su-head { width: 44%; left: 28%; top: -15%; transform-origin: 35% 95%; transition: filter .3s ease; }
+.su-wing { width: 34%; left: -12%; top: -8%; transform-origin: 93% 98%; }
+.su-tail { width: 22%; right: -4%; top: 88%; transform-origin: 40% 0; }
 .su-claw { transform-origin: 70% 80%; filter: drop-shadow(1px 2px 1px var(--card-shadow)) drop-shadow(5px 8px 7px var(--card-shadow)); }
 /* Where the talons dig in: the card is pressed darker under each grip and lit red by the scales. */
 .su-grip { position: absolute; inset: 0; border-radius: 8px; overflow: hidden; pointer-events: none; }
 .su-grip::before { content: ""; position: absolute; inset: 0; background:
   radial-gradient(ellipse 14% 8% at 4% 43%, var(--card-shadow), transparent 70%),
   radial-gradient(ellipse 11% 6% at 3% 70%, var(--card-shadow), transparent 70%); }
-.su-claw-fore { width: 34%; left: -21%; top: 33%; rotate: -52deg; }
-.su-claw-hind { width: 25%; left: -15%; top: 63%; rotate: -38deg; }
-.su-breath { position: absolute; left: 20%; top: -48%; width: 135%; height: 108%; pointer-events: none; }
+.su-claw-fore { width: 27%; left: -12%; top: 35%; rotate: -52deg; }
+.su-claw-hind { width: 20%; left: -8%; top: 65%; rotate: -38deg; }
+.su-breath { position: absolute; left: 20%; top: -40%; width: 110%; height: 100%; pointer-events: none; }
 .su-breath-glow { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--su-metal-spec) 45%, transparent), color-mix(in oklab, var(--su-metal-bright) 50%, transparent) 30%, color-mix(in oklab, var(--su-metal) 30%, transparent) 58%, transparent 82%); }
 .su-shell.is-breathing > .fm-card { filter: brightness(1.05) saturate(1.08); }
 .su-shell.is-breathing .su-head { filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 10px var(--flame-mid)) brightness(1.15); }
