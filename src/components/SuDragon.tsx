@@ -2,7 +2,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { fireSprites, toRgb } from "@/components/CardFire";
 import { cn } from "@/lib/utils";
 import { BREATH_FIRE_MS, BREATH_TOTAL_MS, BREATH_WINDUP_MS, breathIntensity, nextBreathDelay } from "@/lib/dragon-breath";
-import { bodyRadius, headDistance, makeCrawl, perimeter, pointAt, type Rect } from "@/lib/dragon-path";
+import { bodyRadius, headDistance, makeCrawl, perimeter, smoothPointAt, smoothstep, type Rect } from "@/lib/dragon-path";
 import dragonHead from "@/assets/dragon/su-dragon-profile.webp";
 import dragonClaw from "@/assets/dragon/su-dragon-claw.webp";
 
@@ -12,6 +12,8 @@ const PAD_Y = 0.09;
 const NECK_R = 0.034; // neck radius, fraction of card width
 const BODY_LEN = 0.55; // share of the border the body covers
 const OUTSET = 0.004; // body centre line sits just outside the card edge
+const CORNER_R = 0.13; // path corner radius, fraction of card width (wider than the card's so the turn is gentle)
+const TURN_WIN = 0.07; // path blur half-window, fraction of card width: spreads each corner turn over a long curve
 // Head picture (side profile facing right, neck leaving the left edge): neck centre and mouth, as fractions of its box.
 const HEAD = { neckY: 0.54, neckH: 0.53, mouthX: 0.8, mouthY: 0.58, aspect: 2 };
 
@@ -100,6 +102,8 @@ export function SuDragonShell({ className, missing, children }: { className?: st
     const parts: Flame[] = [];
     let raf = 0, last = 0, running = false, acc = 0, embers = 0, t = 0;
     let breathAt = -1;
+    // Previous mouth position / heading, so particles born during a frame spread along the mouth's motion (no dotted jet).
+    let pmx = NaN, pmy = NaN, pHeading = 0, glowS = 0.12, headA = NaN;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const schedule = (ms: number) => { clearTimeout(timer); timer = setTimeout(breathe, ms); };
     const breathe = () => {
@@ -115,7 +119,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       if (!cw || !ch) return;
       const u = cw / 100;
       const o = OUTSET * cw;
-      const rect: Rect = { x: PAD_X * cw - o, y: PAD_Y * ch - o, w: cw + 2 * o, h: ch + 2 * o, r: 0.09 * cw };
+      const rect: Rect = { x: PAD_X * cw - o, y: PAD_Y * ch - o, w: cw + 2 * o, h: ch + 2 * o, r: CORNER_R * cw };
       const P = perimeter(rect);
       const L = BODY_LEN * P;
       const r0 = NECK_R * cw;
@@ -127,8 +131,9 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       ctx.clearRect(0, 0, w, h);
 
       // Position on the body: u = 0 at the neck, 1 at the tail; a soft slither keeps it alive without leaving the edge.
+      const win = TURN_WIN * cw;
       const at = (q: number) => {
-        const p = pointAt(rect, sHead - q * L);
+        const p = smoothPointAt(rect, sHead - q * L, win);
         const off = (0.9 * u) * Math.sin(q * 15 - time * 3.2 + crawl.wiggle) * (0.3 + q);
         return { x: p.x - p.ty * off, y: p.y + p.tx * off, a: Math.atan2(p.ty, p.tx) };
       };
@@ -168,10 +173,19 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       let lift = 0;
       if (ms >= 0) {
         const fireEnd = BREATH_WINDUP_MS + BREATH_FIRE_MS;
-        lift = ms < BREATH_WINDUP_MS ? -0.22 * (ms / BREATH_WINDUP_MS) : ms < fireEnd ? -0.22 + 0.14 * Math.min(1, (ms - BREATH_WINDUP_MS) / 150) : -0.08 * Math.max(0, 1 - (ms - fireEnd) / (BREATH_TOTAL_MS - fireEnd));
+        lift = ms < BREATH_WINDUP_MS ? -0.22 * smoothstep(ms / BREATH_WINDUP_MS)
+          : ms < fireEnd ? -0.22 + 0.14 * smoothstep((ms - BREATH_WINDUP_MS) / 220)
+          : -0.08 * (1 - smoothstep((ms - fireEnd) / (BREATH_TOTAL_MS - fireEnd)));
       }
       const hp = at(0);
-      const ha = hp.a + lift;
+      // The head follows the body's heading through a light low-pass, so it glides round corners instead of twitching.
+      const target = hp.a + lift;
+      if (Number.isNaN(headA) || dt <= 0) headA = target;
+      else {
+        const d = Math.atan2(Math.sin(target - headA), Math.cos(target - headA));
+        headA += d * (1 - Math.exp(-dt * 14));
+      }
+      const ha = headA;
       const Hh = (2 * r0) / HEAD.neckH, Hw = Hh * HEAD.aspect;
       if (head.complete && head.naturalWidth) {
         ctx.save(); ctx.translate(hp.x, hp.y); ctx.rotate(ha);
@@ -184,20 +198,35 @@ export function SuDragonShell({ className, missing, children }: { className?: st
 
       ctx.globalCompositeOperation = "lighter";
       // Flame light washing over the card around the mouth while it breathes, a faint smoulder otherwise.
-      const glow = ms < 0 ? 0.12 : ms < BREATH_WINDUP_MS ? 0.12 + 0.4 * (ms / BREATH_WINDUP_MS) : Math.max(0.12, 0.6 * k);
+      const glowT = ms < 0 ? 0.12 : ms < BREATH_WINDUP_MS ? 0.12 + 0.4 * smoothstep(ms / BREATH_WINDUP_MS) : Math.max(0.12, 0.6 * k);
+      glowS = dt > 0 ? glowS + (glowT - glowS) * (1 - Math.exp(-dt * 9)) : glowT;
+      const glow = glowS;
       ctx.globalAlpha = glow * 0.6;
-      const gr = (14 + 26 * glow) * u;
-      ctx.drawImage(fire[Math.floor(top * 0.55)]!, mx - gr, my - gr, gr * 2, gr * 2);
+      // Centred a little onto the card and kept clear of the overlay's edges, so the light never shows a clipped box.
+      const nx = -Math.sin(ha), ny = Math.cos(ha);
+      const gx = mx + nx * 6 * u, gy = my + ny * 6 * u;
+      const gr = Math.max(0, Math.min((14 + 26 * glow) * u, gx, gy, w - gx, h - gy));
+      if (gr > 1) ctx.drawImage(fire[Math.floor(top * 0.55)]!, gx - gr, gy - gr, gr * 2, gr * 2);
 
+      const heading = ha + 0.1; // along the edge, leaning onto the card so the jet stays inside the overlay and lights the frame
+      if (Number.isNaN(pmx)) { pmx = mx; pmy = my; pHeading = heading; }
       if (dt > 0) {
-        const heading = ha - 0.18; // along the edge, slightly away from the card
-        acc += dt * k * Math.max(320, cw * 4);
-        while (acc > 1) {
+        // Head velocity: the jet is carried a little by the moving head.
+        const hvx = (mx - pmx) / dt, hvy = (my - pmy) / dt;
+        const dh = Math.atan2(Math.sin(heading - pHeading), Math.cos(heading - pHeading));
+        acc += dt * k * Math.max(420, cw * 5);
+        while (acc > 1 && parts.length < 700) {
           acc -= 1;
-          const a = heading + (Math.random() - 0.5) * 0.32;
-          const sp = (65 + Math.random() * 35) * u;
-          parts.push({ x: mx, y: my, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, life: 0.45 + Math.random() * 0.3, size: (2 + Math.random() * 1.5) * u, grow: (8 + Math.random() * 8) * u, ember: false, seed: Math.random() * 1000 });
+          // Born at a random instant inside this frame: start on the mouth's path and already advanced by the time left.
+          const f = Math.random();
+          const a = pHeading + dh * f + (Math.random() - 0.5) * 0.3;
+          const sp = (75 + Math.random() * 30) * u;
+          const vx = Math.cos(a) * sp + hvx * 0.35, vy = Math.sin(a) * sp + hvy * 0.35;
+          // The update loop below advances every particle by dt, so start it dt earlier than its true age.
+          const lead = (1 - f) * dt - dt;
+          parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.25, size: (1.6 + Math.random() * 1) * u, grow: (5 + Math.random() * 4.5) * u, ember: false, seed: Math.random() * 1000 });
         }
+        if (acc > 1) acc = 0;
         embers += dt * (2 + k * 24);
         while (embers > 1) {
           embers -= 1;
@@ -216,19 +245,34 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           ctx.drawImage(fire[Math.floor((0.3 + q * 0.4) * top)]!, p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
           continue;
         }
-        const drag = 1 - Math.min(1, 1.2 * dt);
+        const drag = Math.exp(-1.6 * dt);
         p.vx *= drag; p.vy *= drag;
         p.vy -= 18 * u * dt;
-        p.x += (p.vx + Math.sin(p.seed + time * 13) * 8 * u * q) * dt;
-        p.y += (p.vy + Math.cos(p.seed + time * 11) * 6 * u * q) * dt;
+        // Gentle per-particle turbulence (own phase and slower rate) so the jet billows instead of jittering.
+        p.x += (p.vx + Math.sin(p.seed + time * 6 + q * 4) * 7 * u * q) * dt;
+        p.y += (p.vy + Math.cos(p.seed * 1.7 + time * 5 + q * 3) * 5 * u * q) * dt;
         const size = p.size + (p.grow - p.size) * Math.sqrt(q);
-        const stretch = Math.min(2.2, 1 + Math.hypot(p.vx, p.vy) / (50 * u));
-        ctx.globalAlpha = (q < 0.1 ? q / 0.1 : Math.pow(1 - q, 0.8)) * 0.3;
+        const stretch = Math.min(2.8, 1 + Math.hypot(p.vx, p.vy) / (40 * u));
+        ctx.globalAlpha = (q < 0.12 ? smoothstep(q / 0.12) : Math.pow(1 - q, 1.1)) * 0.15;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
-        ctx.drawImage(fire[Math.min(top, Math.floor((0.2 + 0.8 * Math.pow(q, 1.2)) * fire.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
+        ctx.drawImage(fire[Math.min(top, Math.floor((0.12 + 0.88 * Math.pow(q, 0.85)) * fire.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
         ctx.restore();
       }
+      pmx = mx; pmy = my; pHeading = heading;
       ctx.globalAlpha = 1;
+      // Feather the overlay's outer edges so flames and light drifting outwards fade out instead of being cut off square.
+      ctx.globalCompositeOperation = "destination-out";
+      const band = Math.min(0.045 * cw, w / 4, h / 4);
+      const fade = (x0: number, y0: number, x1: number, y1: number, rx: number, ry: number, rw: number, rh: number) => {
+        const g = ctx.createLinearGradient(x0, y0, x1, y1);
+        g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g; ctx.fillRect(rx, ry, rw, rh);
+      };
+      fade(0, 0, 0, band, 0, 0, w, band);
+      fade(0, h, 0, h - band, 0, h - band, w, band);
+      fade(0, 0, band, 0, 0, 0, band, h);
+      fade(w, 0, w - band, 0, w - band, 0, band, h);
+      ctx.globalCompositeOperation = "source-over";
     };
 
     if (still) {
@@ -250,7 +294,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
     };
     const stop = () => {
       running = false; cancelAnimationFrame(raf); clearTimeout(timer);
-      el.classList.remove("is-breathing"); breathAt = -1; parts.length = 0;
+      el.classList.remove("is-breathing"); breathAt = -1; parts.length = 0; pmx = NaN; headA = NaN;
     };
     const io = new IntersectionObserver(([e]) => (e?.isIntersecting ? start() : stop()), { rootMargin: "100px" });
     io.observe(el);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bodyRadius, headDistance, makeCrawl, perimeter, pointAt, type Rect } from "@/lib/dragon-path";
+import { bodyRadius, headDistance, makeCrawl, perimeter, pointAt, smoothPointAt, type Rect } from "@/lib/dragon-path";
 
 const rect: Rect = { x: 10, y: 20, w: 100, h: 140, r: 10 };
 
@@ -43,5 +43,23 @@ describe("SU dragon path round the card", () => {
     const P = perimeter(rect);
     expect(Math.abs(headDistance(a, P, 5) - headDistance(b, P, 5))).toBeGreaterThan(10);
     expect(a.lap).not.toBe(b.lap);
+  });
+
+  it("eases into each corner: the turning rate builds up gradually instead of switching on at once", () => {
+    const P = perimeter(rect);
+    const step = P / 400;
+    // Largest change in turning rate between consecutive steps (a jolt where a straight edge meets a corner arc).
+    const jolt = (f: (d: number) => { tx: number; ty: number }) => {
+      let worst = 0, prev = 0;
+      for (let i = 0; i <= 400; i++) {
+        const a = f(i * step), b = f((i + 1) * step);
+        const turn = Math.atan2(a.tx * b.ty - a.ty * b.tx, a.tx * b.tx + a.ty * b.ty);
+        if (i > 0) worst = Math.max(worst, Math.abs(turn - prev));
+        prev = turn;
+      }
+      return worst;
+    };
+    expect(jolt((d) => smoothPointAt(rect, d, 12))).toBeLessThan(jolt((d) => pointAt(rect, d)) * 0.3);
+    for (let d = 0; d < P; d += P / 60) expect(Math.hypot(smoothPointAt(rect, d, 12).tx, smoothPointAt(rect, d, 12).ty)).toBeCloseTo(1, 9);
   });
 });

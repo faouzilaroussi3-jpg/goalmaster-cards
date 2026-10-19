@@ -54,3 +54,28 @@ export function makeCrawl(rand: () => number = Math.random): Crawl {
 export function headDistance(c: Crawl, P: number, t: number): number {
   return ((c.phase + t / c.lap) % 1) * P;
 }
+
+/**
+ * Point and unit tangent of the border path box-blurred over ±win: the position is the mean of `samples` points and
+ * the tangent is the chord from s-win to s+win, so the dragon turns round the corners in a long smooth curve
+ * instead of snapping its heading where the straight edges meet the corner arcs.
+ */
+export function smoothPointAt(rect: Rect, s: number, win: number, samples = 7): PathPoint {
+  if (win <= 0) return pointAt(rect, s);
+  let x = 0, y = 0;
+  for (let i = 0; i < samples; i++) {
+    const p = pointAt(rect, s - win + (2 * win * i) / (samples - 1));
+    x += p.x; y += p.y;
+  }
+  const a = pointAt(rect, s - win), b = pointAt(rect, s + win);
+  let tx = b.x - a.x, ty = b.y - a.y;
+  const n = Math.hypot(tx, ty) || 1;
+  tx /= n; ty /= n;
+  return { x: x / samples, y: y / samples, tx, ty };
+}
+
+/** Smooth 0→1 ease (zero slope at both ends) used for the head's rear-and-lunge motion. */
+export function smoothstep(t: number): number {
+  const k = Math.min(1, Math.max(0, t));
+  return k * k * (3 - 2 * k);
+}
