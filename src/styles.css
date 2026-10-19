@@ -296,9 +296,14 @@
 /* Swipe-to-open stage on the packs page. */
 .swipe-glow { background: radial-gradient(ellipse at 30% 50%, color-mix(in oklab, var(--primary) 30%, transparent), transparent 65%); transition: opacity 150ms linear; }
 .swipe-hint { animation: swipe-nudge 1.4s ease-in-out infinite; }
-@keyframes swipe-nudge { 0%,100% { transform: translateX(0); opacity: .6; } 50% { transform: translateX(-8px); opacity: 1; } }
+@keyframes swipe-nudge { 0%,100% { transform: translateX(0); opacity: .6; } 50% { transform: translateX(8px); opacity: 1; } }
+.tear-line { height: 0; border-top: 2px dashed color-mix(in oklab, var(--primary) 70%, transparent); filter: drop-shadow(0 0 4px var(--primary)); }
+.tear-line-done { position: absolute; left: 0; top: -2px; height: 2px; background: var(--primary-glow); box-shadow: 0 0 10px 2px var(--primary); }
+.tear-handle { position: absolute; top: -1px; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 9999px; background: var(--primary); border: 2px solid var(--card-light); box-shadow: 0 0 16px 4px var(--primary); }
+.tear-handle-idle { animation: tear-handle-slide 1.8s ease-in-out infinite; }
+@keyframes tear-handle-slide { 0% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(60px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .swipe-hint { animation: none !important; }
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .swipe-hint, .tear-handle-idle { animation: none !important; }
   .cinema-player-travel { transform: translate(440px,385px); }
   .cinema-ball-travel { transform: translate(540px,450px); }
   .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }

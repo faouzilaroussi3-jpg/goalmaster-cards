@@ -8,3 +8,4 @@
 - [x] Retirer toute écriture des visuels de packs.
 - [x] Enlever les contours blancs bizarres visibles sur les deux packs.
 - [x] Choisir son pack et le glisser vers la gauche pour l'ouvrir
+- [x] Ouvrir en arrachant le haut du pack de gauche à droite

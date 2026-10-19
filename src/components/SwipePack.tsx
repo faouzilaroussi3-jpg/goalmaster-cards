@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { ChevronsLeft } from "lucide-react";
+import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { dragOffset, shouldOpen, swipeProgress } from "@/lib/pack-swipe";
+import { shouldTear, tearProgress } from "@/lib/pack-swipe";
 
-/** Large pack that the player drags to the left to open. */
+/** Height of the tear line, as a percentage of the pack image. */
+const TEAR_Y = 10;
+
+/** Jagged tear edge from x=from% to x=to% around the tear line. */
+function zigzag(from: number, to: number): string[] {
+  const pts: string[] = [];
+  const step = 3;
+  const dir = to >= from ? 1 : -1;
+  for (let x = from, i = 0; dir > 0 ? x < to : x > to; x += step * dir, i++) {
+    pts.push(`${x}% ${TEAR_Y + (i % 2 ? 0.9 : -0.9)}%`);
+  }
+  pts.push(`${to}% ${TEAR_Y}%`);
+  return pts;
+}
+
+/** Large pack whose top strip the player tears off from left to right to open it. */
 export function SwipePack({
   image,
   name,
@@ -17,37 +32,34 @@ export function SwipePack({
   disabled: boolean;
   onOpen: () => void;
 }) {
-  const stageRef = useRef<HTMLDivElement>(null);
-  const start = useRef<{ x: number; t: number; lastX: number; lastT: number } | null>(null);
-  const [dx, setDx] = useState(0);
+  const packRef = useRef<HTMLDivElement>(null);
+  const start = useRef<{ x: number; lastX: number; lastT: number } | null>(null);
+  const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+  const [torn, setTorn] = useState(false);
 
-  // A new pack selection resets the stage.
   useEffect(() => {
-    setDx(0);
-    setLeaving(false);
+    setProgress(0);
+    setTorn(false);
   }, [image]);
 
-  const width = stageRef.current?.clientWidth ?? 400;
-  const progress = swipeProgress(dx, width);
+  const width = () => packRef.current?.clientWidth ?? 200;
 
-  function launch() {
-    if (disabled || leaving) return;
-    setLeaving(true);
-    setDx(-(window.innerWidth + width));
+  function finish() {
+    if (disabled || torn) return;
+    setProgress(1);
+    setTorn(true);
     window.setTimeout(() => {
       onOpen();
-      setLeaving(false);
-      setDx(0);
-    }, 380);
+      setTorn(false);
+      setProgress(0);
+    }, 650);
   }
 
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
-    if (disabled || leaving) return;
+    if (disabled || torn) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    const now = performance.now();
-    start.current = { x: e.clientX, t: now, lastX: e.clientX, lastT: now };
+    start.current = { x: e.clientX, lastX: e.clientX, lastT: performance.now() };
     setDragging(true);
   }
 
@@ -55,9 +67,8 @@ export function SwipePack({
     const s = start.current;
     if (!s) return;
     const now = performance.now();
-    // Keep a short window for velocity so a slow drag ending in a flick still counts.
     if (now - s.lastT > 60) { s.lastX = e.clientX; s.lastT = now; }
-    setDx(dragOffset(e.clientX - s.x));
+    setProgress(tearProgress(e.clientX - s.x, width()));
   }
 
   function onPointerUp(e: PointerEvent<HTMLDivElement>) {
@@ -66,51 +77,36 @@ export function SwipePack({
     start.current = null;
     setDragging(false);
     const now = performance.now();
-    const raw = e.clientX - s.x;
     const velocity = (e.clientX - s.lastX) / Math.max(1, now - s.lastT);
-    if (shouldOpen(raw, velocity, width)) launch();
-    else setDx(0);
+    if (shouldTear(e.clientX - s.x, velocity, width())) finish();
+    else setProgress(0);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
-    if (e.key === "ArrowLeft" || e.key === "Enter" || e.key === " ") {
+    if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      launch();
+      finish();
     }
   }
 
-  const rotate = dx * 0.04;
-  const lift = Math.min(1, Math.abs(dx) / 200);
+  const P = Math.round(progress * 1000) / 10;
+  const edge = zigzag(0, P);
+  const bodyClip = `polygon(${P}% 0, 100% 0, 100% 100%, 0 100%, 0 ${TEAR_Y}%, ${edge.join(", ")})`;
+  const flapClip = `polygon(0 0, ${P}% 0, ${[...edge].reverse().join(", ")}, 0 ${TEAR_Y}%)`;
+  const ease = dragging ? "none" : "clip-path 420ms cubic-bezier(.2,1.2,.4,1), transform 420ms cubic-bezier(.2,1.2,.4,1)";
 
   return (
-    <div ref={stageRef} className="swipe-stage relative flex w-full flex-col items-center overflow-hidden py-4">
+    <div className="relative flex w-full flex-col items-center overflow-hidden py-4">
+      <div className="swipe-glow pointer-events-none absolute inset-0" style={{ opacity: 0.25 + progress * 0.75 }} aria-hidden />
+
       <div
-        className="swipe-glow pointer-events-none absolute inset-0"
-        style={{ opacity: 0.25 + progress * 0.75 }}
-        aria-hidden
-      />
-      <div
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled}
-        aria-label={`${name} : glisser vers la gauche pour ouvrir`}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onKeyDown={onKeyDown}
+        ref={packRef}
         className={cn(
-          "swipe-pack relative z-10 select-none outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl",
-          disabled ? "cursor-not-allowed opacity-40" : dragging ? "cursor-grabbing" : "cursor-grab",
+          "relative z-10 w-44 select-none sm:w-56",
+          !dragging && !torn && progress === 0 && !disabled && "anim-float",
+          torn && "anim-shake",
+          disabled && "opacity-40",
         )}
-        style={{
-          transform: `translate3d(${dx}px, ${-lift * 14}px, 0) rotate(${rotate}deg) scale(${1 + lift * 0.05})`,
-          transition: dragging ? "none" : leaving
-            ? "transform 380ms cubic-bezier(.5,0,.9,.4), opacity 380ms ease-in"
-            : "transform 520ms cubic-bezier(.2,1.5,.4,1)",
-          opacity: leaving ? 0 : 1,
-          touchAction: "pan-y",
-        }}
       >
         <img
           src={image}
@@ -118,18 +114,58 @@ export function SwipePack({
           draggable={false}
           width={768}
           height={1152}
-          className={cn(
-            "pointer-events-none w-44 sm:w-56",
-            !dragging && !leaving && !disabled && "anim-float",
-            premium && "drop-shadow-[0_0_26px_var(--primary)]",
-          )}
+          className={cn("pointer-events-none block w-full", premium && "drop-shadow-[0_0_26px_var(--primary)]")}
+          style={{ clipPath: bodyClip, transition: ease }}
         />
+        {/* The torn strip peels up from its tear point, then flies away. */}
+        <img
+          src={image}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="pointer-events-none absolute inset-0 block w-full"
+          style={{
+            clipPath: flapClip,
+            transformOrigin: `${P}% ${TEAR_Y}%`,
+            transform: torn
+              ? "translate(45%, -70%) rotate(-35deg)"
+              : `translateY(${-progress * 8}px) rotate(${-progress * 14}deg)`,
+            opacity: torn ? 0 : 1,
+            transition: torn ? "transform 600ms cubic-bezier(.3,.6,.4,1), opacity 600ms ease-in" : ease,
+          }}
+        />
+
+        {!disabled && !torn && (
+          <>
+            <div className="tear-line pointer-events-none absolute left-[6%] right-[6%]" style={{ top: `${TEAR_Y}%` }} aria-hidden>
+              <div className="tear-line-done" style={{ width: `${progress * 100}%` }} />
+              <div
+                className={cn("tear-handle", progress === 0 && "tear-handle-idle")}
+                style={{ left: `${progress * 100}%` }}
+              />
+            </div>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label={`${name} : glisser de gauche à droite sur la ligne du haut pour arracher et ouvrir`}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              onKeyDown={onKeyDown}
+              className={cn(
+                "tear-zone absolute inset-x-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                dragging ? "cursor-grabbing" : "cursor-grab",
+              )}
+              style={{ top: `${TEAR_Y - 8}%`, height: "16%", touchAction: "none" }}
+            />
+          </>
+        )}
       </div>
-      <p
-        className={cn("relative z-10 mt-4 flex items-center gap-1 font-display text-lg tracking-widest", disabled ? "text-muted-foreground" : "text-primary")}
-      >
-        {!disabled && <ChevronsLeft className="swipe-hint h-5 w-5" aria-hidden />}
-        {disabled ? "Aucun pack disponible" : "Glisse vers la gauche pour ouvrir"}
+
+      <p className={cn("relative z-10 mt-4 flex items-center gap-1 font-display text-lg tracking-widest", disabled ? "text-muted-foreground" : "text-primary")}>
+        {disabled ? "Aucun pack disponible" : "Glisse sur la ligne de gauche à droite pour arracher"}
+        {!disabled && <ChevronsRight className="swipe-hint h-5 w-5" aria-hidden />}
       </p>
     </div>
   );

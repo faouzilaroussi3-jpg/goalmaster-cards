@@ -86,7 +86,7 @@ function PacksPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-5xl text-gold">Mes packs</h1>
-      <p className="text-muted-foreground">Choisis un pack, puis fais-le glisser vers la gauche pour l'ouvrir.</p>
+      <p className="text-muted-foreground">Choisis un pack, puis arrache le haut en glissant de gauche à droite.</p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Choix du pack">
         {packs?.map((p) => (
