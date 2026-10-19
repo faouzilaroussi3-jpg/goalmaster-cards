@@ -246,20 +246,13 @@
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
 @keyframes su-heat { from { box-shadow: 0 0 28px 0 color-mix(in oklab, var(--flame-outer) 70%, transparent), 0 0 60px -12px var(--flame-mid); } to { box-shadow: 0 0 46px 4px color-mix(in oklab, var(--flame-outer) 85%, transparent), 0 0 90px -8px var(--flame-mid); } }
 @keyframes ember-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-60%); opacity: 0; } }
+/* 3D dragon overlay: overflows the card by DRAGON_PAD_X (40%) / DRAGON_PAD_Y (20%) on each side (src/lib/dragon-orbit.ts). */
+.su-shell { position: relative; transition: transform 0.25s ease; }
+.su-shell:hover { transform: translateY(-4px); }
+.su-shell .fm-card:hover { transform: none; }
+.su-dragon3d { position: absolute; left: -40%; right: -40%; top: -20%; bottom: -20%; z-index: 10; pointer-events: none; }
+.su-shell.is-missing .su-dragon3d { filter: grayscale(1) brightness(0.5); }
 .su-fire { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; box-shadow: inset 0 -10px 16px -4px var(--flame-outer), inset 8px 0 14px -6px var(--flame-outer), inset -8px 0 14px -6px var(--flame-outer); }
-.su-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }
-.su-stop-core { stop-color: var(--flame-core); }
-.su-stop-mid { stop-color: var(--flame-mid); }
-.su-stop-outer { stop-color: var(--flame-outer); }
-.su-stop-dark { stop-color: var(--flame-dark); }
-.su-dragon { filter: drop-shadow(0 0 1.2px var(--flame-mid)) drop-shadow(0 0 3px var(--flame-outer)); }
-.su-dragon-scale { stroke: var(--flame-core); stroke-width: .25; }
-.su-dragon-spike, .su-dragon-tail, .su-dragon-mane { fill: var(--flame-mid); }
-.su-dragon-horn, .su-dragon-claw, .su-dragon-whisker { fill: none; stroke: var(--flame-core); stroke-width: .5; stroke-linecap: round; }
-.su-dragon-whisker { stroke-width: .3; }
-.su-dragon-belly { fill: none; stroke: var(--flame-core); stroke-width: .35; opacity: .8; }
-.su-dragon-mouth { stroke: var(--flame-dark); stroke-width: .45; }
-.su-dragon-eye { fill: var(--flame-core); }
 /* Secrète Légendaire: orbiting diamond */
 .sl-orbit-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }
 .sl-stop-light { stop-color: var(--card-light); }

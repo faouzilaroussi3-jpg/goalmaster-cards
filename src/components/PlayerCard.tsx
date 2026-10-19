@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
 import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
-import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, useNeonFilterId } from "@/components/RareCardFx";
+import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragon3D, useNeonFilterId } from "@/components/RareCardFx";
 
 export function PlayerCard({
   card,
@@ -24,9 +24,10 @@ export function PlayerCard({
   const neonId = useNeonFilterId();
   const shiny = version === "shiny";
   const Emblem = r.tier >= 5 ? Crown : r.tier >= 3 ? Star : Shield;
-  return (
+  const ultimate = card.rarity === "secret_ultimate";
+  const body = (
     <div
-      className={cn("fm-card select-none", missing && "is-missing", className)}
+      className={cn("fm-card select-none", missing && "is-missing", !ultimate && className)}
       data-rarity={card.rarity}
       data-version={version}
       data-reused-art={reusedArt || undefined}
@@ -68,7 +69,15 @@ export function PlayerCard({
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
       {card.rarity === "secret_legendary" && version === "normal" && <DiamondOrbitFx />}
-      {card.rarity === "secret_ultimate" && <SecretUltimateFx />}
+      {ultimate && <SecretUltimateFx />}
+    </div>
+  );
+  if (!ultimate) return body;
+  // The 3D dragon flies outside the card's clipped frame, so Secret Ultimate cards get an unclipped shell.
+  return (
+    <div className={cn("su-shell", missing && "is-missing", className)}>
+      {body}
+      <SuDragon3D />
     </div>
   );
 }
