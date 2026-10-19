@@ -71,6 +71,13 @@
       "when": 1792441174995,
       "tag": "0009_settle_auctions_on_pack_poll",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792441668692,
+      "tag": "0010_pack_challenges",
+      "breakpoints": true
     }
   ]
 }
