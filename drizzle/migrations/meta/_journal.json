@@ -50,6 +50,13 @@
       "when": 1792433637193,
       "tag": "0006_card_photos_admin_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792439634959,
+      "tag": "0007_card_alt_photo_credits",
+      "breakpoints": true
     }
   ]
 }

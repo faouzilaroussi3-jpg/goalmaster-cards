@@ -18,6 +18,10 @@ export type Database = {
         Row: {
           active: boolean
           alt_image_url: string | null
+          alt_photo_author: string | null
+          alt_photo_license: string | null
+          alt_photo_license_url: string | null
+          alt_photo_source: string | null
           club: string
           created_at: string
           has_alt: boolean
@@ -38,6 +42,10 @@ export type Database = {
         Insert: {
           active?: boolean
           alt_image_url?: string | null
+          alt_photo_author?: string | null
+          alt_photo_license?: string | null
+          alt_photo_license_url?: string | null
+          alt_photo_source?: string | null
           club: string
           created_at?: string
           has_alt?: boolean
@@ -58,6 +66,10 @@ export type Database = {
         Update: {
           active?: boolean
           alt_image_url?: string | null
+          alt_photo_author?: string | null
+          alt_photo_license?: string | null
+          alt_photo_license_url?: string | null
+          alt_photo_source?: string | null
           club?: string
           created_at?: string
           has_alt?: boolean
