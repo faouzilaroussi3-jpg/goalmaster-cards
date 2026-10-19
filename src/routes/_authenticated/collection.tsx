@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PhotoCredits } from "@/components/PhotoCredits";
+import { CardViewer } from "@/components/CardViewer";
 
 export const Route = createFileRoute("/_authenticated/collection")({
   head: () => ({
@@ -40,6 +41,7 @@ function CollectionPage() {
   const [rarity, setRarity] = useState("");
   const [version, setVersion] = useState("");
   const [sortDesc, setSortDesc] = useState(true);
+  const [viewing, setViewing] = useState<{ card: (typeof catalog)[number]; version: string; count: number } | null>(null);
 
   const counts = useMemo(() => {
     const m = new Map<string, number>();
@@ -124,11 +126,14 @@ function CollectionPage() {
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
         {filtered.map((e) => (
-          <PlayerCard key={`${e.card.id}:${e.version}`} card={{ ...e.card, version: e.version }} missing={e.count === 0} count={e.count} />
+          <button key={`${e.card.id}:${e.version}`} type="button" onClick={() => setViewing(e)} className="block w-full rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" aria-label={`Voir ${e.card.name} en grand`}>
+            <PlayerCard card={{ ...e.card, version: e.version }} missing={e.count === 0} count={e.count} />
+          </button>
         ))}
       </div>
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
       <PhotoCredits cards={catalog} />
+      <CardViewer card={viewing ? { ...viewing.card, version: viewing.version } : null} missing={viewing?.count === 0} count={viewing?.count} onClose={() => setViewing(null)} />
     </div>
   );
 }
