@@ -1,3 +1,4 @@
+import { rarityMeta } from "@/lib/rarity";
 // Uploaded card photos live in a private storage bucket and are served through
 // /api/public/card-photo/<file>, so cards keep a stable same-origin image URL.
 export const CARD_PHOTO_BUCKET = "card-photos";
@@ -25,6 +26,13 @@ export function fitWithin(w: number, h: number, max = CARD_PHOTO_MAX): { width: 
 
 /** Visual treatment PlayerCard applies automatically for a rarity + version. */
 export function rarityEffects(rarity: string, version: "normal" | "alt" | "shiny" = "normal"): string[] {
+  // Admin-created rarities wear the effect of a built-in one; only the real Secrète Ultime is hidden until pulled.
+  const fx = rarityMeta(rarity).fx;
+  const list = builtinEffects(fx, version);
+  return rarity === fx ? list : list.filter((e) => !e.startsWith("Cachée"));
+}
+
+function builtinEffects(rarity: string, version: "normal" | "alt" | "shiny"): string[] {
   switch (rarity) {
     case "common": return ["Cadre simple"];
     case "uncommon": return ["Cadre peu commun"];
