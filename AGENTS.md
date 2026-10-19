@@ -17,3 +17,4 @@
 - Downloaded player portraits use asset pointers with provenance in player-portraits; collection credits expose author/source/license, and catalog replacements preserve card IDs and game rarity ratings.
 - Catalog edition data is curated in a browser-safe module and applied to existing card IDs; tests validate player-tier eligibility and distinct star-edition photographs without changing pack probabilities.
 - The opening cinematic lazy-loads React Three Fiber and a locally hosted CC0 rigged human; its frame-driven camera and effects use the highest returned card tier, and completion follows model-ready animation time with skip/reduced-motion support, never changing draws.
+- Pack swipe-to-open thresholds live in src/lib/pack-swipe.ts as pure functions with tests, so gesture tuning never touches the component or the server draw.

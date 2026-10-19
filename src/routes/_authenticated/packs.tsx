@@ -8,6 +8,8 @@ import packPremium from "@/assets/pack-premium.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyPacks, useProfile } from "@/lib/auth";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
+import { SwipePack } from "@/components/SwipePack";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
@@ -47,6 +49,7 @@ function PacksPage() {
   const qc = useQueryClient();
   const [opening, setOpening] = useState<{ key: string; result: OpenResult | null } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   async function open(key: string) {
     if (busy) return;
@@ -78,65 +81,78 @@ function PacksPage() {
     qc.invalidateQueries();
   }
 
+  const selected = packs?.find((p) => p.pack_key === selectedKey) ?? packs?.[0];
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-5xl text-gold">Mes packs</h1>
-      <p className="text-muted-foreground">Les packs se rechargent automatiquement, même quand vous êtes déconnecté.</p>
-      <div className="mt-8 grid gap-6 sm:grid-cols-2">
+      <p className="text-muted-foreground">Choisis un pack, puis fais-le glisser vers la gauche pour l'ouvrir.</p>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Choix du pack">
         {packs?.map((p) => (
-          <PackTile key={p.pack_key} p={p} coins={profile?.coins ?? 0} onOpen={() => open(p.pack_key)} onBuy={() => buy(p.pack_key)} busy={busy} />
+          <PackChoice key={p.pack_key} p={p} selected={selected?.pack_key === p.pack_key} onSelect={() => setSelectedKey(p.pack_key)} />
         ))}
       </div>
+
+      {selected && (
+        <div className="panel mt-6 flex flex-col items-center p-4 text-center">
+          <h2 className="text-3xl">{selected.name}</h2>
+          <p className="text-sm text-muted-foreground">{selected.description}</p>
+          <SwipePack
+            image={IMG[selected.pack_key] ?? packClassic}
+            name={selected.name}
+            premium={selected.pack_key === "premium"}
+            disabled={busy || selected.count < 1}
+            onOpen={() => open(selected.pack_key)}
+          />
+          {selected.price_coins > 0 && (
+            <button
+              onClick={() => buy(selected.pack_key)}
+              disabled={(profile?.coins ?? 0) < selected.price_coins}
+              className="mt-2 flex w-full max-w-xs items-center justify-center gap-1 rounded-xl border border-primary/50 py-2 text-sm font-bold text-primary disabled:opacity-40"
+            >
+              Acheter 1 pack · <Coins className="h-4 w-4" /> {selected.price_coins}
+            </button>
+          )}
+        </div>
+      )}
       {opening && <PackOpening packImage={IMG[opening.key] ?? packClassic} result={opening.result} onClose={close} />}
     </div>
   );
 }
 
-function PackTile({
+function PackChoice({
   p,
-  coins,
-  onOpen,
-  onBuy,
-  busy,
+  selected,
+  onSelect,
 }: {
-  p: { pack_key: string; name: string; description: string; count: number; max_stock: number; next_at: string; price_coins: number };
-  coins: number;
-  onOpen: () => void;
-  onBuy: () => void;
-  busy: boolean;
+  p: { pack_key: string; name: string; count: number; max_stock: number; next_at: string };
+  selected: boolean;
+  onSelect: () => void;
 }) {
   const cd = useCountdown(p.next_at);
   return (
-    <div className="panel flex flex-col items-center p-6 text-center">
-      <button onClick={onOpen} disabled={busy || p.count < 1} className="group disabled:opacity-50">
-        <img src={IMG[p.pack_key] ?? packClassic} alt={p.name} width={768} height={1152} className={`w-40 transition group-hover:scale-105 group-enabled:anim-float ${p.pack_key === "premium" ? "drop-shadow-[0_0_22px_var(--primary)]" : ""}`} />
-      </button>
-      <h2 className="mt-4 text-3xl">{p.name}</h2>
-      <p className="text-sm text-muted-foreground">{p.description}</p>
-      <p className="mt-3 font-display text-4xl text-gold">
-        {p.count} <span className="text-xl text-muted-foreground">/ {p.max_stock}</span>
-      </p>
-      {cd && (
-        <p className="flex items-center gap-1 text-sm text-muted-foreground">
-          <Timer className="h-4 w-4" /> Prochain pack dans {cd}
+    <button
+      role="radio"
+      aria-checked={selected}
+      onClick={onSelect}
+      className={cn(
+        "panel flex items-center gap-4 p-3 text-left transition",
+        selected ? "ring-2 ring-primary shadow-gold" : "opacity-70 hover:opacity-100",
+      )}
+    >
+      <img src={IMG[p.pack_key] ?? packClassic} alt="" width={768} height={1152} className="w-14 shrink-0" />
+      <div className="min-w-0 flex-1">
+        <p className="font-display text-2xl leading-none">{p.name}</p>
+        <p className="mt-1 font-display text-xl text-gold">
+          {p.count} <span className="text-sm text-muted-foreground">/ {p.max_stock}</span>
         </p>
-      )}
-      <button
-        onClick={onOpen}
-        disabled={busy || p.count < 1}
-        className="mt-4 w-full rounded-xl bg-gold py-3 font-display text-xl tracking-widest text-primary-foreground shadow-gold disabled:opacity-40"
-      >
-        Ouvrir
-      </button>
-      {p.price_coins > 0 && (
-        <button
-          onClick={onBuy}
-          disabled={coins < p.price_coins}
-          className="mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-primary/50 py-2 text-sm font-bold text-primary disabled:opacity-40"
-        >
-          Acheter 1 pack · <Coins className="h-4 w-4" /> {p.price_coins}
-        </button>
-      )}
-    </div>
+        {cd && (
+          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Timer className="h-3 w-3" /> Prochain dans {cd}
+          </p>
+        )}
+      </div>
+    </button>
   );
 }
