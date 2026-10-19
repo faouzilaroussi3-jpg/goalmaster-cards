@@ -14,11 +14,13 @@ export function nextBreathDelay(rand: () => number = Math.random): number {
   return Math.round(BREATH_PAUSE_MS[0] + (BREATH_PAUSE_MS[1] - BREATH_PAUSE_MS[0]) * rand());
 }
 
-/** Strength of the fire jet (0..1) at `ms` after the breath started: off during wind-up, quick ramp up, soft fade out. */
+/** Strength of the fire jet (0..1) at `ms` after the breath started: off during wind-up, eased ramp up, long soft fade out. */
 export function breathIntensity(ms: number): number {
   const t = ms - BREATH_WINDUP_MS;
   if (t <= 0 || t >= BREATH_FIRE_MS) return 0;
-  if (t < 150) return t / 150;
-  if (t > BREATH_FIRE_MS - 300) return (BREATH_FIRE_MS - t) / 300;
+  // Smooth (eased) ramps so the jet swells in and dies out without a visible step.
+  const ease = (k: number) => k * k * (3 - 2 * k);
+  if (t < 220) return ease(t / 220);
+  if (t > BREATH_FIRE_MS - 450) return ease((BREATH_FIRE_MS - t) / 450);
   return 1;
 }
