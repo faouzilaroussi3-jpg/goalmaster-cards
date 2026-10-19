@@ -7,7 +7,7 @@ import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { dragRotation, flipRotation, type Rotation } from "@/lib/card-viewer";
 
 /** Enlarged card you can drag to rotate in 3D (front + Goalmaster back). */
-export function CardViewer({ card, missing, count, onClose }: { card: CardData | null; missing?: boolean; count?: number; onClose: () => void }) {
+export function CardViewer({ card, missing, count, onClose }: { card: CardData | null; missing?: boolean | undefined; count?: number | undefined; onClose: () => void }) {
   const [rot, setRot] = useState<Rotation>({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ px: number; py: number; start: Rotation } | null>(null);
@@ -59,7 +59,7 @@ export function CardViewer({ card, missing, count, onClose }: { card: CardData |
                   style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`, ["--glare-x" as string]: `${50 - (((rot.y % 360) + 540) % 360 - 180) / 2}%` }}
                 >
                   <div className="card-viewer-face">
-                    <PlayerCard card={card} missing={missing} />
+                    <PlayerCard card={card} missing={!!missing} />
                     <div className="card-viewer-glare" aria-hidden="true" />
                   </div>
                   <div className="card-viewer-face card-viewer-back">
