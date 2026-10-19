@@ -195,6 +195,91 @@ export type Database = {
           },
         ]
       }
+      challenge_claims: {
+        Row: {
+          challenge_id: string
+          claimed_at: string
+          id: string
+          reward_coins: number
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          claimed_at?: string
+          id?: string
+          reward_coins: number
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          claimed_at?: string
+          id?: string
+          reward_coins?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_claims_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          key: string
+          metric: string
+          rarity: string | null
+          reward_coins: number
+          secret: boolean
+          sort_order: number
+          target: number
+          title: string
+          version: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key: string
+          metric?: string
+          rarity?: string | null
+          reward_coins: number
+          secret?: boolean
+          sort_order?: number
+          target: number
+          title: string
+          version?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key?: string
+          metric?: string
+          rarity?: string | null
+          reward_coins?: number
+          secret?: boolean
+          sort_order?: number
+          target?: number
+          title?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_rarity_fkey"
+            columns: ["rarity"]
+            isOneToOne: false
+            referencedRelation: "rarities"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       events: {
         Row: {
           active: boolean
@@ -465,6 +550,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _challenge_progress: {
+        Args: {
+          _metric: string
+          _rarity: string
+          _uid: string
+          _version: string
+        }
+        Returns: number
+      }
+      _claim_challenge: {
+        Args: { _cid: string; _uid: string }
+        Returns: number
+      }
       _draw_key: { Args: { _w: Json }; Returns: string }
       _pick_card: {
         Args: { _exclude?: string[]; _rarity: string }
@@ -491,6 +589,8 @@ export type Database = {
       auction_payout: { Args: { _amount: number }; Returns: number }
       buy_pack: { Args: { _pack_key: string }; Returns: undefined }
       cancel_auction: { Args: { _auction_id: string }; Returns: undefined }
+      claim_all_challenges: { Args: never; Returns: Json }
+      claim_challenge: { Args: { _challenge_id: string }; Returns: number }
       create_auction: {
         Args: { _hours: number; _start_price: number; _user_card_id: string }
         Returns: string
@@ -535,6 +635,23 @@ export type Database = {
           unique_cards: number
           user_id: string
           username: string
+        }[]
+      }
+      get_my_challenges: {
+        Args: never
+        Returns: {
+          challenge_id: string
+          claimed: boolean
+          key: string
+          metric: string
+          progress: number
+          rarity: string
+          reward_coins: number
+          secret: boolean
+          sort_order: number
+          target: number
+          title: string
+          version: string
         }[]
       }
       get_my_listed_copies: {

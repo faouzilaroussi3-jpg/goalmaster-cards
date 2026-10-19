@@ -2,7 +2,8 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Coins, Package, LogOut, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, useMyPacks, useProfile } from "@/lib/auth";
+import { useAuth, useMyChallenges, useMyPacks, useProfile } from "@/lib/auth";
+import { claimableSummary } from "@/lib/challenges";
 
 const linkCls = "rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
@@ -14,6 +15,18 @@ export function AppHeader() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const totalPacks = packs?.reduce((s, p) => s + p.count, 0) ?? 0;
+  const { data: challenges } = useMyChallenges();
+  const ready = claimableSummary(challenges ?? []).count;
+  const defis = (
+    <Link to="/defis" className={linkCls} activeProps={activeCls}>
+      Défis
+      {ready > 0 && (
+        <span aria-label={`${ready} récompense${ready > 1 ? "s" : ""} à récupérer`} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+          {ready}
+        </span>
+      )}
+    </Link>
+  );
 
   async function signOut() {
     await qc.cancelQueries();
@@ -32,6 +45,7 @@ export function AppHeader() {
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
+          {session && defis}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
           {profile?.isAdmin && (
@@ -62,6 +76,7 @@ export function AppHeader() {
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
+        {session && defis}
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
         {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}

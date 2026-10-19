@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
+import { Route as AuthenticatedDefisRouteImport } from './routes/_authenticated/defis'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
@@ -49,6 +50,11 @@ const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
   path: '/collection',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDefisRoute = AuthenticatedDefisRouteImport.update({
+  id: '/defis',
+  path: '/defis',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
   id: '/packs',
   path: '/packs',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/defis': typeof AuthenticatedDefisRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/defis': typeof AuthenticatedDefisRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
+  '/_authenticated/defis': typeof AuthenticatedDefisRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/admin'
     | '/collection'
+    | '/defis'
     | '/packs'
     | '/profile'
     | '/transferts'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/admin'
     | '/collection'
+    | '/defis'
     | '/packs'
     | '/profile'
     | '/transferts'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/_authenticated/admin'
     | '/_authenticated/collection'
+    | '/_authenticated/defis'
     | '/_authenticated/packs'
     | '/_authenticated/profile'
     | '/_authenticated/transferts'
@@ -194,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCollectionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/defis': {
+      id: '/_authenticated/defis'
+      path: '/defis'
+      fullPath: '/defis'
+      preLoaderRoute: typeof AuthenticatedDefisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/packs': {
       id: '/_authenticated/packs'
       path: '/packs'
@@ -228,6 +247,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
+  AuthenticatedDefisRoute: typeof AuthenticatedDefisRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
@@ -236,6 +256,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
+  AuthenticatedDefisRoute: AuthenticatedDefisRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
