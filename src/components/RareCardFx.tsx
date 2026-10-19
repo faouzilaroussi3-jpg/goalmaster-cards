@@ -31,13 +31,13 @@ export function SuDragon3D() {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [colors, setColors] = useState<{ glow: string; warm: string } | null>(null);
+  const [colors, setColors] = useState<{ glow: string; warm: string; ember: string } | null>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const css = getComputedStyle(el);
     const rgb = (name: string, fb: [number, number, number]) => `rgb(${toRgb(css.getPropertyValue(name).trim(), fb).join(",")})`;
-    setColors({ glow: rgb("--flame-mid", [255, 150, 30]), warm: rgb("--flame-core", [255, 244, 190]) });
+    setColors({ glow: rgb("--flame-mid", [255, 150, 30]), warm: rgb("--flame-core", [255, 244, 190]), ember: rgb("--flame-outer", [215, 40, 20]) });
     const io = new IntersectionObserver(([e]) => setVisible(!!e?.isIntersecting), { rootMargin: "150px" });
     io.observe(el);
     return () => io.disconnect();
@@ -46,7 +46,7 @@ export function SuDragon3D() {
     <div ref={ref} className="su-dragon3d" aria-hidden="true">
       {visible && !reduced && colors && (
         <Suspense fallback={null}>
-          <Dragon3D glow={colors.glow} warm={colors.warm} />
+          <Dragon3D glow={colors.glow} warm={colors.warm} ember={colors.ember} />
         </Suspense>
       )}
     </div>

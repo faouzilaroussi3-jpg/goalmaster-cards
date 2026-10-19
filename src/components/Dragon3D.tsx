@@ -17,7 +17,7 @@ const FOV = (2 * Math.atan(VIEW_H / 2 / CAM_Z) * 180) / Math.PI;
 const LAP_S = 6.5;
 const RX = 3.1; // orbit half-width (card half-width is 2.5)
 const RZ = 2.7; // orbit depth in front of / behind the card
-const DRAGON_LEN = 2.4;
+const DRAGON_LEN = 2.8;
 const BANK = -0.45; // roll into the (always left-handed) turn
 
 /** Point on the 3D orbit at time t: swoops low in front of the card and high behind it. */
@@ -26,7 +26,7 @@ function orbit(t: number, out: THREE.Vector3) {
   return out.set(RX * Math.cos(a), -1.9 * Math.sin(a) + 0.6 * Math.sin(2 * a), RZ * Math.sin(a));
 }
 
-function Dragon({ glow }: { glow: string }) {
+function Dragon({ glow, ember }: { glow: string; ember: string }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(dragonAsset.url);
 
@@ -38,7 +38,7 @@ function Dragon({ glow }: { glow: string }) {
       mesh.frustumCulled = false; // skinned bounds lag behind the animation
       const mats = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).map((m) => {
         const c = m.clone() as THREE.MeshStandardMaterial;
-        if (c.emissive) { c.emissive = new THREE.Color(glow); c.emissiveIntensity = 0.28; }
+        if (c.emissive) { c.emissive = new THREE.Color(ember); c.emissiveIntensity = 0.35; }
         c.roughness = 0.45;
         c.metalness = 0.15;
         return c;
@@ -60,7 +60,7 @@ function Dragon({ glow }: { glow: string }) {
     const pivot = new THREE.Group();
     pivot.add(o);
     return pivot;
-  }, [scene, glow]);
+  }, [scene, ember]);
 
   const { actions, names } = useAnimations(animations, group);
   useEffect(() => {
@@ -92,7 +92,7 @@ function Dragon({ glow }: { glow: string }) {
 }
 
 /** Transparent overlay scene: a real 3D dragon circling the Secret Ultimate card, hidden behind the card when it flies round the back. */
-export default function Dragon3D({ glow, warm }: { glow: string; warm: string }) {
+export default function Dragon3D({ glow, warm, ember }: { glow: string; warm: string; ember: string }) {
   return (
     <Canvas
       dpr={[1, 1.75]}
@@ -113,7 +113,7 @@ export default function Dragon3D({ glow, warm }: { glow: string; warm: string })
         <meshBasicMaterial colorWrite={false} />
       </mesh>
       <Suspense fallback={null}>
-        <Dragon glow={glow} />
+        <Dragon glow={glow} ember={ember} />
       </Suspense>
     </Canvas>
   );
