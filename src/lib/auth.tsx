@@ -67,3 +67,24 @@ export function useMyChallenges() {
     },
   });
 }
+
+export interface MyDuel {
+  duel_id: string; status: string; is_challenger: boolean; opponent_id: string | null; opponent_name: string | null;
+  my_score: number; their_score: number; round: number; my_turn: boolean; they_played: boolean; incoming: boolean;
+  open_invite: boolean; result: "win" | "loss" | "draw" | null; forfeit: boolean; my_reward: number | null;
+  my_elo_delta: number | null; created_at: string; finished_at: string | null; round_started_at: string | null;
+}
+
+export function useMyDuels() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["duels", "mine", session?.user.id],
+    enabled: !!session,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_duels");
+      if (error) throw error;
+      return (data ?? []) as MyDuel[];
+    },
+  });
+}
