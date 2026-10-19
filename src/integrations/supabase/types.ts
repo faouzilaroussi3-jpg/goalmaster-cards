@@ -280,6 +280,163 @@ export type Database = {
           },
         ]
       }
+      duel_decks: {
+        Row: {
+          cards: Json
+          duel_id: string
+          player_id: string
+        }
+        Insert: {
+          cards: Json
+          duel_id: string
+          player_id: string
+        }
+        Update: {
+          cards?: Json
+          duel_id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duel_decks_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      duel_moves: {
+        Row: {
+          created_at: string
+          duel_id: string
+          player_id: string
+          round: number
+          slot: number
+        }
+        Insert: {
+          created_at?: string
+          duel_id: string
+          player_id: string
+          round: number
+          slot: number
+        }
+        Update: {
+          created_at?: string
+          duel_id?: string
+          player_id?: string
+          round?: number
+          slot?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duel_moves_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      duel_stats: {
+        Row: {
+          draws: number
+          losses: number
+          played: number
+          rating: number
+          updated_at: string
+          user_id: string
+          wins: number
+        }
+        Insert: {
+          draws?: number
+          losses?: number
+          played?: number
+          rating?: number
+          updated_at?: string
+          user_id: string
+          wins?: number
+        }
+        Update: {
+          draws?: number
+          losses?: number
+          played?: number
+          rating?: number
+          updated_at?: string
+          user_id?: string
+          wins?: number
+        }
+        Relationships: []
+      }
+      duels: {
+        Row: {
+          challenger_elo_delta: number | null
+          challenger_id: string
+          challenger_played: boolean
+          challenger_reward: number | null
+          challenger_score: number
+          created_at: string
+          finished_at: string | null
+          forfeit: boolean
+          id: string
+          opponent_elo_delta: number | null
+          opponent_id: string | null
+          opponent_played: boolean
+          opponent_reward: number | null
+          opponent_score: number
+          round: number
+          round_started_at: string | null
+          rounds: Json
+          status: string
+          themes: string[]
+          winner_id: string | null
+        }
+        Insert: {
+          challenger_elo_delta?: number | null
+          challenger_id: string
+          challenger_played?: boolean
+          challenger_reward?: number | null
+          challenger_score?: number
+          created_at?: string
+          finished_at?: string | null
+          forfeit?: boolean
+          id?: string
+          opponent_elo_delta?: number | null
+          opponent_id?: string | null
+          opponent_played?: boolean
+          opponent_reward?: number | null
+          opponent_score?: number
+          round?: number
+          round_started_at?: string | null
+          rounds?: Json
+          status?: string
+          themes: string[]
+          winner_id?: string | null
+        }
+        Update: {
+          challenger_elo_delta?: number | null
+          challenger_id?: string
+          challenger_played?: boolean
+          challenger_reward?: number | null
+          challenger_score?: number
+          created_at?: string
+          finished_at?: string | null
+          forfeit?: boolean
+          id?: string
+          opponent_elo_delta?: number | null
+          opponent_id?: string | null
+          opponent_played?: boolean
+          opponent_reward?: number | null
+          opponent_score?: number
+          round?: number
+          round_started_at?: string | null
+          rounds?: Json
+          status?: string
+          themes?: string[]
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           active: boolean
@@ -564,12 +721,38 @@ export type Database = {
         Returns: number
       }
       _draw_key: { Args: { _w: Json }; Returns: string }
+      _duel_cost: { Args: { _rarity: string }; Returns: number }
+      _duel_deck: { Args: { _ids: string[]; _uid: string }; Returns: Json }
+      _duel_payout: {
+        Args: { _forfeit: boolean; _score: number }
+        Returns: number
+      }
+      _duel_power: {
+        Args: {
+          _pos: string
+          _rarity: string
+          _rating: number
+          _theme: string
+          _version: string
+        }
+        Returns: number
+      }
+      _duel_reward_ok: { Args: { _uid: string }; Returns: boolean }
+      _finish_duel: {
+        Args: { _forfeit: boolean; _id: string; _winner: string }
+        Returns: undefined
+      }
       _pick_card: {
         Args: { _exclude?: string[]; _rarity: string }
         Returns: string
       }
       _settle_auctions: { Args: never; Returns: undefined }
+      _settle_duels: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
+      accept_duel: {
+        Args: { _duel_id: string; _user_card_ids: string[] }
+        Returns: string
+      }
       admin_card_stats: {
         Args: never
         Returns: {
@@ -593,6 +776,10 @@ export type Database = {
       claim_challenge: { Args: { _challenge_id: string }; Returns: number }
       create_auction: {
         Args: { _hours: number; _start_price: number; _user_card_id: string }
+        Returns: string
+      }
+      create_duel: {
+        Args: { _opponent: string; _user_card_ids: string[] }
         Returns: string
       }
       get_auctions: {
@@ -622,6 +809,20 @@ export type Database = {
           status: string
           tier: number
           version: string
+        }[]
+      }
+      get_duel: { Args: { _duel_id: string }; Returns: Json }
+      get_duel_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          draws: number
+          level: number
+          losses: number
+          played: number
+          rating: number
+          user_id: string
+          username: string
+          wins: number
         }[]
       }
       get_leaderboard: {
@@ -654,6 +855,30 @@ export type Database = {
           version: string
         }[]
       }
+      get_my_duels: {
+        Args: never
+        Returns: {
+          created_at: string
+          duel_id: string
+          finished_at: string
+          forfeit: boolean
+          incoming: boolean
+          is_challenger: boolean
+          my_elo_delta: number
+          my_reward: number
+          my_score: number
+          my_turn: boolean
+          open_invite: boolean
+          opponent_id: string
+          opponent_name: string
+          result: string
+          round: number
+          round_started_at: string
+          status: string
+          their_score: number
+          they_played: boolean
+        }[]
+      }
       get_my_listed_copies: {
         Args: never
         Returns: {
@@ -671,6 +896,16 @@ export type Database = {
           pack_key: string
           price_coins: number
           regen_minutes: number
+        }[]
+      }
+      get_open_duels: {
+        Args: never
+        Returns: {
+          challenger_id: string
+          challenger_name: string
+          challenger_rating: number
+          created_at: string
+          duel_id: string
         }[]
       }
       get_recent_drops: {
@@ -695,11 +930,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      leave_duel: { Args: { _duel_id: string }; Returns: undefined }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
       place_bid: {
         Args: { _amount: number; _auction_id: string }
         Returns: undefined
       }
+      play_card: { Args: { _duel_id: string; _slot: number }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

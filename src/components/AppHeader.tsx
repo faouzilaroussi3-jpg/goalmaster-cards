@@ -2,10 +2,11 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Coins, Package, LogOut, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, useMyChallenges, useMyPacks, useProfile } from "@/lib/auth";
+import { useEffect } from "react";
+import { useAuth, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
 import { claimableSummary } from "@/lib/challenges";
 
-const linkCls = "rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
+const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
 
 export function AppHeader() {
@@ -17,6 +18,33 @@ export function AppHeader() {
   const totalPacks = packs?.reduce((s, p) => s + p.count, 0) ?? 0;
   const { data: challenges } = useMyChallenges();
   const ready = claimableSummary(challenges ?? []).count;
+  const { data: duels } = useMyDuels();
+  const duelTodo = (duels ?? []).filter((d) => d.my_turn || d.incoming).length;
+  const uid = session?.user.id;
+
+  // One realtime subscription for the whole app: any change on my duels refreshes duel lists and boards.
+  useEffect(() => {
+    if (!uid) return;
+    const channel = supabase
+      .channel(`duels-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "duels" }, () => {
+        qc.invalidateQueries({ queryKey: ["duels"] });
+        qc.invalidateQueries({ queryKey: ["duel"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [uid, qc]);
+
+  const duelLink = (
+    <Link to="/duels" className={linkCls} activeProps={activeCls}>
+      Duels
+      {duelTodo > 0 && (
+        <span aria-label={`${duelTodo} duel${duelTodo > 1 ? "s" : ""} en attente de toi`} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+          {duelTodo}
+        </span>
+      )}
+    </Link>
+  );
   const defis = (
     <Link to="/defis" className={linkCls} activeProps={activeCls}>
       Défis
@@ -41,11 +69,12 @@ export function AppHeader() {
         <Link to="/" className="font-display text-2xl tracking-widest text-gold sm:text-3xl">
           GOALMASTER
         </Link>
-        <nav className="hidden flex-1 items-center gap-1 md:flex">
+        <nav className="hidden flex-1 items-center gap-1 lg:flex">
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
           {session && defis}
+          {session && duelLink}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
           {profile?.isAdmin && (
@@ -72,11 +101,12 @@ export function AppHeader() {
           )}
         </div>
       </div>
-      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 md:hidden [&>a]:shrink-0 [&>a]:px-2">
+      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 lg:hidden [&>a]:shrink-0 [&>a]:px-2">
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
         {session && defis}
+        {session && duelLink}
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
         {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}
