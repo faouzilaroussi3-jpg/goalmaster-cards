@@ -12,8 +12,8 @@ describe("Player edition eligibility", () => {
 
   it("offers Haaland as both Super Rare and Legendary with distinct photographs", () => {
     const haaland = CATALOG_EDITIONS.filter((c) => c.name === "Erling Haaland");
-    expect(haaland.map((c) => c.rarity)).toEqual(["super_rare", "legendary"]);
-    expect(new Set(haaland.map((c) => c.image_url)).size).toBe(2);
+    expect(haaland.map((c) => c.rarity)).toEqual(["super_rare", "legendary", "secret_ultimate"]);
+    expect(new Set(haaland.map((c) => c.image_url)).size).toBe(3);
     expect(haaland[1]?.rating).toBeGreaterThan(haaland[0]?.rating ?? 0);
   });
 
@@ -22,5 +22,22 @@ describe("Player edition eligibility", () => {
       const editions = CATALOG_EDITIONS.filter((c) => c.name === name);
       expect(new Set(editions.map((c) => c.image_url)).size, name).toBe(editions.length);
     }
+  });
+
+  it("gives every Legendary ALT its own new illustration", () => {
+    const legendaries = CATALOG_EDITIONS.filter((c) => c.rarity === "legendary");
+    expect(legendaries.length).toBeGreaterThan(0);
+    for (const card of legendaries) {
+      const alt = "alt_image_url" in card ? card.alt_image_url : undefined;
+      expect(alt, card.name).toBeTruthy();
+      expect(alt, card.name).not.toBe(card.image_url);
+    }
+  });
+
+  it("uses a dedicated illustration for every Secret Ultimate edition", () => {
+    const ultimates = CATALOG_EDITIONS.filter((c) => c.rarity === "secret_ultimate");
+    expect(ultimates.map((c) => c.name)).toEqual(["Lionel Messi", "Cristiano Ronaldo", "Kylian Mbappé", "Erling Haaland"]);
+    const otherArt = new Set(CATALOG_EDITIONS.filter((c) => c.rarity !== "secret_ultimate").map((c) => c.image_url));
+    for (const card of ultimates) expect(otherArt.has(card.image_url), card.name).toBe(false);
   });
 });

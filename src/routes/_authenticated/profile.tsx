@@ -84,7 +84,7 @@ function ProfilePage() {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {([["Packs ouverts", stats?.openings], ["Cartes", stats?.total], ["Légendaires", stats?.legend], ["Shiny", stats?.shiny], ["Secrètes Ultimes", stats?.su]] as [string, number | undefined][]).map(([l, v]) => (
+        {([["Packs ouverts", stats?.openings], ["Cartes", stats?.total], ["Légendaires", stats?.legend], ["Shiny", stats?.shiny], ...(stats?.su ? [["Secrètes Ultimes", stats.su]] : [])] as [string, number | undefined][]).map(([l, v]) => (
           <div key={l} className="panel p-3">
             <div className="font-display text-3xl text-gold">{v ?? 0}</div>
             <div className="text-xs text-muted-foreground">{l}</div>

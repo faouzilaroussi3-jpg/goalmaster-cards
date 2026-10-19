@@ -17,6 +17,7 @@ export type Database = {
       cards: {
         Row: {
           active: boolean
+          alt_image_url: string | null
           club: string
           created_at: string
           has_alt: boolean
@@ -36,6 +37,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          alt_image_url?: string | null
           club: string
           created_at?: string
           has_alt?: boolean
@@ -55,6 +57,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          alt_image_url?: string | null
           club?: string
           created_at?: string
           has_alt?: boolean

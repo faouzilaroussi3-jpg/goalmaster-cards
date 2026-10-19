@@ -3,11 +3,11 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
+// Secret Ultimate counts are deliberately not shown: players must not learn those cards exist.
 const SORTS = [
   { key: "total", label: "Cartes", col: "total" },
   { key: "legendaries", label: "Légendaires", col: "legendaries" },
   { key: "shinies", label: "Shiny", col: "shinies" },
-  { key: "ultimates", label: "Secrètes Ultimes", col: "ultimates" },
 ] as const;
 
 export function LeaderboardTable({ limit = 50, compact }: { limit?: number; compact?: boolean }) {
@@ -53,7 +53,6 @@ export function LeaderboardTable({ limit = 50, compact }: { limit?: number; comp
                   <span>{row.total} cartes</span>
                   <span>{row.legendaries} lég.</span>
                   <span>{row.shinies} shiny</span>
-                  <span>{row.ultimates} SU</span>
                 </span>
               )}
               <span className="font-display text-xl text-primary">{row[SORTS.find((s) => s.key === sort)!.col]}</span>

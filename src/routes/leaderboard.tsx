@@ -5,7 +5,7 @@ export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
       { title: "Classement — Goalmaster" },
-      { name: "description", content: "Les meilleurs collectionneurs Goalmaster : cartes, légendaires, Shiny et Secrètes Ultimes." },
+      { name: "description", content: "Les meilleurs collectionneurs Goalmaster : cartes, légendaires et Shiny." },
       { property: "og:title", content: "Classement — Goalmaster" },
       { property: "og:description", content: "Qui possède la plus belle collection ?" },
       { property: "og:type", content: "website" },

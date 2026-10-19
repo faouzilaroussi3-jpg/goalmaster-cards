@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Goalmaster — Collectionnez les légendes du football" },
-      { name: "description", content: "Ouvrez des boosters, découvrez des cartes Légendaires, Shiny et Secrètes Ultimes, et grimpez au classement." },
+      { name: "description", content: "Ouvrez des boosters, découvrez des cartes Légendaires et Shiny, et grimpez au classement." },
       { property: "og:title", content: "Goalmaster — Collectionnez les légendes du football" },
       { property: "og:description", content: "Le jeu de cartes de football à collectionner. Ouvrez vos packs !" },
       { property: "og:type", content: "website" },

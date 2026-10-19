@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { RARITIES, rarityMeta } from "@/lib/rarity";
-import { MysteryCard, PlayerCard } from "@/components/PlayerCard";
+import { PlayerCard } from "@/components/PlayerCard";
 import { PhotoCredits } from "@/components/PhotoCredits";
 
 export const Route = createFileRoute("/_authenticated/collection")({
@@ -72,7 +72,9 @@ function CollectionPage() {
   const clubs = [...new Set(catalog.map((c) => c.club))].sort();
   const countries = [...new Set(catalog.map((c) => c.nationality))].sort();
   const uniqueOwned = entries.filter((e) => e.count > 0).length;
+  // Secret Ultimate cards only come back for their owners (and the admin), so the tier stays invisible until pulled.
   const hasUltimate = catalog.some((c) => c.rarity === "secret_ultimate");
+  const visibleRarities = RARITIES.filter((r) => r.key !== "secret_ultimate" || hasUltimate);
   const sel = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 
   return (
@@ -83,7 +85,7 @@ function CollectionPage() {
         <Stat label="Cartes possédées" value={owned.length} />
         <Stat label="Uniques" value={`${uniqueOwned}/${entries.length}`} />
         <Stat label="Complétion" value={`${entries.length ? Math.round((uniqueOwned / entries.length) * 100) : 0}%`} />
-        {RARITIES.slice(2).map((r) => (
+        {visibleRarities.slice(2).map((r) => (
           <Stat key={r.key} label={r.label} value={owned.filter((o) => catalog.find((c) => c.id === o.card_id)?.rarity === r.key).length} />
         ))}
       </div>
@@ -107,7 +109,7 @@ function CollectionPage() {
         </select>
         <select className={sel} value={rarity} onChange={(e) => setRarity(e.target.value)}>
           <option value="">Toutes raretés</option>
-          {RARITIES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+          {visibleRarities.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
         </select>
         <select className={sel} value={version} onChange={(e) => setVersion(e.target.value)}>
           <option value="">Toutes versions</option>
@@ -121,7 +123,6 @@ function CollectionPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7">
-        {!hasUltimate && view !== "owned" && !rarity && <MysteryCard />}
         {filtered.map((e) => (
           <PlayerCard key={`${e.card.id}:${e.version}`} card={{ ...e.card, version: e.version }} missing={e.count === 0} count={e.count} />
         ))}

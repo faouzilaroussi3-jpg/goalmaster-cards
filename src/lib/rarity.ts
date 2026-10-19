@@ -26,5 +26,6 @@ export interface CardData {
   rating: number;
   rarity: string;
   image_url?: string | null;
+  alt_image_url?: string | null;
   version?: string;
 }
