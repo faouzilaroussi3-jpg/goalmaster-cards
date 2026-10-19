@@ -133,6 +133,7 @@ export function PackOpening({
   const lastShown = turned >= total && !busy;
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center-safe overflow-y-auto bg-background/95 px-3 py-6 backdrop-blur">
       {flash && (
         <div
@@ -279,6 +280,7 @@ export function PackOpening({
         </div>
       )}
 
+    </div>
       {result && phase !== "done" && (
         <Button
           variant="secondary"
@@ -286,8 +288,8 @@ export function PackOpening({
           onClick={skip}
           aria-label="Passer l'ouverture et voir le résultat"
           className={cn(
-            // Phone: centred pill above the home bar; tablet and desktop: bottom-right corner, a bit larger.
-            "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-30 -translate-x-1/2",
+            // Outside the blurred overlay so it stays pinned to the screen. Phone: centred pill above the home bar; tablet and desktop: bottom-right corner, a bit larger.
+            "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[60] -translate-x-1/2",
             "h-11 gap-1.5 rounded-full border border-primary/60 bg-background/80 px-5 font-display text-lg tracking-widest text-primary shadow-gold backdrop-blur",
             "hover:bg-primary hover:text-primary-foreground",
             "sm:bottom-6 sm:left-auto sm:right-6 sm:h-12 sm:translate-x-0 sm:px-6 sm:text-xl",
@@ -299,6 +301,6 @@ export function PackOpening({
           <ChevronsRight className="size-5 lg:size-6" aria-hidden />
         </Button>
       )}
-    </div>
+    </>
   );
 }
