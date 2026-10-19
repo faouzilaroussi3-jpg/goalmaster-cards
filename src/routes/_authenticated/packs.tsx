@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Coins, Timer } from "lucide-react";
 import packClassic from "@/assets/pack-classic.png";
 import packPremium from "@/assets/pack-premium.png";
 import { supabase } from "@/integrations/supabase/client";
-import { useMyPacks, useProfile } from "@/lib/auth";
+import { useAuth, useMyPacks, useProfile } from "@/lib/auth";
+import { newlyClaimable, type Challenge } from "@/lib/challenges";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
 import { cn } from "@/lib/utils";
@@ -47,6 +49,8 @@ function PacksPage() {
   const { data: packs, refetch } = useMyPacks();
   const { data: profile } = useProfile();
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { session } = useAuth();
   const [opening, setOpening] = useState<{ key: string; result: OpenResult | null } | null>(null);
   const [busy, setBusy] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -79,11 +83,21 @@ function PacksPage() {
     qc.invalidateQueries({ queryKey: ["profile"] });
   }
 
-  function close() {
+  async function close() {
     setOpening(null);
     setBusy(false);
     setRound((r) => r + 1);
-    qc.invalidateQueries();
+    const key = ["challenges", session?.user.id];
+    const before = qc.getQueryData<Challenge[]>(key) ?? [];
+    await qc.invalidateQueries();
+    const fresh = newlyClaimable(before, qc.getQueryData<Challenge[]>(key) ?? []);
+    if (fresh.length > 0) {
+      const coins = fresh.reduce((s, c) => s + c.reward_coins, 0);
+      toast.success(fresh.length > 1 ? `${fresh.length} défis accomplis !` : `Défi accompli : ${fresh[0].title}`, {
+        description: `${coins} pièces à récupérer`,
+        action: { label: "Récupérer", onClick: () => navigate({ to: "/defis" }) },
+      });
+    }
   }
 
   const selected = packs?.find((p) => p.pack_key === selectedKey) ?? packs?.[0];
