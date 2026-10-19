@@ -131,7 +131,7 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
 
   async function save() {
     const clean = (o: Record<string, number>) => Object.fromEntries(Object.entries(o).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)]));
-    const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), version_rates: { alt: Number(versions.alt) || 0, shiny: Number(versions.shiny) || 0 } }).eq("id", p.id);
+    const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), version_rates: { alt: Number(versions["alt"]) || 0, shiny: Number(versions["shiny"]) || 0 } }).eq("id", p.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Pack enregistré");
     onSaved();
