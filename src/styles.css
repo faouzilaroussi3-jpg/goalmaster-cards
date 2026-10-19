@@ -263,8 +263,8 @@
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
 @keyframes su-heat { from { box-shadow: 0 0 28px 0 color-mix(in oklab, var(--flame-outer) 70%, transparent), 0 0 60px -12px var(--flame-mid); } to { box-shadow: 0 0 46px 4px color-mix(in oklab, var(--flame-outer) 85%, transparent), 0 0 90px -8px var(--flame-mid); } }
 @keyframes ember-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-60%); opacity: 0; } }
-/* Dragon wrapped around the SU card: wings, tail and head sit behind it with z-index -1, so they also pass behind neighbouring
-   cards instead of covering their text; flame light, claws and fire breath paint over the card in DOM order.
+/* Dragon wrapped around the SU card: wings, tail, head and its fire breath sit behind it with z-index -1, so they also pass behind neighbouring
+   cards instead of covering their text; flame light and claws paint over the card in DOM order.
    Left/right sizes are % of the card width, top % of its height; the right side is the left side mirrored about the card. */
 .su-shell { position: relative; transition: transform 0.25s ease; }
 .su-shell:hover { transform: translateY(-4px); }

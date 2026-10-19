@@ -124,16 +124,16 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           ctx.drawImage(sprites[Math.floor(q * 0.6 * top)]!, p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
           continue;
         }
-        const drag = 1 - Math.min(1, 1.6 * dt);
+        const drag = 1 - Math.min(1, 1.1 * dt);
         p.vx *= drag; p.vy *= drag;
         p.vy -= 30 * u * dt; // hot gas rises and curls the plume upward
-        p.x += (p.vx + Math.sin(p.seed + t * 11) * 8 * u * q) * dt;
-        p.y += (p.vy + Math.cos(p.seed + t * 9) * 5 * u * q) * dt;
+        p.x += (p.vx + Math.sin(p.seed + t * 13 + p.y * 0.05) * 14 * u * q) * dt;
+        p.y += (p.vy + Math.cos(p.seed + t * 11 + p.x * 0.05) * 10 * u * q) * dt;
         const size = p.size + (p.grow - p.size) * Math.sqrt(q);
         // Each tongue is stretched along its motion; only the youngest flames near the mouth burn white-hot.
         const speed = Math.hypot(p.vx, p.vy);
         const stretch = Math.min(2.4, 1 + speed / (55 * u));
-        ctx.globalAlpha = (q < 0.08 ? q / 0.08 : 1 - q) * 0.42;
+        ctx.globalAlpha = (q < 0.06 ? q / 0.06 : (1 - q) * (1 - q)) * 0.38; // the red tail fades fast so it never piles up into pink
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(Math.atan2(p.vy, p.vx));
@@ -164,6 +164,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
         <div className="su-side is-mirror"><Part src={dragonWing} className="su-wing" w={600} h={600} /></div>
         <Part src={dragonTail} className="su-tail" w={420} h={560} />
         <img ref={head} src={dragonHead} alt="" width={720} height={720} draggable={false} loading="lazy" decoding="async" className="su-part su-head" />
+        <canvas ref={canvas} className="su-breath" />
       </div>
       {children}
       <div className="su-breath-glow" aria-hidden="true" />
@@ -177,7 +178,6 @@ export function SuDragonShell({ className, missing, children }: { className?: st
           <Part src={dragonClaw} className="su-claw su-claw-hind" w={480} h={480} />
         </div>
       </div>
-      <canvas ref={canvas} className="su-breath" aria-hidden="true" />
     </div>
   );
 }
