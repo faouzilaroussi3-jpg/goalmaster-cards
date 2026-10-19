@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GoldenFlames } from "@/components/GoldenFlames";
+import { TearSparkles } from "@/components/TearSparkles";
 import { shouldTear, tearProgress } from "@/lib/pack-swipe";
 
 /** Height of the tear line, as a percentage of the pack image. */
@@ -101,7 +103,7 @@ export function SwipePack({
         className={cn(
           "relative z-10 w-44 select-none sm:w-56",
           !dragging && !torn && progress === 0 && !disabled && "anim-float",
-          torn && "anim-shake",
+          torn && "tear-pack-lift",
           disabled && "opacity-40",
         )}
       >
@@ -114,21 +116,27 @@ export function SwipePack({
           draggable={false}
           width={768}
           height={1152}
-          className="pointer-events-none relative block w-full"
+          className={cn("pointer-events-none relative block w-full", torn && "tear-pack-flash")}
           style={{ clipPath: bodyClip, transition: ease }}
         />
-        {/* Light leaks out of the tear as it opens, then bursts out of the pack. */}
+        {/* Soft white light leaks out of the cut as it opens. */}
         <div
-          className="tear-light pointer-events-none absolute left-[6%]"
-          style={{ top: `${TEAR_Y}%`, width: `${Math.max(0, Math.min(P, 94) - 6)}%`, opacity: Math.min(1, progress * 1.6) }}
+          className="tear-leak pointer-events-none absolute left-[6%]"
+          style={{ bottom: `${100 - TEAR_Y}%`, width: `${progress * 88}%`, opacity: torn ? 1 : Math.min(1, progress * 1.4) }}
           aria-hidden
         />
         <div
-          className="tear-rays pointer-events-none absolute left-[6%]"
-          style={{ bottom: `${100 - TEAR_Y}%`, width: `${Math.max(0, Math.min(P, 94) - 6)}%`, opacity: progress, transform: `scaleY(${0.3 + progress * 0.9})` }}
+          className="tear-cut pointer-events-none absolute left-[6%]"
+          style={{ top: `${TEAR_Y}%`, width: `${progress * 88}%`, opacity: progress > 0 ? 1 : 0 }}
           aria-hidden
         />
-        {torn && <div className="tear-burst pointer-events-none absolute left-1/2" style={{ top: `${TEAR_Y}%` }} aria-hidden />}
+        <TearSparkles
+          progress={progress}
+          torn={torn}
+          tearY={TEAR_Y}
+          className="pointer-events-none absolute -left-1/2 -top-1/2 z-20 h-[200%] w-[200%]"
+        />
+        {torn && typeof document !== "undefined" && createPortal(<div className="tear-whiteout pointer-events-none fixed inset-0 z-40" aria-hidden />, document.body)}
         {/* The torn strip peels up from its tear point, then flies away. */}
         <img
           src={image}
@@ -149,12 +157,12 @@ export function SwipePack({
 
         {!disabled && !torn && (
           <>
-            <div className="tear-line pointer-events-none absolute left-[6%] right-[6%]" style={{ top: `${TEAR_Y}%` }} aria-hidden>
-              <div className="tear-line-done" style={{ width: `${progress * 100}%` }} />
-              <div
-                className={cn("tear-handle", progress === 0 && "tear-handle-idle")}
-                style={{ left: `${progress * 100}%` }}
-              />
+            <div
+              className="tear-line pointer-events-none absolute left-[6%] right-[6%]"
+              style={{ top: `${TEAR_Y}%`, opacity: progress > 0 ? 0 : 1, transition: "opacity 150ms" }}
+              aria-hidden
+            >
+              <div className="tear-handle tear-handle-idle" />
             </div>
             <div
               role="button"
