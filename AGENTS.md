@@ -18,3 +18,4 @@
 - Catalog edition data is curated in a browser-safe module and applied to existing card IDs; tests validate player-tier eligibility and distinct star-edition photographs without changing pack probabilities.
 - The opening cinematic lazy-loads React Three Fiber and a locally hosted CC0 rigged human; its frame-driven camera and effects use the highest returned card tier, and completion follows model-ready animation time with skip/reduced-motion support, never changing draws.
 - Pack tear-to-open thresholds (left-to-right on the top strip) live in src/lib/pack-swipe.ts as pure functions with tests, so gesture tuning never touches the component or the server draw.
+- Pack results are revealed from a tap-to-flip stack (CardBack + src/lib/card-reveal.ts timings, bonus card last); reveal suspense is presentation only and never affects the server draw.
