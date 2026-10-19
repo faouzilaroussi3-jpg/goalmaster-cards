@@ -1,10 +1,12 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
-import { useAuth, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
+import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
+import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
 
 const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
@@ -22,6 +24,44 @@ export function AppHeader() {
   const { data: duels } = useMyDuels();
   const duelTodo = (duels ?? []).filter((d) => d.my_turn || d.incoming).length;
   const uid = session?.user.id;
+  const { data: friendList } = useFriends();
+  const friendTodo = splitFriends(friendList ?? []).incoming.length;
+  const unread = unreadTotal(friendList ?? []);
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
+  const pathRef = useRef(pathname);
+  pathRef.current = pathname;
+
+  // Friends + messages realtime: RLS only delivers rows where I am one of the two players.
+  useEffect(() => {
+    if (!uid) return;
+    const refresh = () => qc.invalidateQueries({ queryKey: ["friends"] });
+    const channel = supabase
+      .channel(`social-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, (p) => {
+        refresh();
+        const row = p.new as { requester_id?: string; addressee_id?: string; status?: string } | null;
+        if (p.eventType === "INSERT" && row?.addressee_id === uid) {
+          sfx.friendRequest();
+          toast("Nouvelle demande d'ami", { action: { label: "Voir", onClick: () => navigate({ to: "/amis" }) } });
+        } else if (p.eventType === "UPDATE" && row?.status === "accepted" && row.requester_id === uid) {
+          sfx.friendAccept();
+          toast("Demande d'ami acceptée !");
+        }
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
+        refresh();
+        qc.invalidateQueries({ queryKey: ["messages"] });
+        const row = p.new as { sender_id?: string; recipient_id?: string } | null;
+        if (p.eventType === "INSERT" && row?.recipient_id === uid) {
+          sfx.messageIn();
+          if (!pathRef.current.startsWith("/messages")) {
+            toast("Nouveau message", { action: { label: "Lire", onClick: () => navigate({ to: "/messages", search: { ami: row.sender_id } }) } });
+          }
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [uid, qc, navigate]);
 
   // One realtime subscription for the whole app: any change on my duels refreshes duel lists and boards.
   useEffect(() => {
@@ -57,6 +97,23 @@ export function AppHeader() {
     </Link>
   );
 
+  const badge = (n: number, label: string) =>
+    n > 0 && (
+      <span aria-label={label} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+        {n > 99 ? "99+" : n}
+      </span>
+    );
+  const amis = (
+    <Link to="/amis" className={linkCls} activeProps={activeCls}>
+      Amis{badge(friendTodo, `${friendTodo} demande${friendTodo > 1 ? "s" : ""} d'ami reçue${friendTodo > 1 ? "s" : ""}`)}
+    </Link>
+  );
+  const messages = (
+    <Link to="/messages" className={linkCls} activeProps={activeCls}>
+      Messages{badge(unread, `${unread} message${unread > 1 ? "s" : ""} non lu${unread > 1 ? "s" : ""}`)}
+    </Link>
+  );
+
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -70,12 +127,14 @@ export function AppHeader() {
         <Link to="/" className="font-display text-2xl tracking-widest text-gold sm:text-3xl">
           GOALMASTER
         </Link>
-        <nav className="hidden flex-1 items-center gap-1 lg:flex">
+        <nav className="hidden flex-1 items-center gap-0.5 2xl:flex">
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
           {session && defis}
           {session && duelLink}
+          {session && amis}
+          {session && messages}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
           {profile?.isAdmin && (
@@ -103,12 +162,14 @@ export function AppHeader() {
           )}
         </div>
       </div>
-      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 lg:hidden [&>a]:shrink-0 [&>a]:px-2">
+      <nav className="flex justify-between overflow-x-auto border-t border-border px-1 py-1 2xl:hidden [&>a]:shrink-0 [&>a]:px-2">
         <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
         <Link to="/collection" className={linkCls} activeProps={activeCls}>Collection</Link>
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
         {session && defis}
         {session && duelLink}
+        {session && amis}
+        {session && messages}
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
         {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}
