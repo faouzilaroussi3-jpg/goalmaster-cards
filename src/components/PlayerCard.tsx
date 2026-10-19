@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
-import { useRarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
+import { useRarityMeta, VERSION_LABEL, type CardData, type RarityInfo } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragonShell, useNeonFilterId } from "@/components/RareCardFx";
 
@@ -9,14 +9,18 @@ export function PlayerCard({
   missing,
   count,
   className,
+  rarityInfo,
 }: {
   card: CardData;
   missing?: boolean;
   count?: number;
   className?: string;
+  /** Preview a rarity that is not saved yet (admin rarity editor). */
+  rarityInfo?: RarityInfo;
 }) {
   // Admin-created rarities wear the visual effect (fx) and optional tint chosen for them.
-  const r = useRarityMeta(card.rarity);
+  const known = useRarityMeta(card.rarity);
+  const r = rarityInfo ?? known;
   const version = card.version ?? "normal";
   // ALT cards carry their own illustration; fall back to the normal one (re-framed) when none exists yet.
   const image = version === "alt" ? (card.alt_image_url ?? card.image_url) : card.image_url;
