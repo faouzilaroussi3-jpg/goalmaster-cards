@@ -52,7 +52,7 @@ export function cardPower(card: DuelCardLike, theme: Theme) {
   const version = card.version ?? "normal";
   return (
     card.rating +
-    (RARITY_BONUS[card.rarity] ?? 0) +
+    (RARITY_BONUS[rarityMeta(card.rarity).fx] ?? 0) +
     (version === "alt" || version === "shiny" ? 2 : 0) +
     positionModifier(card.pos, theme)
   );
