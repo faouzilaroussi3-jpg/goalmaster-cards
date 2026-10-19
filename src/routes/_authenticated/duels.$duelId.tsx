@@ -283,7 +283,7 @@ function DuelPage() {
   );
 }
 
-function PowerTag({ card, theme, used }: { card: DeckCard; theme?: Theme; used: boolean }) {
+function PowerTag({ card, theme, used }: { card: DeckCard; theme?: Theme | undefined; used: boolean }) {
   return (
     <span className="mt-1 flex items-center justify-between text-[11px]">
       <span className="text-muted-foreground">{card.pos}</span>
@@ -294,7 +294,7 @@ function PowerTag({ card, theme, used }: { card: DeckCard; theme?: Theme; used: 
   );
 }
 
-function TeamRow({ title, cards, theme }: { title: string; cards: DeckCard[]; theme?: Theme }) {
+function TeamRow({ title, cards, theme }: { title: string; cards: DeckCard[]; theme?: Theme | undefined }) {
   return (
     <section className="mt-6">
       <h2 className="mb-2 font-display text-2xl tracking-wide text-muted-foreground">{title}</h2>

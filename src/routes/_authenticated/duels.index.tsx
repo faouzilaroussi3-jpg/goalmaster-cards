@@ -159,7 +159,7 @@ function Section({ title, empty, items, render }: { title: string; empty: string
   );
 }
 
-function DuelRow({ d, status, action, highlight, tone }: { d: MyDuel; status: string; action: ReactNode; highlight?: boolean; tone?: string }) {
+function DuelRow({ d, status, action, highlight, tone }: { d: MyDuel; status: string; action: ReactNode; highlight?: boolean; tone?: string | undefined }) {
   const deadline = d.status === "active" && d.round_started_at ? new Date(d.round_started_at).getTime() + ROUND_TIMEOUT_HOURS * 3600_000 : null;
   return (
     <li className={cn("flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5",

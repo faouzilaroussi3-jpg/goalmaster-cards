@@ -25,7 +25,7 @@ export interface PickedCard {
 
 /** Pick 5 different players from the collection within the duel budget. */
 export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
-  themes?: Theme[] | null;
+  themes?: Theme[] | null | undefined;
   submitLabel: string;
   busy?: boolean;
   onSubmit: (cards: PickedCard[]) => void;
