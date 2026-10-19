@@ -313,7 +313,8 @@
 .tear-handle-idle { animation: tear-handle-slide 1.8s ease-in-out infinite; }
 @keyframes tear-handle-slide { 0% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(60px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .opening-glow, .tear-burst, .opening-entry, .swipe-hint, .tear-handle-idle { animation: none !important; }
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .opening-glow, .tear-burst, .swipe-hint, .tear-handle-idle { animation: none !important; }
+  .opening-entry { display: none; }
   .cinema-player-travel { transform: translate(440px,385px); }
   .cinema-ball-travel { transform: translate(540px,450px); }
   .cinema-impact, .cinema-sparks, .cinema-speed-lines, .cinema-impact-wash { display: none; }
