@@ -17,7 +17,7 @@ describe("card photo uploads", () => {
 
 describe("automatic rarity effects", () => {
   it("SU gets fire and dragons", () => {
-    expect(rarityEffects("secret_ultimate")).toEqual(expect.arrayContaining(["Feu réaliste", "3 dragons 3D"]));
+    expect(rarityEffects("secret_ultimate")).toEqual(expect.arrayContaining(["Feu réaliste", "Dragon cracheur de feu"]));
   });
   it("SL classic gets diamonds, SL shiny gets navy/white neon", () => {
     expect(rarityEffects("secret_legendary")).toContain("Petits diamants qui gravitent");

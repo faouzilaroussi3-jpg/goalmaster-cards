@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
 import { rarityMeta, VERSION_LABEL, type CardData } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
-import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragon3D, useNeonFilterId } from "@/components/RareCardFx";
+import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragonShell, useNeonFilterId } from "@/components/RareCardFx";
 
 export function PlayerCard({
   card,
@@ -73,11 +73,6 @@ export function PlayerCard({
     </div>
   );
   if (!ultimate) return body;
-  // The 3D dragon flies outside the card's clipped frame, so Secret Ultimate cards get an unclipped shell.
-  return (
-    <div className={cn("su-shell", missing && "is-missing", className)}>
-      {body}
-      <SuDragon3D />
-    </div>
-  );
+  // The dragon's limbs and head stick out of the card's clipped frame, so Secret Ultimate cards get an unclipped shell.
+  return <SuDragonShell className={className} missing={missing}>{body}</SuDragonShell>;
 }

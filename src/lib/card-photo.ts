@@ -39,7 +39,7 @@ export function rarityEffects(rarity: string, version: "normal" | "alt" | "shiny
         ? ["Néon inversé bleu marine / blanc", "Paillettes"]
         : ["Bordure diamant", "Gros diamant autour du bord", "Petits diamants qui gravitent"];
     case "secret_ultimate":
-      return ["Bordure de flammes", "Feu réaliste", "3 dragons 3D", "Cachée jusqu'au premier tirage"];
+      return ["Bordure de flammes", "Feu réaliste", "Dragon cracheur de feu", "Cachée jusqu'au premier tirage"];
     default: return [];
   }
 }

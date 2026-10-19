@@ -263,12 +263,56 @@
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
 @keyframes su-heat { from { box-shadow: 0 0 28px 0 color-mix(in oklab, var(--flame-outer) 70%, transparent), 0 0 60px -12px var(--flame-mid); } to { box-shadow: 0 0 46px 4px color-mix(in oklab, var(--flame-outer) 85%, transparent), 0 0 90px -8px var(--flame-mid); } }
 @keyframes ember-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-60%); opacity: 0; } }
-/* 3D dragon overlay: overflows the card by DRAGON_PAD_X (40%) / DRAGON_PAD_Y (20%) on each side (src/lib/dragon-orbit.ts). */
-.su-shell { position: relative; transition: transform 0.25s ease; }
+/* Dragon wrapped around the SU card: wings, tail and head behind it (z 0), card (z 1), flame light (z 2), claws (z 3), fire breath (z 4).
+   Left/right sizes are % of the card width, top % of its height; the right side is the left side mirrored about the card. */
+.su-shell { position: relative; isolation: isolate; transition: transform 0.25s ease; }
 .su-shell:hover { transform: translateY(-4px); }
+.su-shell > .fm-card { z-index: 1; transition: filter .3s ease; }
 .su-shell .fm-card:hover { transform: none; }
-.su-dragon3d { position: absolute; left: -40%; right: -40%; top: -20%; bottom: -20%; z-index: 10; pointer-events: none; }
-.su-shell.is-missing .su-dragon3d { filter: grayscale(1) brightness(0.5); }
+.su-back, .su-front, .su-side { position: absolute; inset: 0; pointer-events: none; }
+.su-back { z-index: 0; }
+.su-front { z-index: 3; }
+.su-side.is-mirror { transform: scaleX(-1); }
+.su-part { position: absolute; max-width: none; height: auto; user-select: none; filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 6px color-mix(in oklab, var(--flame-outer) 55%, transparent)); }
+.su-head { width: 52%; left: 25%; top: -23%; transform-origin: 35% 95%; transition: filter .3s ease; }
+.su-wing { width: 40%; left: -19%; top: 1%; transform-origin: 93% 98%; }
+.su-tail { width: 30%; right: -9%; top: 86%; transform-origin: 40% 0; }
+.su-claw { transform-origin: 70% 80%; }
+.su-claw-fore { width: 34%; left: -21%; top: 33%; rotate: -52deg; }
+.su-claw-hind { width: 25%; left: -15%; top: 63%; rotate: -38deg; }
+.su-breath { position: absolute; z-index: 4; left: 20%; right: -55%; top: -48%; bottom: 40%; width: 125%; height: 108%; pointer-events: none; }
+.su-breath-glow { position: absolute; inset: 0; z-index: 2; border-radius: 8px; pointer-events: none; mix-blend-mode: screen; opacity: .22; background: radial-gradient(ellipse 85% 55% at 70% -4%, color-mix(in oklab, var(--flame-core) 80%, transparent), color-mix(in oklab, var(--flame-mid) 55%, transparent) 32%, color-mix(in oklab, var(--flame-outer) 30%, transparent) 58%, transparent 82%); }
+.su-shell.is-breathing > .fm-card { filter: brightness(1.12) saturate(1.15); }
+.su-shell.is-breathing .su-head { filter: drop-shadow(0 3px 5px var(--card-shadow)) drop-shadow(0 0 10px var(--flame-mid)) brightness(1.15); }
+.su-shell.is-missing > :not(.fm-card) { filter: grayscale(1) brightness(0.5); }
+.su-shell.is-missing .su-breath-glow, .su-shell.is-missing .su-breath { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .su-head { animation: su-head-idle 3.4s ease-in-out infinite; }
+  .su-shell.is-breathing .su-head { animation: su-head-breath 2s ease-out; }
+  .su-wing { animation: su-wing-flap 2.8s ease-in-out infinite; }
+  .su-shell.is-breathing .su-wing { animation-duration: 1s; }
+  .su-tail { animation: su-tail-sway 3.8s ease-in-out infinite; }
+  .su-claw { animation: su-claw-flex 3.2s ease-in-out infinite; }
+  .su-claw-hind { animation-delay: -1.3s; }
+  .is-mirror .su-claw { animation-delay: -.8s; }
+  .is-mirror .su-claw-hind { animation-delay: -2.1s; }
+  .su-breath-glow { animation: su-glow-idle 2.2s ease-in-out infinite alternate; }
+  .su-shell.is-breathing .su-breath-glow { animation: su-glow-breath 2s ease-out; }
+}
+@keyframes su-head-idle { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.5%) rotate(-1.5deg); } }
+@keyframes su-head-breath {
+  0% { transform: none; }
+  18% { transform: translate(-3%, 3%) rotate(5deg); }
+  28% { transform: translate(2%, -4%) rotate(-5deg); }
+  40%, 60%, 80% { transform: translate(2.6%, -4%) rotate(-6deg); }
+  50%, 70% { transform: translate(1.8%, -3.4%) rotate(-4.5deg); }
+  100% { transform: none; }
+}
+@keyframes su-wing-flap { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(9deg); } }
+@keyframes su-tail-sway { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes su-claw-flex { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg) scale(1.03); } }
+@keyframes su-glow-idle { from { opacity: .14; } to { opacity: .3; } }
+@keyframes su-glow-breath { 0% { opacity: .22; } 19% { opacity: .35; } 30% { opacity: .95; } 42% { opacity: .7; } 54% { opacity: 1; } 66% { opacity: .75; } 78% { opacity: .9; } 100% { opacity: .22; } }
 .su-fire { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; box-shadow: inset 0 -10px 16px -4px var(--flame-outer), inset 8px 0 14px -6px var(--flame-outer), inset -8px 0 14px -6px var(--flame-outer); }
 /* Secrète Légendaire: orbiting diamond */
 .sl-orbit-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }
