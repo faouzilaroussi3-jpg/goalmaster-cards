@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMyPacks, useProfile } from "@/lib/auth";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
+import { preloadFootballCinematic } from "@/components/FootballCinematic";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/packs")({
@@ -50,16 +51,22 @@ function PacksPage() {
   const [opening, setOpening] = useState<{ key: string; result: OpenResult | null } | null>(null);
   const [busy, setBusy] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [round, setRound] = useState(0);
+
+  // Warm up the 3D animation so it starts the moment a pack is torn.
+  useEffect(() => { preloadFootballCinematic(); }, []);
 
   async function open(key: string) {
     if (busy) return;
     setBusy(true);
-    setOpening({ key, result: null });
-    const { data, error } = await supabase.rpc("open_pack", { _pack_key: key });
+    // Draw on the server while the light bursts out of the torn pack, then cut straight to the cinematic.
+    const burst = new Promise((r) => setTimeout(r, 700));
+    const [{ data, error }] = await Promise.all([supabase.rpc("open_pack", { _pack_key: key }), burst]);
     if (error) {
       toast.error(error.message);
       setOpening(null);
       setBusy(false);
+      setRound((r) => r + 1);
       refetch();
       return;
     }
@@ -78,6 +85,7 @@ function PacksPage() {
   function close() {
     setOpening(null);
     setBusy(false);
+    setRound((r) => r + 1);
     qc.invalidateQueries();
   }
 
@@ -99,6 +107,7 @@ function PacksPage() {
           <h2 className="text-3xl">{selected.name}</h2>
           <p className="text-sm text-muted-foreground">{selected.description}</p>
           <SwipePack
+            key={`${selected.pack_key}-${round}`}
             image={IMG[selected.pack_key] ?? packClassic}
             name={selected.name}
             premium={selected.pack_key === "premium"}

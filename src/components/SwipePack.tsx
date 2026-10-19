@@ -49,11 +49,7 @@ export function SwipePack({
     if (disabled || torn) return;
     setProgress(1);
     setTorn(true);
-    window.setTimeout(() => {
-      onOpen();
-      setTorn(false);
-      setProgress(0);
-    }, 650);
+    onOpen();
   }
 
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
@@ -96,7 +92,7 @@ export function SwipePack({
   const ease = dragging ? "none" : "clip-path 420ms cubic-bezier(.2,1.2,.4,1), transform 420ms cubic-bezier(.2,1.2,.4,1)";
 
   return (
-    <div className="relative flex w-full flex-col items-center overflow-hidden py-4">
+    <div className="relative flex w-full flex-col items-center py-4">
       <div className="swipe-glow pointer-events-none absolute inset-0" style={{ opacity: 0.25 + progress * 0.75 }} aria-hidden />
 
       <div
@@ -117,6 +113,18 @@ export function SwipePack({
           className={cn("pointer-events-none block w-full", premium && "drop-shadow-[0_0_26px_var(--primary)]")}
           style={{ clipPath: bodyClip, transition: ease }}
         />
+        {/* Light leaks out of the tear as it opens, then bursts out of the pack. */}
+        <div
+          className="tear-light pointer-events-none absolute left-0"
+          style={{ top: `${TEAR_Y}%`, width: `${P}%`, opacity: Math.min(1, progress * 1.6) }}
+          aria-hidden
+        />
+        <div
+          className="tear-rays pointer-events-none absolute left-0"
+          style={{ bottom: `${100 - TEAR_Y}%`, width: `${P}%`, opacity: progress, transform: `scaleY(${0.3 + progress * 0.9})` }}
+          aria-hidden
+        />
+        {torn && <div className="tear-burst pointer-events-none absolute left-1/2" style={{ top: `${TEAR_Y}%` }} aria-hidden />}
         {/* The torn strip peels up from its tear point, then flies away. */}
         <img
           src={image}

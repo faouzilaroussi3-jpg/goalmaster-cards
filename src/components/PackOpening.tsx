@@ -38,7 +38,7 @@ export function PackOpening({
   result: OpenResult | null;
   onClose: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>("intro");
+  const [phase, setPhase] = useState<Phase>(() => (result ? "football" : "intro"));
   const [revealed, setRevealed] = useState(0);
   const [flash, setFlash] = useState<string | null>(null);
   const [suFx, setSuFx] = useState(false);
@@ -46,11 +46,9 @@ export function PackOpening({
   const main = result?.cards.filter((c) => !c.is_bonus) ?? [];
   const bonus = result?.cards.find((c) => c.is_bonus);
 
-  // The pack was already torn on the packs page: a short glow, then straight to the cinematic.
+  // The pack was already torn on the packs page: go straight to the cinematic.
   useEffect(() => {
-    if (phase !== "intro" || !result) return;
-    const t = setTimeout(() => setPhase("football"), 450);
-    return () => clearTimeout(t);
+    if (phase === "intro" && result) setPhase("football");
   }, [phase, result]);
 
   const finishFootball = useCallback(() => setPhase((current) => current === "football" ? "reveal" : current), []);
@@ -129,6 +127,7 @@ export function PackOpening({
       )}
 
       {phase === "football" && result && <FootballCinematic cards={result.cards} onComplete={finishFootball} />}
+      {phase === "football" && <div className="opening-entry pointer-events-none fixed inset-0 z-10" aria-hidden />}
 
       {phase !== "intro" && phase !== "burst" && phase !== "football" && result && (
         <div className="relative w-full max-w-5xl">
