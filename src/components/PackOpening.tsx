@@ -4,7 +4,9 @@ import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CardBack } from "@/components/CardBack";
-import { chargeDelay, FLIP_MS, RARITY_VAR } from "@/lib/card-reveal";
+import { RARITY_VAR } from "@/lib/card-reveal";
+import { revealTiming, type RareFx } from "@/lib/rare-reveal";
+import { RareRevealFx } from "@/components/RareRevealFx";
 
 export interface OpenedCard {
   slot: number;
@@ -50,7 +52,8 @@ export function PackOpening({
   const [busy, setBusy] = useState(false);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
-  const [suFx, setSuFx] = useState(false);
+  const [rare, setRare] = useState<{ fx: RareFx; key: number; boom: number; total: number; title: boolean; shake: boolean } | null>(null);
+  const stackRef = useRef<HTMLButtonElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // The server already orders the pack from least rare to rarest, so the best card is revealed last.
@@ -66,12 +69,16 @@ export function PackOpening({
   }, [phase, result]);
 
   function triggerFlash(c: OpenedCard) {
-    if (c.rarity === "secret_ultimate") {
-      setSuFx(true);
-      later(() => setSuFx(false), 3200);
-    }
     setFlash(c.rarity);
     later(() => setFlash(null), 900);
+  }
+
+  /** Légendaire or better: glow build-up, explosion as the face appears, then lingering light (3.6 to 4.8 s). */
+  function playRare(fx: RareFx, key: number, boom: number, total: number) {
+    setRare({ fx, key, boom, total, title: false, shake: false });
+    later(() => setRare((r) => (r && r.key === key ? { ...r, title: true, shake: true } : r)), boom);
+    later(() => setRare((r) => (r && r.key === key ? { ...r, shake: false } : r)), boom + 500);
+    later(() => setRare((r) => (r && r.key === key ? null : r)), total);
   }
 
   /** One tap: the face-up card goes to the tray and the next card comes forward and turns over. */
@@ -80,17 +87,19 @@ export function PackOpening({
     if (turned >= total) { setPhase("done"); return; }
     const next = cards[turned];
     if (!next) return;
-    const charge = chargeDelay(next.tier, next.is_bonus, next.version);
+    const timing = revealTiming(next);
     if (turned > 0) setLeaving(turned - 1);
     setTurned(turned + 1);
     setBusy(true);
-    later(() => { if (next.tier >= 4) triggerFlash(next); }, charge + FLIP_MS * 0.4);
-    later(() => setBusy(false), charge + FLIP_MS);
+    if (timing.fx) playRare(timing.fx, turned + 1, timing.boom, timing.total);
+    else if (next.tier >= 4) later(() => triggerFlash(next), timing.boom);
+    later(() => setBusy(false), timing.lock);
   }
 
   function skip() {
     if (!result) return;
     setTurned(total);
+    setRare(null);
     setPhase("done");
   }
 
@@ -106,11 +115,14 @@ export function PackOpening({
           className={cn("pointer-events-none fixed inset-0 z-10 anim-flash", flash === "secret_ultimate" ? "su-overlay" : "bg-primary/40")}
         />
       )}
-      {suFx && (
-        <div className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center">
-          <div className="rays" style={{ ["--rc" as string]: "var(--primary-glow)" }} />
-          <h2 className="anim-rise relative text-center text-6xl text-gold drop-shadow-[0_0_30px_var(--primary-glow)] sm:text-8xl">
-            SECRÈTE ULTIME
+      {rare && phase === "reveal" && (
+        <RareRevealFx key={rare.key} fx={rare.fx} boomAt={rare.boom} total={rare.total} anchor={stackRef} />
+      )}
+      {rare?.title && front && (
+        <div className="pointer-events-none fixed inset-x-0 top-[6%] z-20 flex justify-center px-4">
+          <h2 className="rare-title text-center text-5xl sm:text-7xl" data-fx={rare.fx}>
+            {rarityMeta(front.rarity).label}
+            {front.version !== "normal" && ` ${VERSION_LABEL[front.version]}`}
           </h2>
         </div>
       )}
@@ -135,9 +147,10 @@ export function PackOpening({
 
           <button
             type="button"
+            ref={stackRef}
             onClick={revealNext}
             aria-label={lastShown ? "Voir le résumé du pack" : "Révéler la carte suivante"}
-            className="reveal-stack relative aspect-[5/7] w-52 cursor-pointer rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-64"
+            className={cn("reveal-stack relative aspect-[5/7] w-52 cursor-pointer rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-64", rare?.shake && "rare-shake")}
           >
             {/* Face-down cards still waiting, furthest first. */}
             {waiting.map((c, i) => ({ c, depth: i + 1 })).reverse().map(({ c, depth }) => {
@@ -163,7 +176,7 @@ export function PackOpening({
             {/* The card being turned over: it comes forward from the stack, charges, then flips. */}
             {front && (() => {
               const o = stackOffset(turned === 1 ? 0 : 1);
-              const charge = chargeDelay(front.tier, front.is_bonus, front.version);
+              const { charge, fx } = revealTiming(front);
               return (
                 <div
                   key={`front-${turned}`}
@@ -180,7 +193,7 @@ export function PackOpening({
                   {front.tier >= 5 && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: RARITY_VAR[front.rarity] }} />}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
-                      <CardBack bonus={front.is_bonus} className={cn(front.tier >= 4 && "gm-back-charge")} />
+                      <CardBack bonus={front.is_bonus} className={cn(front.tier >= 4 && "gm-back-charge", fx && "gm-back-rare")} />
                     </div>
                     <div className="flip-face flip-back">
                       <PlayerCard card={front} />
