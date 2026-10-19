@@ -253,12 +253,15 @@ export const sfx = {
     noise(e, { dur: 0.15, freq: 1100, to: 3800, q: 1.6, gain: 0.11, attack: 0.03 });
     tone(e, { start: 0.11, freq: 320, to: 170, dur: 0.08, gain: 0.08 });
   }),
-  /** Real trading-card handling: a crisp cardboard snap, a light thump and a short paper rub. */
+  /** Satisfying trading-card flick: airy swoosh into a crisp snap, warm body thump and a soft sparkle tail. */
   cardTap: () => play((e) => {
-    noise(e, { dur: 0.018, filter: "highpass", freq: 3200, gain: 0.16, attack: 0.001, reverb: 0.02 });
-    noise(e, { start: 0.004, dur: 0.035, freq: 1800, q: 2.2, gain: 0.1, attack: 0.002, reverb: 0.03 });
-    tone(e, { start: 0.002, freq: 180, to: 110, dur: 0.05, gain: 0.07, reverb: 0 });
-    noise(e, { start: 0.03, dur: 0.09, filter: "lowpass", freq: 2600, to: 900, gain: 0.035, attack: 0.02, reverb: 0.04 });
+    special();
+    noise(e, { dur: 0.11, freq: 700, to: 4200, q: 1.1, gain: 0.3, attack: 0.05, reverb: 0.08, pan: rand(-0.15, 0.15) });
+    noise(e, { start: 0.09, dur: 0.022, filter: "highpass", freq: 2600, gain: 0.42, attack: 0.001, reverb: 0.1 });
+    noise(e, { start: 0.092, dur: 0.05, freq: 1300, q: 1.8, gain: 0.22, attack: 0.002, reverb: 0.06 });
+    tone(e, { start: 0.09, freq: 240, to: 120, dur: 0.09, gain: 0.26, reverb: 0.05 });
+    bell(e, 1318.5, 0.1, 0.5, 0.05, -0.2);
+    bell(e, 1975.5, 0.13, 0.55, 0.04, 0.2);
   }),
   cardSlide: () => play((e) => noise(e, { dur: 0.22, filter: "lowpass", freq: 1400, to: 300, gain: 0.07, attack: 0.04 })),
   stackAppear: () => play((e) => {
