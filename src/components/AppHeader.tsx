@@ -45,7 +45,6 @@ export function AppHeader() {
           <Link to="/packs" className={linkCls} activeProps={activeCls}>Packs</Link>
           <Link to="/collection" className={linkCls} activeProps={activeCls}>Ma collection</Link>
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
-        {session && defis}
           {session && defis}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
