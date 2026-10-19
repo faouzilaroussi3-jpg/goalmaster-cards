@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Brain, Clock, Globe, Swords, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -148,7 +148,7 @@ function DuelsPage() {
   );
 }
 
-function Section({ title, empty, items, render }: { title: string; empty: string; items: MyDuel[]; render: (d: MyDuel) => React.ReactNode }) {
+function Section({ title, empty, items, render }: { title: string; empty: string; items: MyDuel[]; render: (d: MyDuel) => ReactNode }) {
   return (
     <section>
       <h2 className="mb-3 flex items-center gap-2 font-display text-2xl tracking-wide">
@@ -159,7 +159,7 @@ function Section({ title, empty, items, render }: { title: string; empty: string
   );
 }
 
-function DuelRow({ d, status, action, highlight, tone }: { d: MyDuel; status: string; action: React.ReactNode; highlight?: boolean; tone?: string }) {
+function DuelRow({ d, status, action, highlight, tone }: { d: MyDuel; status: string; action: ReactNode; highlight?: boolean; tone?: string }) {
   const deadline = d.status === "active" && d.round_started_at ? new Date(d.round_started_at).getTime() + ROUND_TIMEOUT_HOURS * 3600_000 : null;
   return (
     <li className={cn("flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5",
