@@ -53,10 +53,8 @@ export function PackOpening({
   const [suFx, setSuFx] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Main cards first, bonus card last (it sits at the bottom of the stack).
-  const cards = result ? [...result.cards.filter((c) => !c.is_bonus), ...result.cards.filter((c) => c.is_bonus)] : [];
-  const main = cards.filter((c) => !c.is_bonus);
-  const bonus = cards.find((c) => c.is_bonus);
+  // The server already orders the pack from least rare to rarest, so the best card is revealed last.
+  const cards = result ? [...result.cards].sort((a, b) => a.slot - b.slot) : [];
   const total = cards.length;
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -129,7 +127,7 @@ export function PackOpening({
       {phase === "reveal" && result && (
         <div className="relative flex w-full max-w-3xl flex-col items-center">
           <p className="mb-1 font-display text-2xl tracking-widest text-primary">
-            {front?.is_bonus ? "CARTE BONUS" : `CARTE ${Math.max(1, turned)} / ${total}`}
+            {`CARTE ${Math.max(1, turned)} / ${total}`}
           </p>
           <p className="mb-10 h-5 text-sm text-muted-foreground">
             {busy ? "" : lastShown ? "Touche la carte pour voir ton pack" : "Touche la carte pour la révéler"}
@@ -223,27 +221,13 @@ export function PackOpening({
       {phase === "done" && result && (
         <div className="relative w-full max-w-5xl">
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-4">
-            {main.map((c, i) => (
+            {cards.map((c, i) => (
               <div key={i} className="relative anim-card-in" style={{ animationDelay: `${i * 70}ms` }}>
                 <PlayerCard card={c} />
                 {c.is_new && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-gold px-2 text-[10px] font-bold text-primary-foreground">NOUVEAU</span>}
               </div>
             ))}
           </div>
-
-          {bonus && (
-            <div className="mt-6 flex flex-col items-center">
-              <p className="mb-3 font-display text-xl tracking-widest text-primary">CARTE BONUS</p>
-              <div className="relative w-40 anim-card-in sm:w-52" style={{ animationDelay: "380ms" }}>
-                <PlayerCard card={bonus} />
-                {bonus.is_new && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-gold px-2 text-[10px] font-bold text-primary-foreground">NOUVEAU</span>}
-              </div>
-              <p className="mt-3 font-display text-2xl text-gold">
-                {rarityMeta(bonus.rarity).label}
-                {bonus.version !== "normal" && ` · ${VERSION_LABEL[bonus.version]}`}
-              </p>
-            </div>
-          )}
 
           <div className="anim-rise mt-6 flex flex-col items-center gap-3">
             <p className="text-sm text-muted-foreground">
