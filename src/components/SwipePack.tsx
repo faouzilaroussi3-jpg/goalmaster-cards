@@ -115,13 +115,13 @@ export function SwipePack({
         />
         {/* Light leaks out of the tear as it opens, then bursts out of the pack. */}
         <div
-          className="tear-light pointer-events-none absolute left-0"
-          style={{ top: `${TEAR_Y}%`, width: `${P}%`, opacity: Math.min(1, progress * 1.6) }}
+          className="tear-light pointer-events-none absolute left-[6%]"
+          style={{ top: `${TEAR_Y}%`, width: `${Math.max(0, Math.min(P, 94) - 6)}%`, opacity: Math.min(1, progress * 1.6) }}
           aria-hidden
         />
         <div
-          className="tear-rays pointer-events-none absolute left-0"
-          style={{ bottom: `${100 - TEAR_Y}%`, width: `${P}%`, opacity: progress, transform: `scaleY(${0.3 + progress * 0.9})` }}
+          className="tear-rays pointer-events-none absolute left-[6%]"
+          style={{ bottom: `${100 - TEAR_Y}%`, width: `${Math.max(0, Math.min(P, 94) - 6)}%`, opacity: progress, transform: `scaleY(${0.3 + progress * 0.9})` }}
           aria-hidden
         />
         {torn && <div className="tear-burst pointer-events-none absolute left-1/2" style={{ top: `${TEAR_Y}%` }} aria-hidden />}
