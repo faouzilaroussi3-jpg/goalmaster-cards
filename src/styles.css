@@ -269,7 +269,7 @@
 .fm-card[data-rarity="secret_ultimate"] .card-pattern { mix-blend-mode: color; opacity: .42; background: linear-gradient(160deg, var(--su-metal-bright), var(--su-metal) 45%, var(--su-metal-deep)); }
 .fm-card[data-rarity="secret_ultimate"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; mix-blend-mode: overlay; background:
   linear-gradient(112deg, transparent 28%, color-mix(in oklab, var(--su-metal-bright) 80%, transparent) 40%, var(--su-metal-spec) 48%, color-mix(in oklab, var(--su-metal-bright) 80%, transparent) 56%, transparent 68%) 0 0 / 260% 100% no-repeat,
-  repeating-linear-gradient(90deg, color-mix(in oklab, var(--su-metal-spec) 14%, transparent) 0 1px, transparent 1px 3px, color-mix(in oklab, var(--su-metal-deep) 18%, transparent) 3px 4px),
+  repeating-linear-gradient(90deg, color-mix(in oklab, var(--su-metal-spec) 9%, transparent) 0 1px, transparent 1px 3px, color-mix(in oklab, var(--su-metal-deep) 12%, transparent) 3px 4px),
   linear-gradient(180deg, color-mix(in oklab, var(--su-metal-spec) 35%, transparent), transparent 22% 70%, color-mix(in oklab, var(--su-metal-deep) 55%, transparent)),
   radial-gradient(ellipse 120% 90% at 50% 50%, transparent 50%, color-mix(in oklab, var(--su-metal) 90%, transparent)); animation: su-metal-sheen 4.5s ease-in-out infinite; }
 .fm-card[data-rarity="secret_ultimate"] .card-portrait { filter: saturate(1.1) contrast(1.12); }
