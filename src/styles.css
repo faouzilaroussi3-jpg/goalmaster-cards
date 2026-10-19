@@ -7,6 +7,9 @@
 @theme inline {
   --font-display: "Bebas Neue", "Barlow Condensed", sans-serif;
   --font-sans: "Barlow", system-ui, sans-serif;
+  --font-card-sport: "Barlow Condensed", "Barlow", sans-serif;
+  --font-card-engraved: "Cinzel", Georgia, serif;
+  --font-card-ornate: "Cinzel Decorative", "Cinzel", Georgia, serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -194,7 +197,6 @@
 .card-sparks { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(circle at 15% 28%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 88% 44%, var(--rc) 0 1px, transparent 3px), radial-gradient(circle at 25% 70%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 80% 15%, var(--rc) 0 2px, transparent 4px); animation: sparkle-drift 4s ease-in-out infinite; }
 .fm-card[data-rarity="legendary"] .card-sparks { animation-duration: 3s; }
 .fm-card[data-rarity="legendary"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 92%, transparent) 38%, color-mix(in oklab, var(--rc) 38%, var(--card-night))); padding-bottom: 9%; }
-.fm-card[data-rarity="legendary"] .card-name { color: var(--rc); }
 .fm-card[data-rarity="legendary"] .card-pattern { background: linear-gradient(125deg, color-mix(in oklab, var(--rc) 30%, transparent), transparent 35% 70%, color-mix(in oklab, var(--rc) 30%, transparent)), repeating-linear-gradient(45deg, transparent 0 24px, color-mix(in oklab, var(--rc) 22%, transparent) 24px 25px); }
 .card-foil-border { position: absolute; inset: 0; padding: 5px; z-index: 6; border-radius: inherit; pointer-events: none; background: conic-gradient(from 0deg, var(--rc), var(--card-light), var(--rc), var(--card-night), var(--rc), var(--card-light), var(--rc)); background-size: 200% 200%; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; animation: foil-travel 3s linear infinite; }
 .card-border-glitter { position: absolute; inset: 0; z-index: 7; pointer-events: none; background: radial-gradient(circle at 3% 18%, var(--card-light) 0 1px, transparent 3px), radial-gradient(circle at 97% 42%, var(--card-light) 0 1px, transparent 4px), radial-gradient(circle at 24% 2%, var(--card-light) 0 1px, transparent 3px), radial-gradient(circle at 78% 98%, var(--card-light) 0 1px, transparent 4px), radial-gradient(circle at 3% 80%, var(--rc) 0 2px, transparent 5px), radial-gradient(circle at 96% 12%, var(--card-light) 0 2px, transparent 5px); animation: glitter-twinkle 1.8s ease-in-out infinite alternate; }
@@ -228,7 +230,6 @@
 .fm-card[data-rarity="secret_legendary"] .card-foil-border { padding: 7px; background: linear-gradient(115deg, transparent 42%, var(--card-light) 50%, transparent 58%) no-repeat, repeating-conic-gradient(from var(--facet) at 50% 50%, var(--card-light) 0deg 5deg, var(--diamond-ice) 5deg 11deg, var(--r-sl) 11deg 16deg, var(--diamond-lilac) 16deg 21deg, color-mix(in oklab, var(--diamond-ice) 45%, var(--card-night)) 21deg 26deg, var(--card-light) 26deg 30deg); background-size: 100% 100%; background-size: 250% 100%, 100% 100%; animation: facet-spin 8s linear infinite, diamond-glint 2.6s ease-in-out infinite; }
 @keyframes diamond-glint { 0% { background-position: 160% 0, 0 0; } 60%, 100% { background-position: -60% 0, 0 0; } }
 .fm-card[data-rarity="secret_legendary"]::after { inset: 7px; border-color: var(--card-light); box-shadow: 0 0 6px var(--diamond-ice); }
-.fm-card[data-rarity="secret_legendary"] .card-name { color: var(--card-light); text-shadow: 0 0 6px var(--diamond-ice), 0 0 14px var(--diamond-lilac); }
 .fm-card[data-rarity="secret_legendary"] .card-border-glitter { background: radial-gradient(circle at 4% 10%, var(--card-light) 0 1.5px, transparent 4px), radial-gradient(circle at 96% 30%, var(--card-light) 0 2px, transparent 6px), radial-gradient(circle at 50% 1.5%, var(--card-light) 0 1.5px, transparent 5px), radial-gradient(circle at 3% 60%, var(--diamond-ice) 0 2px, transparent 6px), radial-gradient(circle at 97% 86%, var(--card-light) 0 2px, transparent 6px), radial-gradient(circle at 30% 98.5%, var(--diamond-lilac) 0 2px, transparent 5px), radial-gradient(circle at 75% 1.5%, var(--diamond-ice) 0 1.5px, transparent 4px); animation: glitter-twinkle .9s ease-in-out infinite alternate; }
 .fm-card[data-rarity="secret_legendary"] .card-sparks { animation-duration: 2s; }
 
@@ -239,7 +240,7 @@
 .fm-card[data-version="shiny"] .card-foil-border { background: conic-gradient(from var(--facet), var(--neon-navy), var(--neon-ice), var(--neon-blue), var(--neon-navy), var(--neon-ice), var(--neon-blue), var(--neon-navy)); background-size: 100% 100%; animation: facet-spin 2.4s linear infinite; }
 .fm-card[data-version="shiny"]::after { border-color: var(--neon-ice); box-shadow: 0 0 6px var(--neon-ice), inset 0 0 8px var(--neon-blue); }
 .fm-card[data-version="shiny"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--neon-navy) 92%, transparent) 40%, var(--neon-navy)); }
-.fm-card[data-version="shiny"] .card-name { color: var(--neon-ice); text-shadow: 0 0 4px var(--neon-ice), 0 0 10px var(--neon-blue), 0 0 18px var(--neon-blue); }
+.fm-card[data-version="shiny"] .card-name { background: none; color: var(--neon-ice); filter: drop-shadow(0 0 2px var(--neon-ice)) drop-shadow(0 0 6px var(--neon-blue)) drop-shadow(0 0 12px var(--neon-blue)); }
 .fm-card[data-version="shiny"] .card-rarity-label { color: var(--neon-ice); border-top-color: color-mix(in oklab, var(--neon-ice) 50%, transparent); }
 .fm-card[data-version="shiny"] .card-version { background: var(--neon-ice); border-color: var(--neon-blue); color: var(--neon-navy); box-shadow: 0 0 8px var(--neon-ice); }
 @keyframes neon-flicker { 0%, 18%, 22%, 60%, 64%, 100% { box-shadow: 0 0 14px 0 var(--neon-ice), 0 0 34px -4px var(--neon-blue); } 20%, 62% { box-shadow: 0 0 5px 0 var(--neon-ice), 0 0 12px -6px var(--neon-blue); } }
@@ -254,7 +255,6 @@
 .fm-card[data-rarity="secret_ultimate"]::after { display: none; }
 .fm-card[data-rarity="secret_ultimate"] .card-foil-border { padding: 4px; background: var(--gradient-fire); background-size: 100% 200%; animation: foil-travel 1.2s linear infinite; }
 .fm-card[data-rarity="secret_ultimate"] .holo { position: absolute; inset: 0; pointer-events: none; z-index: 3; background: linear-gradient(to top, color-mix(in oklab, var(--flame-mid) 55%, transparent), transparent 38%); mix-blend-mode: screen; animation: aura-breathe 1.1s ease-in-out infinite; }
-.fm-card[data-rarity="secret_ultimate"] .card-name { color: var(--flame-core); text-shadow: 0 0 6px var(--flame-mid), 0 0 14px var(--flame-outer); }
 .fm-card[data-rarity="secret_ultimate"] .card-club, .fm-card[data-rarity="secret_ultimate"] .card-country, .fm-card[data-rarity="secret_ultimate"] .card-rarity-label { position: relative; z-index: 9; text-shadow: 0 1px 3px var(--card-night), 0 0 6px var(--card-night); }
 .fm-card[data-rarity="secret_ultimate"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 88%, transparent) 40%, color-mix(in oklab, var(--flame-outer) 40%, var(--card-night))); padding-bottom: 10%; }
 .fm-card[data-rarity="secret_ultimate"] .card-sparks { background: radial-gradient(circle at 12% 90%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 30% 80%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 62% 92%, var(--flame-core) 0 1px, transparent 2.5px), radial-gradient(circle at 84% 78%, var(--flame-mid) 0 1.5px, transparent 3px), radial-gradient(circle at 48% 70%, var(--flame-core) 0 1px, transparent 2px); animation: ember-rise 2.4s ease-in infinite; }
