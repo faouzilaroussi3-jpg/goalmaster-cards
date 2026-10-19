@@ -8,6 +8,7 @@ import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
 import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
 import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
+import { giftSummary } from "@/lib/admin-grants";
 
 const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
@@ -62,6 +63,33 @@ export function AppHeader() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [uid, qc, navigate]);
+
+  // Admin gifts: announce unseen gifts on load and live when the admin sends one (RLS only delivers my rows).
+  useEffect(() => {
+    if (!uid) return;
+    let busy = false;
+    const announce = async () => {
+      if (busy) return;
+      busy = true;
+      const { data } = await supabase.rpc("claim_gift_notices");
+      busy = false;
+      if (!data?.length) return;
+      sfx.sparkle();
+      setTimeout(() => sfx.coins(5), 250);
+      for (const g of data) {
+        toast.success("Cadeau de l'admin !", { description: [giftSummary(g), g.note && `« ${g.note} »`].filter(Boolean).join(" — "), duration: 8000 });
+      }
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries({ queryKey: ["packs"] });
+      qc.invalidateQueries({ queryKey: ["my-cards"] });
+    };
+    announce();
+    const channel = supabase
+      .channel(`gifts-${uid}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_grants", filter: `user_id=eq.${uid}` }, () => { announce(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [uid, qc]);
 
   // One realtime subscription for the whole app: any change on my duels refreshes duel lists and boards.
   useEffect(() => {

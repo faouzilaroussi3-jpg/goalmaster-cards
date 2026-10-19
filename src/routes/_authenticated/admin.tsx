@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/auth";
 import { RARITIES } from "@/lib/rarity";
 import { CardsAdmin } from "@/components/admin/CardsAdmin";
+import { GiftsAdmin } from "@/components/admin/GiftsAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -25,20 +26,22 @@ const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm t
 
 function AdminPage() {
   const { data: profile, isLoading } = useProfile();
-  const [tab, setTab] = useState<"cards" | "packs" | "events">("cards");
+  const [tab, setTab] = useState<"cards" | "gifts" | "packs" | "events">("cards");
   if (isLoading) return null;
   if (!profile?.isAdmin) return <p className="p-8 text-center text-muted-foreground">Accès réservé aux administrateurs.</p>;
+  const label = { cards: "Cartes", gifts: "Cadeaux joueurs", packs: "Packs & taux", events: "Événements" } as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-5xl text-gold">Administration</h1>
-      <div className="my-4 flex gap-2">
-        {(["cards", "packs", "events"] as const).map((t) => (
+      <div className="my-4 flex flex-wrap gap-2">
+        {(["cards", "gifts", "packs", "events"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 text-sm font-bold ${tab === t ? "bg-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            {t === "cards" ? "Cartes" : t === "packs" ? "Packs & taux" : "Événements"}
+            {label[t]}
           </button>
         ))}
       </div>
       {tab === "cards" && <CardsAdmin />}
+      {tab === "gifts" && <GiftsAdmin />}
       {tab === "packs" && <PacksAdmin />}
       {tab === "events" && <EventsAdmin />}
     </div>

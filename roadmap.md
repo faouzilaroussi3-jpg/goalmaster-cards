@@ -19,3 +19,4 @@
 - [x] Gros tirages (Légendaire et plus) en direct sur la page Packs
 - [x] Effets sonores partout (clics, onglets, rotation des cartes, arrachage, lueur, explosion, révélations, duels, pièces) + bouton couper le son
 - [x] Amis : envoyer/recevoir/accepter des demandes d'ami + onglet Messages pour discuter avec ses amis
+- [x] Admin : offrir des packs, des pièces et des cartes aux joueurs (un ou tous), sans limite d'envois

@@ -14,6 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_grants: {
+        Row: {
+          card_copies: number
+          card_id: string | null
+          card_version: string | null
+          coins: number
+          created_at: string
+          granted_by: string | null
+          id: string
+          note: string | null
+          pack_type_id: string | null
+          packs: number
+          seen_at: string | null
+          user_id: string
+        }
+        Insert: {
+          card_copies?: number
+          card_id?: string | null
+          card_version?: string | null
+          coins?: number
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          note?: string | null
+          pack_type_id?: string | null
+          packs?: number
+          seen_at?: string | null
+          user_id: string
+        }
+        Update: {
+          card_copies?: number
+          card_id?: string | null
+          card_version?: string | null
+          coins?: number
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          note?: string | null
+          pack_type_id?: string | null
+          packs?: number
+          seen_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_grants_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_grants_pack_type_id_fkey"
+            columns: ["pack_type_id"]
+            isOneToOne: false
+            referencedRelation: "pack_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_grants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auction_bids: {
         Row: {
           amount: number
@@ -904,6 +971,31 @@ export type Database = {
           owners: number
         }[]
       }
+      admin_grant: {
+        Args: {
+          _all: boolean
+          _card_id: string
+          _coins: number
+          _copies: number
+          _note: string
+          _pack_key: string
+          _packs: number
+          _user_id: string
+          _version: string
+        }
+        Returns: number
+      }
+      admin_list_players: {
+        Args: { _q?: string }
+        Returns: {
+          coins: number
+          is_admin: boolean
+          level: number
+          total_packs: number
+          user_id: string
+          username: string
+        }[]
+      }
       admin_replace_card: {
         Args: { _from: string; _to: string }
         Returns: number
@@ -917,6 +1009,20 @@ export type Database = {
       cancel_auction: { Args: { _auction_id: string }; Returns: undefined }
       claim_all_challenges: { Args: never; Returns: Json }
       claim_challenge: { Args: { _challenge_id: string }; Returns: number }
+      claim_gift_notices: {
+        Args: never
+        Returns: {
+          card_copies: number
+          card_name: string
+          card_version: string
+          coins: number
+          created_at: string
+          grant_id: string
+          note: string
+          pack_name: string
+          packs: number
+        }[]
+      }
       create_auction: {
         Args: { _hours: number; _start_price: number; _user_card_id: string }
         Returns: string
