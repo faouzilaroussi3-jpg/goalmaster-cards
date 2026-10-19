@@ -54,3 +54,16 @@ export function useMyPacks() {
     },
   });
 }
+
+export function useMyChallenges() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["challenges", session?.user.id],
+    enabled: !!session,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_challenges");
+      if (error) throw error;
+      return (data ?? []) as import("@/lib/challenges").Challenge[];
+    },
+  });
+}

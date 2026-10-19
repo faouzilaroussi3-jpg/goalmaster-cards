@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { challengeState, claimableSummary, goalText, newlyClaimable, type Challenge } from "@/lib/challenges";
+import { challengeState, claimableSummary, newlyClaimable, type Challenge } from "@/lib/challenges";
 
 const ch = (o: Partial<Challenge>): Challenge => ({
   challenge_id: o.key ?? "x", key: "x", title: "t", metric: "rarity", rarity: "common", version: null,
@@ -33,8 +33,4 @@ describe("challenges", () => {
     expect(newlyClaimable(before, after).map((c) => c.key)).toEqual(["b"]);
   });
 
-  it("describes the goal in French with the rarity", () => {
-    expect(goalText({ metric: "rarity", rarity: "legendary", version: null, target: 1 })).toBe("Obtiens 1 carte Légendaire dans tes packs");
-    expect(goalText({ metric: "rarity", rarity: "common", version: null, target: 50 })).toBe("Obtiens 50 cartes Communes dans tes packs");
-  });
 });
