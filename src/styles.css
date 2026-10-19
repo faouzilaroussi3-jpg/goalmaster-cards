@@ -83,6 +83,7 @@
   --card-night: oklch(0.12 0.025 260);
   --card-shadow: oklch(0 0 0 / 0.65);
   --card-light: oklch(1 0 0);
+  --pack-light: oklch(0.95 0.045 215);
 }
 
 @layer base {
@@ -296,11 +297,15 @@
 /* Glow that bridges the torn pack and the cinematic. */
 .opening-glow { width: 60vmin; height: 60vmin; border-radius: 9999px; background: radial-gradient(circle, var(--card-light) 0%, var(--primary-glow) 25%, color-mix(in oklab, var(--primary) 40%, transparent) 50%, transparent 72%); animation: opening-glow 0.9s ease-out both; }
 @keyframes opening-glow { 0% { transform: scale(.2); opacity: 0; } 35% { opacity: 1; } 100% { transform: scale(2.4); opacity: .85; } }
-/* Light escaping the tear, then bursting out of the pack into the cinematic. */
-.tear-light { height: 10px; margin-top: -5px; border-radius: 9999px; background: linear-gradient(90deg, var(--primary-glow), var(--card-light) 70%, var(--card-light)); box-shadow: 0 0 14px 4px var(--primary-glow), 0 0 40px 10px var(--primary); filter: blur(1px); }
-.tear-rays { height: 70%; transform-origin: bottom; background: linear-gradient(to top, color-mix(in oklab, var(--card-light) 85%, transparent), color-mix(in oklab, var(--primary-glow) 45%, transparent) 30%, transparent 85%); mask-image: repeating-linear-gradient(90deg, black 0 10px, transparent 10px 22px); filter: blur(4px); }
-.tear-burst { width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 9999px; background: radial-gradient(circle, var(--card-light) 0%, var(--card-light) 35%, var(--primary-glow) 55%, color-mix(in oklab, var(--primary) 70%, transparent) 68%, transparent 75%); animation: tear-burst 0.7s cubic-bezier(.3,0,.6,1) forwards; z-index: 30; }
-@keyframes tear-burst { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(140); opacity: 1; } }
+/* Soft white light from the tear (trading-card-app style): a bright cut, a leak above it, then a white-out. */
+.tear-cut { height: 2px; margin-top: -1px; border-radius: 9999px; background: var(--card-light); box-shadow: 0 0 4px 1px var(--card-light), 0 0 14px 4px var(--pack-light), 0 0 36px 10px color-mix(in oklab, var(--pack-light) 55%, transparent); }
+.tear-leak { height: 55%; transform-origin: bottom; background: radial-gradient(ellipse 60% 100% at 50% 100%, color-mix(in oklab, var(--card-light) 90%, transparent) 0%, color-mix(in oklab, var(--pack-light) 45%, transparent) 30%, transparent 70%); filter: blur(6px); }
+.tear-pack-lift { animation: tear-pack-lift 0.7s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes tear-pack-lift { from { transform: translateY(0) scale(1); } to { transform: translateY(-10px) scale(1.06); } }
+.tear-pack-flash { animation: tear-pack-flash 0.7s ease-in forwards; }
+@keyframes tear-pack-flash { 0% { filter: brightness(1); } 100% { filter: brightness(2.6) saturate(.4) drop-shadow(0 0 30px var(--card-light)); } }
+.tear-whiteout { background: radial-gradient(circle at 50% 40%, var(--card-light) 0%, var(--card-light) 35%, var(--pack-light) 100%); animation: tear-whiteout 0.7s cubic-bezier(.6,0,.9,.6) forwards; }
+@keyframes tear-whiteout { 0%, 25% { opacity: 0; } 100% { opacity: 1; } }
 .opening-entry { background: var(--card-light); animation: opening-entry 0.7s ease-out forwards; }
 @keyframes opening-entry { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
 /* Swipe-to-open stage on the packs page. */
@@ -308,12 +313,11 @@
 .swipe-hint { animation: swipe-nudge 1.4s ease-in-out infinite; }
 @keyframes swipe-nudge { 0%,100% { transform: translateX(0); opacity: .6; } 50% { transform: translateX(8px); opacity: 1; } }
 .tear-line { height: 0; border-top: 2px dashed color-mix(in oklab, var(--primary) 70%, transparent); filter: drop-shadow(0 0 4px var(--primary)); }
-.tear-line-done { position: absolute; left: 0; top: -2px; height: 2px; background: var(--primary-glow); box-shadow: 0 0 10px 2px var(--primary); }
 .tear-handle { position: absolute; top: -1px; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 9999px; background: var(--primary); border: 2px solid var(--card-light); box-shadow: 0 0 16px 4px var(--primary); }
 .tear-handle-idle { animation: tear-handle-slide 1.8s ease-in-out infinite; }
 @keyframes tear-handle-slide { 0% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(60px); opacity: 0; } 100% { transform: translateX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .opening-glow, .tear-burst, .swipe-hint, .tear-handle-idle { animation: none !important; }
+  .football-cinematic *, .anim-float, .anim-shake, .anim-burst, .anim-flash, .anim-card-in, .anim-suspense, .anim-rise, .rays, .opening-glow, .tear-pack-lift, .tear-pack-flash, .swipe-hint, .tear-handle-idle { animation: none !important; }
   .opening-entry { display: none; }
   .cinema-player-travel { transform: translate(440px,385px); }
   .cinema-ball-travel { transform: translate(540px,450px); }
