@@ -18,7 +18,7 @@ export function PlayerCard({
   /** Preview a rarity that is not saved yet (admin rarity editor). */
   rarityInfo?: RarityInfo;
 }) {
-  // Admin-created rarities wear the visual effect (fx) and optional tint chosen for them.
+  // Admin-created rarities wear the visual effect (fx, or an extra style drawn instead of its frame) and optional tint chosen for them.
   const known = useRarityMeta(card.rarity);
   const r = rarityInfo ?? known;
   const version = card.version ?? "normal";
@@ -33,7 +33,7 @@ export function PlayerCard({
   const body = (
     <div
       className={cn("fm-card select-none", missing && "is-missing", !ultimate && className)}
-      data-rarity={r.fx}
+      data-rarity={r.style ?? r.fx}
       data-rarity-key={card.rarity === r.fx ? undefined : card.rarity}
       style={r.color ? ({ "--rc": r.color } as React.CSSProperties) : undefined}
       data-version={version}
@@ -75,7 +75,8 @@ export function PlayerCard({
       {r.tier >= 5 && <div className="card-border-glitter" aria-hidden="true" />}
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
-      {r.fx === "secret_legendary" && version === "normal" && <DiamondOrbitFx />}
+      {r.style && <div className="card-style-fx" aria-hidden="true"><i /></div>}
+      {r.fx === "secret_legendary" && !r.style && version === "normal" && <DiamondOrbitFx />}
       {ultimate && <SecretUltimateFx />}
     </div>
   );

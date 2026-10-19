@@ -5,13 +5,13 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PlayerCard } from "@/components/PlayerCard";
 import { RARITIES_QUERY_KEY } from "@/components/RarityRegistry";
-import { rarityMeta, useRarities, type CardData, type RarityInfo, type RarityKey } from "@/lib/rarity";
+import { effectBase, effectStyle, rarityMeta, useRarities, type CardData, type RarityEffect, type RarityInfo } from "@/lib/rarity";
 import { canDeleteRarity, LABEL_MAX, RARITY_EFFECTS, rarityDraftError, SHORT_MAX } from "@/lib/rarity-admin";
 
 const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 const DEFAULT_TINT = "#ff3d8b";
 
-/** Create admin rarities (name, sigle, visual effect borrowed from a built-in rarity, optional tint, place in the order) and delete them. */
+/** Create admin rarities (name, sigle, visual effect borrowed from a built-in rarity or one of the extra styles, optional tint, place in the order) and delete them. */
 export function RaritiesAdmin() {
   const rarities = useRarities();
   const qc = useQueryClient();
@@ -25,13 +25,14 @@ export function RaritiesAdmin() {
     return c ? { ...c, version: "normal" } : { name: "Joueur exemple", club: "Goalmaster FC", nationality: "France", pos: "BU", rating: 88, rarity: "common", image_url: null };
   }, [cards]);
 
-  const [f, setF] = useState({ label: "", short: "", effect: "legendary" as RarityKey, tint: false, color: DEFAULT_TINT, after: "legendary", duplicateCoins: 200 });
+  const [f, setF] = useState({ label: "", short: "", effect: "legendary" as RarityEffect, tint: false, color: DEFAULT_TINT, after: "legendary", duplicateCoins: 200 });
   const [busy, setBusy] = useState(false);
   const draft = { label: f.label, short: f.short, effect: f.effect, color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins };
   const problem = rarityDraftError(draft);
   const preview: RarityInfo = {
     key: "preview", label: f.label.trim() || "Nouvelle rareté", short: f.short.trim().toUpperCase() || "?",
-    tier: rarityMeta(f.effect).tier, rank: 0, fx: f.effect, color: f.tint ? f.color : null, builtin: false,
+    tier: rarityMeta(effectBase(f.effect) ?? "common").tier, rank: 0, fx: effectBase(f.effect) ?? "common", style: effectStyle(f.effect),
+    color: f.tint ? f.color : null, builtin: false,
   };
 
   const refresh = () => {
@@ -74,7 +75,7 @@ export function RaritiesAdmin() {
               {RARITY_EFFECTS.map((fx) => (
                 <label key={fx.fx} className={`flex cursor-pointer gap-2 rounded-lg border p-2 text-sm ${f.effect === fx.fx ? "border-primary bg-primary/10" : "border-border"}`}>
                   <input type="radio" name="effect" className="mt-1" checked={f.effect === fx.fx} onChange={() => setF({ ...f, effect: fx.fx })} />
-                  <span><b className="text-foreground">{fx.label}</b><span className="block text-xs text-muted-foreground">{fx.hint}</span></span>
+                  <span><b className="text-foreground">{fx.label}</b>{fx.isNew && <span className="ml-1.5 rounded bg-primary/20 px-1 text-[10px] font-bold uppercase text-primary">Nouveau</span>}<span className="block text-xs text-muted-foreground">{fx.hint}</span></span>
                 </label>
               ))}
             </div>
@@ -119,7 +120,7 @@ export function RaritiesAdmin() {
 function RarityRowItem({ r, count, others, onDone }: { r: RarityInfo; count: number; others: RarityInfo[]; onDone: () => void }) {
   const [moveTo, setMoveTo] = useState<string>(others.find((o) => o.rank < r.rank && o.builtin)?.key ?? others[0]?.key ?? "");
   const [confirm, setConfirm] = useState(false);
-  const effect = RARITY_EFFECTS.find((e) => e.fx === r.fx);
+  const effect = RARITY_EFFECTS.find((e) => e.fx === (r.style ?? r.fx));
   async function remove() {
     if (!canDeleteRarity(r, moveTo)) return;
     const { data, error } = await supabase.rpc("admin_delete_rarity", { _key: r.key, _move_to: moveTo });

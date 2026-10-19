@@ -963,6 +963,7 @@ export type Database = {
         Returns: number
       }
       _duel_reward_ok: { Args: { _uid: string }; Returns: boolean }
+      _effect_base: { Args: { _effect: string }; Returns: string }
       _finish_duel: {
         Args: { _forfeit: boolean; _id: string; _winner: string }
         Returns: undefined

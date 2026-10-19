@@ -107,6 +107,21 @@
   --card-shadow: oklch(0 0 0 / 0.65);
   --card-light: oklch(1 0 0);
   --pack-light: oklch(0.94 0.05 350);
+  /* Extra looks for admin-created rarities (Admin → Raretés) */
+  --fx-metal: oklch(0.86 0.012 250);
+  --fx-metal-dark: oklch(0.42 0.012 250);
+  --fx-metal-mid: oklch(0.66 0.012 250);
+  --fx-tinted: oklch(0.72 0.14 195);
+  --fx-cartoon: oklch(0.88 0.18 95);
+  --fx-vintage: oklch(0.84 0.06 80);
+  --fx-vintage-ink: oklch(0.32 0.05 55);
+  --fx-neon: oklch(0.87 0.21 150);
+  --fx-holo: oklch(0.86 0.11 300);
+  --fx-frost: oklch(0.9 0.07 220);
+  --fx-frost-deep: oklch(0.62 0.12 235);
+  --fx-galaxy: oklch(0.68 0.21 305);
+  --fx-galaxy-blue: oklch(0.55 0.2 265);
+  --fx-galaxy-night: oklch(0.14 0.06 285);
 }
 
 @layer base {
@@ -435,3 +450,106 @@
   .gm-back-rare, .rare-shake { animation: none; }
   .rare-title { animation: none; }
 }
+
+/* ===== Extra looks for admin-created rarities: data-rarity is the style key, .card-style-fx carries
+   ::before (photo treatment, under the text), ::after (moving light, above the photo) and <i> (frame). ===== */
+.card-style-fx { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+.card-style-fx::before, .card-style-fx::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.card-style-fx::before { z-index: 1; }
+.card-style-fx::after { z-index: 4; }
+.card-style-fx i { position: absolute; inset: 0; z-index: 6; border-radius: inherit; pointer-events: none; }
+.fm-card[data-rarity="metal"] { --rc: var(--fx-metal); }
+.fm-card[data-rarity="tinted"] { --rc: var(--fx-tinted); }
+.fm-card[data-rarity="cartoon"] { --rc: var(--fx-cartoon); }
+.fm-card[data-rarity="vintage"] { --rc: var(--fx-vintage); }
+.fm-card[data-rarity="neon"] { --rc: var(--fx-neon); }
+.fm-card[data-rarity="holo"] { --rc: var(--fx-holo); }
+.fm-card[data-rarity="frost"] { --rc: var(--fx-frost); }
+.fm-card[data-rarity="galaxy"] { --rc: var(--fx-galaxy); }
+
+/* --- Métallique: brushed chrome frame, steel-toned photo, a specular band gliding across --- */
+.fm-card[data-rarity="metal"] { background: repeating-linear-gradient(90deg, var(--fx-metal-mid) 0 1px, var(--fx-metal-dark) 1px 3px); border-color: var(--fx-metal-mid); box-shadow: 0 0 26px -6px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="metal"] .card-portrait { filter: saturate(.55) contrast(1.15) brightness(1.04); }
+.fm-card[data-rarity="metal"] .card-style-fx::before { background: repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in oklab, var(--card-light) 7%, transparent) 2px 3px), linear-gradient(160deg, color-mix(in oklab, var(--rc) 40%, transparent), transparent 45%, color-mix(in oklab, var(--rc) 35%, transparent)); mix-blend-mode: overlay; }
+.fm-card[data-rarity="metal"] .card-style-fx::after { background: linear-gradient(105deg, transparent 38%, color-mix(in oklab, var(--card-light) 55%, transparent) 48%, color-mix(in oklab, var(--card-light) 85%, transparent) 50%, color-mix(in oklab, var(--card-light) 55%, transparent) 52%, transparent 62%); background-size: 300% 100%; mix-blend-mode: soft-light; animation: fx-glide 4.5s ease-in-out infinite; }
+.fm-card[data-rarity="metal"] .card-style-fx i { padding: 5px; background: linear-gradient(135deg, var(--card-light), var(--fx-metal-dark) 18%, var(--fx-metal) 34%, var(--fx-metal-dark) 50%, var(--card-light) 62%, var(--fx-metal-mid) 80%, var(--card-light)); background-size: 200% 200%; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; animation: foil-travel 5s linear infinite; }
+.fm-card[data-rarity="metal"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .06em; background: linear-gradient(180deg, var(--card-light) 10%, var(--fx-metal) 45%, var(--fx-metal-dark) 52%, var(--card-light) 85%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px color-mix(in oklab, var(--rc) 60%, transparent)); }
+.fm-card[data-rarity="metal"] .card-rating > span:first-child { color: var(--card-light); text-shadow: 0 1px 0 var(--fx-metal-dark), 0 0 8px var(--fx-metal); }
+
+/* --- Teinté: the photo is washed in the rarity colour, with a slow light leak --- */
+.fm-card[data-rarity="tinted"] { box-shadow: 0 0 24px -6px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="tinted"] .card-portrait { filter: contrast(1.12) brightness(1.04); }
+.fm-card[data-rarity="tinted"] .card-style-fx::before { background: linear-gradient(170deg, var(--rc), color-mix(in oklab, var(--rc) 55%, var(--card-night))); mix-blend-mode: color; opacity: .88; }
+.fm-card[data-rarity="tinted"] .card-style-fx::after { background: radial-gradient(ellipse at 15% 10%, color-mix(in oklab, var(--rc) 70%, var(--card-light)), transparent 55%), radial-gradient(ellipse at 90% 75%, color-mix(in oklab, var(--rc) 60%, transparent), transparent 50%); mix-blend-mode: soft-light; animation: fx-breathe 4s ease-in-out infinite; }
+.fm-card[data-rarity="tinted"] .card-style-fx i { inset: 5px; border: 1px solid color-mix(in oklab, var(--rc) 80%, var(--card-light)); border-radius: 4px; box-shadow: inset 0 0 18px -4px var(--rc); }
+.fm-card[data-rarity="tinted"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .05em; color: color-mix(in oklab, var(--rc) 35%, var(--card-light)); text-shadow: 0 2px 0 color-mix(in oklab, var(--rc) 50%, var(--card-night)), 0 0 12px var(--rc); }
+.fm-card[data-rarity="tinted"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--rc) 25%, var(--card-night)) 45%, color-mix(in oklab, var(--rc) 40%, var(--card-night))); }
+
+/* --- Cartoon: thick ink outline, comic halftone dots, punchy colours --- */
+.fm-card[data-rarity="cartoon"] { border: 3px solid var(--card-night); box-shadow: 0 0 0 2px var(--rc), 5px 6px 0 2px var(--card-night); }
+.fm-card[data-rarity="cartoon"]::after { border: 2px solid var(--card-night); inset: 3px; }
+.fm-card[data-rarity="cartoon"] .card-portrait { filter: saturate(1.8) contrast(1.4) brightness(1.06); }
+.fm-card[data-rarity="cartoon"] .card-style-fx::before { background: radial-gradient(circle, color-mix(in oklab, var(--card-night) 45%, transparent) 26%, transparent 29%) 0 0 / 5px 5px; mix-blend-mode: multiply; mask: radial-gradient(ellipse at 50% 32%, transparent 28%, var(--card-light) 80%); }
+.fm-card[data-rarity="cartoon"] .card-style-fx::after { z-index: 1; background: repeating-conic-gradient(from 0deg at 0% 0%, color-mix(in oklab, var(--rc) 55%, transparent) 0deg 3deg, transparent 3deg 9deg); mask: radial-gradient(circle at 0% 0%, var(--card-light) 0, transparent 48%); mix-blend-mode: screen; animation: fx-pop 1.6s steps(2) infinite; }
+.fm-card[data-rarity="cartoon"] .card-style-fx i { inset: 4px; border-radius: 4px; box-shadow: inset 0 0 0 2px var(--rc), inset 0 0 0 4px var(--card-night); }
+.fm-card[data-rarity="cartoon"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(12px, 12.5cqw, 34px); letter-spacing: .04em; color: var(--rc); -webkit-text-stroke: 1.5px var(--card-night); paint-order: stroke fill; text-shadow: 2px 2px 0 var(--card-night), 3px 3px 0 var(--card-night); transform: rotate(-3deg); }
+.fm-card[data-rarity="cartoon"] .card-rarity-code { background: var(--rc); color: var(--card-night); border: 2px solid var(--card-night); font-weight: 700; }
+.fm-card[data-rarity="cartoon"] .card-rating { background: var(--rc); color: var(--card-night); border: 2px solid var(--card-night); text-shadow: none; box-shadow: 2px 2px 0 var(--card-night); }
+.fm-card[data-rarity="cartoon"] .card-position { border-top-color: var(--card-night); }
+
+/* --- Vintage: sepia photo on old paper, cream border, a faint film flicker --- */
+.fm-card[data-rarity="vintage"] { background: linear-gradient(160deg, var(--fx-vintage), color-mix(in oklab, var(--fx-vintage) 60%, var(--fx-vintage-ink))); border-color: var(--fx-vintage); }
+.fm-card[data-rarity="vintage"] .card-portrait { filter: sepia(.85) contrast(1.06) brightness(.96); }
+.fm-card[data-rarity="vintage"] .card-style-fx::before { background: radial-gradient(ellipse at center, transparent 48%, color-mix(in oklab, var(--fx-vintage-ink) 75%, transparent) 100%), repeating-linear-gradient(90deg, transparent 0 37px, color-mix(in oklab, var(--card-light) 10%, transparent) 37px 38px, transparent 38px 71px), repeating-radial-gradient(circle at 30% 40%, color-mix(in oklab, var(--fx-vintage-ink) 12%, transparent) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+.fm-card[data-rarity="vintage"] .card-style-fx::after { background: color-mix(in oklab, var(--fx-vintage) 18%, transparent); mix-blend-mode: screen; animation: fx-flicker 2.4s steps(6) infinite; }
+.fm-card[data-rarity="vintage"] .card-style-fx i { border: 5px solid var(--fx-vintage); box-shadow: inset 0 0 0 1px var(--fx-vintage-ink), inset 0 0 0 3px color-mix(in oklab, var(--fx-vintage) 60%, transparent); }
+.fm-card[data-rarity="vintage"] .card-name { font-family: var(--font-card-engraved); font-weight: 700; text-transform: none; font-style: italic; font-size: clamp(10px, 8.6cqw, 24px); letter-spacing: .02em; color: var(--fx-vintage); text-shadow: 0 1px 0 var(--fx-vintage-ink), 0 0 6px color-mix(in oklab, var(--fx-vintage-ink) 80%, transparent); }
+.fm-card[data-rarity="vintage"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--fx-vintage-ink) 88%, transparent) 45%, var(--fx-vintage-ink)); }
+.fm-card[data-rarity="vintage"] .card-rating { background: color-mix(in oklab, var(--fx-vintage-ink) 80%, transparent); color: var(--fx-vintage); }
+
+/* --- Néon: a glowing tube round the card that flickers like a sign --- */
+.fm-card[data-rarity="neon"] { background: var(--card-night); border-color: color-mix(in oklab, var(--rc) 40%, var(--card-night)); box-shadow: 0 0 30px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="neon"]::after { display: none; }
+.fm-card[data-rarity="neon"] .card-portrait { filter: contrast(1.15) saturate(1.2) brightness(.85); }
+.fm-card[data-rarity="neon"] .card-style-fx::before { background: radial-gradient(ellipse at 50% 110%, color-mix(in oklab, var(--rc) 45%, transparent), transparent 60%), radial-gradient(ellipse at 50% 40%, transparent 45%, color-mix(in oklab, var(--card-night) 70%, transparent)); mix-blend-mode: screen; }
+.fm-card[data-rarity="neon"] .card-style-fx i { inset: 5px; border: 2px solid color-mix(in oklab, var(--rc) 45%, var(--card-light)); border-radius: 6px; box-shadow: 0 0 3px var(--rc), 0 0 10px var(--rc), 0 0 18px color-mix(in oklab, var(--rc) 60%, transparent), inset 0 0 4px var(--rc), inset 0 0 14px color-mix(in oklab, var(--rc) 55%, transparent); animation: fx-neon 5s linear infinite; }
+.fm-card[data-rarity="neon"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .08em; color: color-mix(in oklab, var(--rc) 25%, var(--card-light)); text-shadow: 0 0 2px var(--card-light), 0 0 6px var(--rc), 0 0 14px var(--rc), 0 0 24px var(--rc); animation: fx-neon 5s linear infinite .3s; }
+.fm-card[data-rarity="neon"] .card-rarity-code, .fm-card[data-rarity="neon"] .card-rating > span:first-child { text-shadow: 0 0 6px var(--rc); }
+
+/* --- Holographique: a moving rainbow film over the whole card --- */
+.fm-card[data-rarity="holo"] { box-shadow: 0 0 34px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="holo"] .card-style-fx::before { background: repeating-linear-gradient(55deg, color-mix(in oklab, var(--card-light) 16%, transparent) 0 1px, transparent 1px 4px), var(--gradient-rainbow); background-size: 100% 100%, 300% 300%; mix-blend-mode: color-dodge; opacity: .42; animation: fx-holo 6s linear infinite; }
+.fm-card[data-rarity="holo"] .card-style-fx::after { background: linear-gradient(120deg, transparent 35%, color-mix(in oklab, var(--card-light) 45%, transparent) 50%, transparent 65%); background-size: 300% 100%; mix-blend-mode: overlay; animation: fx-glide 3.5s ease-in-out infinite; }
+.fm-card[data-rarity="holo"] .card-foil-border { background: var(--gradient-rainbow-conic); background-size: 100% 100%; animation: facet-spin 4s linear infinite; }
+.fm-card[data-rarity="holo"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; text-transform: none; font-size: clamp(10px, 8.6cqw, 24px); letter-spacing: .03em; line-height: 1.05; background: var(--gradient-rainbow); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px color-mix(in oklab, var(--card-light) 50%, transparent)); animation: fx-holo-text 6s linear infinite; }
+
+/* --- Glace: frosted border, ice crystals in the corners, falling snow --- */
+.fm-card[data-rarity="frost"] { box-shadow: 0 0 34px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="frost"] .card-portrait { filter: saturate(.8) contrast(1.06) brightness(1.03); }
+.fm-card[data-rarity="frost"] .card-style-fx::before { background: radial-gradient(circle at 0 0, color-mix(in oklab, var(--card-light) 70%, transparent), transparent 24%), radial-gradient(circle at 100% 0, color-mix(in oklab, var(--card-light) 55%, transparent), transparent 20%), radial-gradient(circle at 0 100%, color-mix(in oklab, var(--rc) 70%, transparent), transparent 26%), radial-gradient(circle at 100% 100%, color-mix(in oklab, var(--card-light) 60%, transparent), transparent 22%), linear-gradient(180deg, color-mix(in oklab, var(--fx-frost-deep) 30%, transparent), transparent 40%); }
+.fm-card[data-rarity="frost"] .card-style-fx::after { background-image: radial-gradient(circle, var(--card-light) 0 1px, transparent 1.6px), radial-gradient(circle, color-mix(in oklab, var(--card-light) 75%, transparent) 0 1.5px, transparent 2.2px), radial-gradient(circle, color-mix(in oklab, var(--rc) 90%, transparent) 0 .8px, transparent 1.4px); background-size: 37px 41px, 61px 67px, 23px 29px; background-position: 0 0, 13px 20px, 7px 5px; animation: fx-snow 10s linear infinite; }
+.fm-card[data-rarity="frost"] .card-style-fx i { inset: 5px; border-radius: 4px; box-shadow: inset 0 0 3px var(--card-light), inset 0 0 16px color-mix(in oklab, var(--rc) 80%, transparent); }
+.fm-card[data-rarity="frost"] .card-foil-border { background: linear-gradient(135deg, var(--card-light), var(--fx-frost-deep) 20%, var(--fx-frost) 40%, var(--card-light) 50%, var(--fx-frost-deep) 70%, var(--card-light)); background-size: 200% 200%; animation: foil-travel 6s linear infinite; }
+.fm-card[data-rarity="frost"] .card-name { font-family: var(--font-card-engraved); font-weight: 700; font-size: clamp(10px, 8.4cqw, 23px); letter-spacing: .08em; line-height: 1.06; background: linear-gradient(175deg, var(--card-light) 25%, var(--fx-frost) 55%, var(--fx-frost-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 5px var(--fx-frost)); }
+.fm-card[data-rarity="frost"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--card-night) 88%, transparent) 40%, color-mix(in oklab, var(--fx-frost-deep) 45%, var(--card-night))); }
+
+/* --- Galaxie: a drifting nebula with twinkling stars and a cosmic rotating border --- */
+.fm-card[data-rarity="galaxy"] { background: var(--fx-galaxy-night); box-shadow: 0 0 40px 0 var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="galaxy"] .card-portrait { filter: contrast(1.1) saturate(1.1); }
+.fm-card[data-rarity="galaxy"] .card-style-fx::before { background: radial-gradient(ellipse at 20% 25%, color-mix(in oklab, var(--rc) 75%, transparent), transparent 45%), radial-gradient(ellipse at 85% 60%, color-mix(in oklab, var(--fx-galaxy-blue) 80%, transparent), transparent 45%), radial-gradient(ellipse at 40% 95%, color-mix(in oklab, var(--primary) 55%, transparent), transparent 40%); background-size: 160% 160%; mix-blend-mode: screen; opacity: .75; animation: fx-nebula 14s ease-in-out infinite alternate; }
+.fm-card[data-rarity="galaxy"] .card-style-fx::after { background: radial-gradient(circle at 12% 18%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 78% 9%, var(--card-light) 0 1.5px, transparent 3px), radial-gradient(circle at 64% 38%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 30% 52%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 90% 70%, var(--card-light) 0 1.5px, transparent 3px), radial-gradient(circle at 8% 66%, var(--card-light) 0 1px, transparent 2px); animation: fx-twinkle 2.2s ease-in-out infinite alternate; }
+.fm-card[data-rarity="galaxy"] .card-style-fx i { z-index: 4; background: radial-gradient(circle at 45% 14%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 22% 34%, color-mix(in oklab, var(--rc) 50%, var(--card-light)) 0 1.5px, transparent 3px), radial-gradient(circle at 70% 55%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 52% 76%, var(--card-light) 0 1px, transparent 2px), radial-gradient(circle at 86% 30%, color-mix(in oklab, var(--fx-galaxy-blue) 40%, var(--card-light)) 0 1px, transparent 2px); animation: fx-twinkle 3.1s ease-in-out infinite alternate-reverse; }
+.fm-card[data-rarity="galaxy"] .card-foil-border { background: conic-gradient(from var(--facet, 0deg), var(--rc), var(--fx-galaxy-blue), var(--card-light), var(--fx-galaxy-night), var(--rc), var(--primary), var(--card-light), var(--rc)); background-size: 100% 100%; animation: facet-spin 6s linear infinite; }
+.fm-card[data-rarity="galaxy"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; font-size: clamp(10px, 8.4cqw, 23px); letter-spacing: .08em; line-height: 1.06; background: linear-gradient(170deg, var(--card-light) 25%, color-mix(in oklab, var(--rc) 55%, var(--card-light)) 55%, var(--fx-galaxy-blue)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 6px var(--rc)); }
+.fm-card[data-rarity="galaxy"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--fx-galaxy-night) 90%, transparent) 40%, color-mix(in oklab, var(--rc) 35%, var(--fx-galaxy-night))); }
+
+@keyframes fx-glide { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
+@keyframes fx-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes fx-pop { 0% { opacity: .6; } 100% { opacity: 1; } }
+@keyframes fx-flicker { 0%, 100% { opacity: .2; } 30% { opacity: .5; } 55% { opacity: .1; } 80% { opacity: .4; } }
+@keyframes fx-neon { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: .35; } }
+@keyframes fx-holo { to { background-position: 0 0, 300% 300%; } }
+@keyframes fx-holo-text { to { background-position: 300% 0; } }
+@keyframes fx-snow { to { background-position: 0 410px, 13px 690px, 7px 295px; } }
+@keyframes fx-nebula { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+@keyframes fx-twinkle { from { opacity: .25; } to { opacity: 1; } }
