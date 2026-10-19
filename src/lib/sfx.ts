@@ -253,15 +253,15 @@ export const sfx = {
     noise(e, { dur: 0.15, freq: 1100, to: 3800, q: 1.6, gain: 0.11, attack: 0.03 });
     tone(e, { start: 0.11, freq: 320, to: 170, dur: 0.08, gain: 0.08 });
   }),
-  /** Satisfying trading-card flick: airy swoosh into a crisp snap, warm body thump and a soft sparkle tail. */
+  /** Mobile-TCG style card tap: soft airy swish, a round glassy "pop" and a bright rising sparkle with a light shimmer tail. */
   cardTap: () => play((e) => {
     special();
-    noise(e, { dur: 0.11, freq: 700, to: 4200, q: 1.1, gain: 0.3, attack: 0.05, reverb: 0.08, pan: rand(-0.15, 0.15) });
-    noise(e, { start: 0.09, dur: 0.022, filter: "highpass", freq: 2600, gain: 0.42, attack: 0.001, reverb: 0.1 });
-    noise(e, { start: 0.092, dur: 0.05, freq: 1300, q: 1.8, gain: 0.22, attack: 0.002, reverb: 0.06 });
-    tone(e, { start: 0.09, freq: 240, to: 120, dur: 0.09, gain: 0.26, reverb: 0.05 });
-    bell(e, 1318.5, 0.1, 0.5, 0.05, -0.2);
-    bell(e, 1975.5, 0.13, 0.55, 0.04, 0.2);
+    noise(e, { dur: 0.09, freq: 1800, to: 6000, q: 0.9, gain: 0.12, attack: 0.03, reverb: 0.12, pan: rand(-0.1, 0.1) });
+    tone(e, { start: 0.03, freq: 1180, to: 620, glide: 0.07, dur: 0.12, gain: 0.24, attack: 0.002, reverb: 0.2 });
+    tone(e, { start: 0.03, freq: 2360, to: 1240, glide: 0.07, dur: 0.08, gain: 0.06, attack: 0.002, reverb: 0.2 });
+    bell(e, 1567.98, 0.07, 0.55, 0.11, -0.15);
+    bell(e, 2349.32, 0.12, 0.7, 0.09, 0.15);
+    noise(e, { start: 0.1, dur: 0.35, filter: "highpass", freq: 7000, gain: 0.025, attack: 0.08, reverb: 0.4 });
   }),
   cardSlide: () => play((e) => noise(e, { dur: 0.22, filter: "lowpass", freq: 1400, to: 300, gain: 0.07, attack: 0.04 })),
   stackAppear: () => play((e) => {
