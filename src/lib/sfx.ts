@@ -29,7 +29,7 @@ export function isMuted(): boolean {
 export function setMuted(m: boolean) {
   mutedCache = m;
   try { window.localStorage.setItem(MUTE_KEY, m ? "1" : "0"); } catch { /* private mode */ }
-  if (engine) engine.master.gain.setTargetAtTime(m ? 0 : 0.6, engine.ctx.currentTime, 0.03);
+  if (engine) engine.master.gain.setTargetAtTime(m ? 0 : MASTER_GAIN, engine.ctx.currentTime, 0.03);
   muteListeners.forEach((l) => l());
 }
 
@@ -48,17 +48,35 @@ function impulse(ctx: AudioContext, seconds: number, decay: number) {
   return buf;
 }
 
+/** Pre-compressor gain: quiet UI clicks get boosted while the near-limiter keeps explosions from clipping. */
+const MASTER_GAIN = 1.7;
+
+let sessionPrimed = false;
+/** iPhone/iPad mute Web Audio when the ring/silent switch is on unless the page claims a "playback" audio session. */
+function primeAudioSession() {
+  if (sessionPrimed) return;
+  sessionPrimed = true;
+  try {
+    const nav = navigator as unknown as { audioSession?: { type: string } };
+    if (nav.audioSession) nav.audioSession.type = "playback";
+  } catch { /* unsupported */ }
+}
+
 function ensure(): Engine | null {
   if (typeof window === "undefined" || isMuted()) return null;
   if (!engine) {
     const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AC) return null;
+    primeAudioSession();
     const ctx = new AC();
     const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -16;
-    comp.ratio.value = 5;
+    comp.threshold.value = -12;
+    comp.knee.value = 6;
+    comp.ratio.value = 14;
+    comp.attack.value = 0.002;
+    comp.release.value = 0.18;
     const master = ctx.createGain();
-    master.gain.value = 0.6;
+    master.gain.value = MASTER_GAIN;
     master.connect(comp).connect(ctx.destination);
     const verb = ctx.createConvolver();
     verb.buffer = impulse(ctx, 2.4, 2.6);
@@ -70,12 +88,24 @@ function ensure(): Engine | null {
     for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
     engine = { ctx, master, verb, noise };
   }
-  if (engine.ctx.state === "suspended") void engine.ctx.resume();
+  // "interrupted" is Safari's state after a phone call / app switch.
+  if (engine.ctx.state !== "running" && engine.ctx.state !== "closed") void engine.ctx.resume().catch(() => {});
   return engine;
 }
 
-/** Resume audio on the first gesture (browsers keep it locked until then). */
-export function unlockAudio() { ensure(); }
+let unlocked = false;
+/** Resume audio inside a real gesture (browsers keep it locked until then); a silent blip finishes the unlock on iOS. */
+export function unlockAudio() {
+  const e = ensure();
+  if (!e || (unlocked && e.ctx.state === "running")) return;
+  try {
+    const src = e.ctx.createBufferSource();
+    src.buffer = e.ctx.createBuffer(1, 1, e.ctx.sampleRate);
+    src.connect(e.ctx.destination);
+    src.start(0);
+    unlocked = e.ctx.state === "running";
+  } catch { /* ignore */ }
+}
 
 function route(e: Engine, node: AudioNode, reverb: number, pan = 0) {
   let out: AudioNode = node;
