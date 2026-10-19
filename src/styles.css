@@ -521,7 +521,7 @@
 .fm-card[data-rarity="holo"] .card-style-fx::before { background: repeating-linear-gradient(55deg, color-mix(in oklab, var(--card-light) 16%, transparent) 0 1px, transparent 1px 4px), var(--gradient-rainbow); background-size: 100% 100%, 300% 300%; mix-blend-mode: color-dodge; opacity: .42; animation: fx-holo 6s linear infinite; }
 .fm-card[data-rarity="holo"] .card-style-fx::after { background: linear-gradient(120deg, transparent 35%, color-mix(in oklab, var(--card-light) 45%, transparent) 50%, transparent 65%); background-size: 300% 100%; mix-blend-mode: overlay; animation: fx-glide 3.5s ease-in-out infinite; }
 .fm-card[data-rarity="holo"] .card-foil-border { background: var(--gradient-rainbow-conic); background-size: 100% 100%; animation: facet-spin 4s linear infinite; }
-.fm-card[data-rarity="holo"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; text-transform: none; font-size: clamp(10px, 8.6cqw, 24px); letter-spacing: .03em; line-height: 1.05; background: var(--gradient-rainbow); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px color-mix(in oklab, var(--card-light) 50%, transparent)); animation: fx-holo 6s linear infinite; }
+.fm-card[data-rarity="holo"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; text-transform: none; font-size: clamp(10px, 8.6cqw, 24px); letter-spacing: .03em; line-height: 1.05; background: var(--gradient-rainbow); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px color-mix(in oklab, var(--card-light) 50%, transparent)); animation: fx-holo-text 6s linear infinite; }
 
 /* --- Glace: frosted border, ice crystals in the corners, falling snow --- */
 .fm-card[data-rarity="frost"] { box-shadow: 0 0 34px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
@@ -549,6 +549,7 @@
 @keyframes fx-flicker { 0%, 100% { opacity: .2; } 30% { opacity: .5; } 55% { opacity: .1; } 80% { opacity: .4; } }
 @keyframes fx-neon { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: .35; } }
 @keyframes fx-holo { to { background-position: 0 0, 300% 300%; } }
+@keyframes fx-holo-text { to { background-position: 300% 0; } }
 @keyframes fx-snow { to { background-position: 0 410px, 13px 690px, 7px 295px; } }
 @keyframes fx-nebula { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
 @keyframes fx-twinkle { from { opacity: .25; } to { opacity: 1; } }
