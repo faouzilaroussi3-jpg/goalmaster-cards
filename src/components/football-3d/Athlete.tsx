@@ -30,14 +30,15 @@ export function Athlete({ time, tier, palette, onReady }: { time: React.RefObjec
   useFrame((_, rawDelta) => {
     const p = time.current; const dt = Math.min(rawDelta, .05);
     if (p < .27) mixer.update(dt * 1.5);
-    const hip = bones.Hips; const left = bones.LeftUpLeg; const right = bones.RightUpLeg; const knee = bones.RightLeg;
+    const hip = bones["Hips"]; const left = bones["LeftUpLeg"]; const right = bones["RightUpLeg"]; const knee = bones["RightLeg"];
+    const leftArm = bones["LeftArm"]; const rightArm = bones["RightArm"];
     if (p >= .27) {
       const kick = Math.sin(Math.min(1, (p - .27) / .26) * Math.PI);
       if (left) left.rotation.x = .4 + kick * .5;
       if (right) right.rotation.x = -kick * 1.9;
       if (knee) knee.rotation.x = .3 + kick * .7;
-      if (bones.LeftArm) bones.LeftArm.rotation.z = .7;
-      if (bones.RightArm) bones.RightArm.rotation.z = -.7;
+      if (leftArm) leftArm.rotation.z = .7;
+      if (rightArm) rightArm.rotation.z = -.7;
       if (hip) hip.rotation.x = tier >= 5 ? -.2 : -.1;
     }
     if (!root.current) return;
