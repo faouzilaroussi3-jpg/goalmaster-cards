@@ -64,6 +64,13 @@
       "when": 1792441142479,
       "tag": "0008_transfer_market_auctions",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792441174995,
+      "tag": "0009_settle_auctions_on_pack_poll",
+      "breakpoints": true
     }
   ]
 }
