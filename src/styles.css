@@ -185,6 +185,7 @@
 .fm-card[data-rarity="secret_legendary"] .card-rating > span:first-child { color: var(--card-light); text-shadow: 0 0 8px var(--diamond-ice); }
 .fm-card[data-rarity="secret_ultimate"] .card-name { position: relative; z-index: 9; font-family: var(--font-card-ornate); font-weight: 900; text-transform: none; font-size: clamp(11px, 10cqw, 28px); letter-spacing: .02em; line-height: 1.05; background: linear-gradient(0deg, var(--flame-outer) 5%, var(--flame-mid) 45%, var(--flame-core) 80%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 4px var(--flame-mid)) drop-shadow(0 0 10px var(--flame-outer)); }
 .fm-card[data-rarity="secret_ultimate"] .card-rating > span:first-child { color: var(--flame-core); text-shadow: 0 0 6px var(--flame-mid), 0 0 14px var(--flame-outer); }
+.fm-card[data-rarity="secret_ultimate"] .card-rarity-label { color: var(--flame-core); border-top-color: color-mix(in oklab, var(--flame-mid) 60%, transparent); text-shadow: 0 0 3px var(--card-night), 0 0 8px var(--card-night), 0 0 6px var(--flame-outer); }
 .fm-card:hover { transform: translateY(-4px); }
 .fm-card[data-rarity="uncommon"] { --rc: var(--r-uncommon); }
 .fm-card[data-rarity="rare"] { --rc: var(--r-rare); box-shadow: 0 0 22px -6px var(--rc); }
