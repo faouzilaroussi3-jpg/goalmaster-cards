@@ -81,7 +81,7 @@ export function AppHeader() {
       }
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["packs"] });
-      qc.invalidateQueries({ queryKey: ["collection"] });
+      qc.invalidateQueries({ queryKey: ["my-cards"] });
     };
     announce();
     const channel = supabase
