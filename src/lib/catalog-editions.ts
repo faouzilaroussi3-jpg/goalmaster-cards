@@ -326,7 +326,7 @@ export const CATALOG_EDITIONS = [
     "nationality": "Angleterre",
     "pos": "MOC",
     "image_url": "/__l5e/assets-v1/18f4f851-6770-4174-bced-2d329d3ab1ca/edition-stars-3.jpg",
-    "alt_image_url": "/__l5e/assets-v1/e65f8615-9303-4d5e-bf89-42e55a96ced4/alt-photo-bellingham.jpg"
+    "alt_image_url": "/__l5e/assets-v1/ea52f36c-03d7-401d-8f23-5032e2493844/alt-photo-bellingham-kit.jpg"
   },
   {
     "name": "Lionel Messi",
@@ -362,7 +362,7 @@ export const CATALOG_EDITIONS = [
     "club": "Argentine · Sélection",
     "nationality": "Argentine",
     "pos": "BU",
-    "image_url": "/__l5e/assets-v1/8ae6c9bb-750e-411b-9e04-32b345cc31b0/su-messi.jpg"
+    "image_url": "/__l5e/assets-v1/86574e87-8176-4e61-904f-f21e3a13bb8c/su-photo-messi.jpg"
   },
   {
     "name": "Cristiano Ronaldo",
@@ -371,7 +371,7 @@ export const CATALOG_EDITIONS = [
     "club": "Portugal · Sélection",
     "nationality": "Portugal",
     "pos": "BU",
-    "image_url": "/__l5e/assets-v1/71fe2dd4-c511-4ad3-9202-895a553be04d/su-ronaldo.jpg"
+    "image_url": "/__l5e/assets-v1/29432567-7a55-44e2-9728-e9720ca8a278/su-photo-ronaldo.jpg"
   },
   {
     "name": "Kylian Mbappé",
@@ -380,7 +380,7 @@ export const CATALOG_EDITIONS = [
     "club": "France · Sélection",
     "nationality": "France",
     "pos": "BU",
-    "image_url": "/__l5e/assets-v1/6b47080d-109b-4f99-a8c5-2882bc7cfdf0/su-mbappe.jpg"
+    "image_url": "/__l5e/assets-v1/064181fc-572e-41d7-8804-a447cccf1039/su-photo-mbappe.jpg"
   },
   {
     "name": "Erling Haaland",
@@ -389,6 +389,6 @@ export const CATALOG_EDITIONS = [
     "club": "Norvège · Sélection",
     "nationality": "Norvège",
     "pos": "BU",
-    "image_url": "/__l5e/assets-v1/93cfb7d4-5f61-41c4-b358-d8166b83cf89/su-haaland.jpg"
+    "image_url": "/__l5e/assets-v1/e7b6e1f9-1995-4256-b093-3a80153b78e6/su-photo-haaland.jpg"
   }
 ] as const;

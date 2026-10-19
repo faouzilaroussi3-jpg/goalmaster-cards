@@ -1,4 +1,5 @@
 import { useId, useSyncExternalStore } from "react";
+import { CardFire } from "@/components/CardFire";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 function subscribe(cb: () => void) {
@@ -19,31 +20,9 @@ const ORBIT = "M12,2.5 H88 Q97.5,2.5 97.5,12 V128 Q97.5,137.5 88,137.5 H12 Q2.5,
 const LAP_S = 7;
 const SEGMENTS = 34;
 const GAP_S = 0.036;
-const TONGUE = "M0,0 C-3.2,-2.5 -3,-8 0,-15 C0.8,-10 3.4,-7 2.6,-3 C2.2,-1 1.2,0 0,0 Z";
-
-// Flame tongues: [x, y, scale, rotation, delay s]
-const TONGUES: [number, number, number, number, number][] = [
-  // bottom edge — short enough to leave the card text readable
-  [5, 142, 0.9, 0, 0], [15, 142.5, 1.1, 0, 0.35], [26, 142, 0.8, 0, 0.7], [37, 142.5, 1.15, 0, 0.15], [49, 142, 0.9, 0, 0.55],
-  [60, 142.5, 1.1, 0, 0.9], [71, 142, 0.85, 0, 0.25], [83, 142.5, 1.1, 0, 0.65], [95, 142, 0.9, 0, 0.45],
-  // left and right edges, licking upward
-  [1, 122, 1.4, 12, 0.2], [0, 100, 1.2, 12, 0.6], [1, 78, 1.1, 12, 0.1], [0, 56, 0.95, 12, 0.5], [1, 34, 0.8, 12, 0.8],
-  [99, 120, 1.4, -12, 0.4], [100, 98, 1.2, -12, 0.0], [99, 76, 1.1, -12, 0.7], [100, 54, 0.95, -12, 0.3], [99, 32, 0.8, -12, 0.55],
-  // a few short ones along the top
-  [22, 4, 0.55, 0, 0.3], [50, 3.5, 0.6, 0, 0.75], [78, 4, 0.55, 0, 0.1],
-];
-// Embers: [x, delay s, duration s]
-const EMBERS: [number, number, number][] = [
-  [8, 0, 2.2], [18, 0.9, 2.8], [29, 0.4, 2.4], [41, 1.4, 3], [52, 0.2, 2.6], [63, 1.1, 2.3],
-  [74, 0.6, 2.9], [86, 1.6, 2.5], [93, 0.3, 2.7], [35, 1.9, 3.2], [69, 2.1, 2.6], [12, 2.4, 3],
-];
-
-/** Secret Ultimate frame: a raging fire border with flame tongues, embers and a dragon slithering around the card. */
+/** Secret Ultimate frame: realistic particle fire along the card edges and a dragon slithering around the card. */
 export function SecretUltimateFx() {
   const reduced = useReducedMotion();
-  const fire = useSvgId("su-fire");
-  const grad = useSvgId("su-grad");
-  const tongueGrad = useSvgId("su-tongue");
   const scale = useSvgId("su-scale");
   const track = useSvgId("su-track");
 
@@ -55,26 +34,10 @@ export function SecretUltimateFx() {
     );
 
   return (
+    <>
+    <CardFire className="su-fire" />
     <svg className="su-fx" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <filter id={fire} x="-15%" y="-15%" width="130%" height="130%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.07 0.2" numOctaves="2" seed="4" result="noise">
-            {!reduced && <animate attributeName="baseFrequency" dur="1.4s" values="0.07 0.2;0.09 0.27;0.07 0.2" repeatCount="indefinite" />}
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-        <linearGradient id={grad} x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" className="su-stop-core" />
-          <stop offset="0.35" className="su-stop-mid" />
-          <stop offset="0.75" className="su-stop-outer" />
-          <stop offset="1" className="su-stop-mid" />
-        </linearGradient>
-        <linearGradient id={tongueGrad} x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" className="su-stop-core" />
-          <stop offset="0.3" className="su-stop-mid" />
-          <stop offset="0.75" className="su-stop-outer" />
-          <stop offset="1" className="su-stop-outer" stopOpacity="0" />
-        </linearGradient>
         <radialGradient id={scale}>
           <stop offset="0" className="su-stop-mid" />
           <stop offset="0.6" className="su-stop-outer" />
@@ -82,26 +45,6 @@ export function SecretUltimateFx() {
         </radialGradient>
         <path id={track} d={TRACK} fill="none" />
       </defs>
-
-      {/* Fire: border ring + flame tongues, all distorted by animated noise so they flicker like real flames. */}
-      <g filter={`url(#${fire})`}>
-        <rect className="su-flame-glow" x="2" y="2" width="96" height="136" rx="5" fill="none" strokeWidth="9" />
-        <rect className="su-flame-outer" x="2.5" y="2.5" width="95" height="135" rx="5" fill="none" stroke={`url(#${grad})`} strokeWidth="5" />
-        <rect className="su-flame-core" x="3" y="3" width="94" height="134" rx="4.5" fill="none" strokeWidth="1.4" />
-        {TONGUES.map(([x, y, s, r, d], k) => (
-          <g key={k} transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
-            <path className="su-tongue" d={TONGUE} fill={`url(#${tongueGrad})`} style={{ animationDelay: `${d}s` }} />
-          </g>
-        ))}
-      </g>
-
-      {!reduced && (
-        <g className="su-embers">
-          {EMBERS.map(([x, d, dur], k) => (
-            <circle key={k} cx={x} cy="136" r={k % 3 === 0 ? 0.9 : 0.6} style={{ animationDelay: `${d}s`, animationDuration: `${dur}s` }} />
-          ))}
-        </g>
-      )}
 
       {/* Dragon: tail first so the head is painted on top. */}
       {!reduced && (
@@ -142,6 +85,7 @@ export function SecretUltimateFx() {
         </g>
       )}
     </svg>
+    </>
   );
 }
 

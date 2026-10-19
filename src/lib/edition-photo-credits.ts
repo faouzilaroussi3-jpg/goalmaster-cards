@@ -35,7 +35,8 @@ import photo33 from "@/assets/players/Aïmen_Moueffek.jpg.asset.json";
 import altPhotoHaaland from "@/assets/players/alt-photo-haaland.jpg.asset.json";
 import altPhotoMbappe from "@/assets/players/alt-photo-mbappe.jpg.asset.json";
 import altPhotoSalah from "@/assets/players/alt-photo-salah.jpg.asset.json";
-import altPhotoBellingham from "@/assets/players/alt-photo-bellingham.jpg.asset.json";
+import altPhotoBellingham from "@/assets/players/alt-photo-bellingham-kit.jpg.asset.json";
+import altPhotoCherki from "@/assets/players/alt-photo-cherki.jpg.asset.json";
 export const EDITION_PHOTO_CREDITS = [
   { ...{"name": "Romain Del Castillo", "author": "Paté kroute", "license": "CC0", "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "source": "https://commons.wikimedia.org/wiki/File:Del_castillo_asse_sb_2425.png"}, url: photo0.url },
   { ...{"name": "Wahbi Khazri", "author": "Дмитрий Садовников", "license": "CC BY-SA 3.0", "license_url": "https://creativecommons.org/licenses/by-sa/3.0", "source": "https://commons.wikimedia.org/wiki/File:Wahbi_Khazri.jpg"}, url: photo1.url },
@@ -75,5 +76,6 @@ export const EDITION_PHOTO_CREDITS = [
   { name: "Erling Haaland (ALT)", author: "Hameltion", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:ManCity20240722-031_(cropped).jpg", url: altPhotoHaaland.url },
   { name: "Kylian Mbappé (ALT)", author: "Bryan Berlin", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Paraguay_4_July_2026-201_(cropped).jpg", url: altPhotoMbappe.url },
   { name: "Mohamed Salah (ALT)", author: "Franco237 (recadrage : HazemGM)", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Mohamed_Salah_2021_CAN_Final.jpg", url: altPhotoSalah.url },
-  { name: "Jude Bellingham (ALT)", author: "Barcex", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:25th_Laureus_World_Sports_Awards_-_240422_205212_(cropped).jpg", url: altPhotoBellingham.url },
+  { name: "Jude Bellingham (ALT)", author: "Bryan Berlin", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Jude_Bellingham_England_v_Panama_27_June_26-082.jpg", url: altPhotoBellingham.url },
+  { name: "Rayan Cherki (ALT)", author: "Bryan Berlin", license: "CC BY-SA 4.0", license_url: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:Rayan_Cherki_France_v_Norway_26_June_26-114.jpg", url: altPhotoCherki.url },
 ];
