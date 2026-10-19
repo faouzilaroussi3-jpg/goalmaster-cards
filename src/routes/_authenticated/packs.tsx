@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Coins, Timer } from "lucide-react";
+import { Coins, FastForward, Timer } from "lucide-react";
 import packClassic from "@/assets/pack-classic.png";
 import packPremium from "@/assets/pack-premium.png";
 import { supabase } from "@/integrations/supabase/client";

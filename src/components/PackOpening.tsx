@@ -76,7 +76,6 @@ export function PackOpening({
   useEffect(() => {
     if (instant && result) { sfx.whoosh(0.8); sfx.packSummary(result.coins_gained); }
     // Only on mount: an instant opening arrives with its result already drawn.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function triggerFlash(c: OpenedCard) {
