@@ -103,7 +103,7 @@ export function SwipePack({
         className={cn(
           "relative z-10 w-44 select-none sm:w-56",
           !dragging && !torn && progress === 0 && !disabled && "anim-float",
-          torn && "anim-shake",
+          torn && "tear-pack-lift",
           disabled && "opacity-40",
         )}
       >
@@ -157,12 +157,12 @@ export function SwipePack({
 
         {!disabled && !torn && (
           <>
-            <div className="tear-line pointer-events-none absolute left-[6%] right-[6%]" style={{ top: `${TEAR_Y}%` }} aria-hidden>
-              <div className="tear-line-done" style={{ width: `${progress * 100}%` }} />
-              <div
-                className={cn("tear-handle", progress === 0 && "tear-handle-idle")}
-                style={{ left: `${progress * 100}%` }}
-              />
+            <div
+              className="tear-line pointer-events-none absolute left-[6%] right-[6%]"
+              style={{ top: `${TEAR_Y}%`, opacity: progress > 0 ? 0 : 1, transition: "opacity 150ms" }}
+              aria-hidden
+            >
+              <div className="tear-handle tear-handle-idle" />
             </div>
             <div
               role="button"
