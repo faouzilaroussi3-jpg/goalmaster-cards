@@ -36,7 +36,7 @@ export function CardViewer({ card, missing, count, onClose }: { card: CardData |
     <DialogPrimitive.Root open={!!card} onOpenChange={(o) => !o && onClose()}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="card-viewer-overlay fixed inset-0 z-50 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 overflow-hidden p-4 outline-none" onPointerDownOutside={(e) => e.preventDefault()}>
+        <DialogPrimitive.Content className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 overflow-hidden p-4 outline-none" onClick={(e) => e.target === e.currentTarget && onClose()}>
           {card && r && (
             <>
               <div className="text-center">
