@@ -53,17 +53,18 @@ function PacksPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { session } = useAuth();
-  const [opening, setOpening] = useState<{ key: string; result: OpenResult | null } | null>(null);
+  const [opening, setOpening] = useState<{ key: string; result: OpenResult | null; instant: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [round, setRound] = useState(0);
 
 
-  async function open(key: string) {
+  async function open(key: string, instant = false) {
     if (busy) return;
     setBusy(true);
     // Draw on the server while the light bursts out of the torn pack, then show the face-down cards.
-    const burst = new Promise((r) => setTimeout(r, 700));
+    // A quick open skips the tear and the stack and goes straight to the results.
+    const burst = new Promise((r) => setTimeout(r, instant ? 0 : 700));
     const [{ data, error }] = await Promise.all([supabase.rpc("open_pack", { _pack_key: key }), burst]);
     if (error) {
       toast.error(error.message);
@@ -73,7 +74,7 @@ function PacksPage() {
       refetch();
       return;
     }
-    setOpening({ key, result: data as unknown as OpenResult });
+    setOpening({ key, result: data as unknown as OpenResult, instant });
     qc.invalidateQueries({ queryKey: ["packs"] });
   }
 
@@ -129,6 +130,14 @@ function PacksPage() {
             disabled={busy || selected.count < 1}
             onOpen={() => open(selected.pack_key)}
           />
+          <button
+            type="button"
+            onClick={() => open(selected.pack_key, true)}
+            disabled={busy || selected.count < 1}
+            className="mb-2 flex items-center gap-1 rounded-full border border-border px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground transition hover:border-primary hover:text-primary disabled:opacity-40"
+          >
+            <FastForward className="h-3.5 w-3.5" aria-hidden /> Ouvrir direct · voir le résultat
+          </button>
           {selected.price_coins > 0 && (
             <button
               onClick={() => buy(selected.pack_key)}
@@ -141,7 +150,7 @@ function PacksPage() {
         </div>
       )}
       <LivePulls />
-      {opening && <PackOpening packImage={IMG[opening.key] ?? packClassic} result={opening.result} onClose={close} />}
+      {opening && <PackOpening packImage={IMG[opening.key] ?? packClassic} result={opening.result} instant={opening.instant} onClose={close} />}
     </div>
   );
 }

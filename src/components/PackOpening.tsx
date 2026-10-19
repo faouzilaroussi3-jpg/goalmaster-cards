@@ -8,6 +8,7 @@ import { RARITY_VAR } from "@/lib/card-reveal";
 import { revealTiming, type RareFx } from "@/lib/rare-reveal";
 import { RareRevealFx } from "@/components/RareRevealFx";
 import { sfx } from "@/lib/sfx";
+import { ChevronsRight } from "lucide-react";
 
 export interface OpenedCard {
   slot: number;
@@ -41,13 +42,16 @@ function stackOffset(depth: number) {
 export function PackOpening({
   packImage,
   result,
+  instant = false,
   onClose,
 }: {
   packImage: string;
   result: OpenResult | null;
+  /** Quick open: skip the face-down stack and show the whole pack straight away. */
+  instant?: boolean;
   onClose: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>(() => (result ? "reveal" : "intro"));
+  const [phase, setPhase] = useState<Phase>(() => (result ? (instant ? "done" : "reveal") : "intro"));
   // Number of cards turned over so far; the last turned card sits face up at the front of the stack.
   const [turned, setTurned] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -69,6 +73,11 @@ export function PackOpening({
     if (phase === "intro" && result) setPhase("reveal");
   }, [phase, result]);
   useEffect(() => { if (phase === "reveal") sfx.stackAppear(); }, [phase]);
+  useEffect(() => {
+    if (instant && result) { sfx.whoosh(0.8); sfx.packSummary(result.coins_gained); }
+    // Only on mount: an instant opening arrives with its result already drawn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function triggerFlash(c: OpenedCard) {
     setFlash(c.rarity);
@@ -272,8 +281,8 @@ export function PackOpening({
       )}
 
       {result && phase !== "done" && (
-        <Button variant="secondary" data-sfx="none" onClick={skip} className="fixed bottom-4 right-4 z-30 px-4 py-2 text-xs font-bold uppercase text-muted-foreground">
-          Passer
+        <Button variant="secondary" data-sfx="none" onClick={skip} className="fixed bottom-4 right-4 z-30 gap-1 border border-primary/50 px-4 py-2 text-xs font-bold uppercase text-primary">
+          Passer · voir le résultat <ChevronsRight className="h-4 w-4" aria-hidden />
         </Button>
       )}
     </div>
