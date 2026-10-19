@@ -29,7 +29,6 @@ function orbit(t: number, out: THREE.Vector3) {
 function Dragon({ glow }: { glow: string }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(dragonAsset.url);
-  console.log('DRAGONDBG loaded', animations.length);
 
   const model = useMemo(() => {
     const o = SkeletonUtils.clone(scene);
@@ -69,7 +68,6 @@ function Dragon({ glow }: { glow: string }) {
   const ahead = useMemo(() => new THREE.Vector3(), []);
   useFrame((state) => {
     const g = group.current;
-    if (state.clock.elapsedTime < 0.05 || Math.random() < 0.01) console.log('DRAGONDBG frame', !!g);
     if (!g) return;
     const t = state.clock.elapsedTime;
     orbit(t, pos);
@@ -77,7 +75,6 @@ function Dragon({ glow }: { glow: string }) {
     g.position.copy(pos);
     g.lookAt(ahead); // the model's +Z (its nose) follows the flight path
     g.rotateZ(BANK);
-    (window as unknown as Record<string, unknown>).__dragonDbg = { p: g.position.toArray(), box: new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()).toArray(), s: model.children[0]?.scale.x };
   });
 
   return (
@@ -90,7 +87,6 @@ function Dragon({ glow }: { glow: string }) {
 
 /** Transparent overlay scene: a real 3D dragon circling the Secret Ultimate card, hidden behind the card when it flies round the back. */
 export default function Dragon3D({ glow, warm }: { glow: string; warm: string }) {
-  console.log('DRAGONDBG canvas');
   return (
     <Canvas
       dpr={[1, 1.75]}
