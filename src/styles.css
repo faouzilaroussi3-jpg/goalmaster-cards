@@ -106,6 +106,8 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  /* Flying pack flaps, sparkles and SU dragons may leave the screen sideways; never let them widen the page on phones. */
+  html, body { overflow-x: clip; }
   body {
     background: var(--color-background);
     background-image: var(--gradient-hero);
