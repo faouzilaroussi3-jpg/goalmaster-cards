@@ -8,7 +8,7 @@ const card = { id: "x", name: "Lionel Messi", rarity: "secret_ultimate", rating:
 
 function Page() {
   return (
-    <div className="grid grid-cols-2 gap-4 p-24 sm:grid-cols-3 md:grid-cols-4" style={{ maxWidth: 1100 }}>
+    <div className="grid grid-cols-2 gap-4 p-24 sm:grid-cols-2 md:grid-cols-2" style={{ maxWidth: 1100, paddingTop: 220 }}>
       <PlayerCard card={card} />
       <PlayerCard card={card} />
       <PlayerCard card={card} />
