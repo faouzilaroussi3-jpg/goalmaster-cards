@@ -176,7 +176,7 @@ function EditDialog({ card, onClose, onSaved }: { card: Card | null; onClose: ()
     onClose();
   }
 
-  const preview = { ...toRow(f), id: card?.id };
+  const preview = { ...toRow(f), ...(card ? { id: card.id } : {}) };
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
