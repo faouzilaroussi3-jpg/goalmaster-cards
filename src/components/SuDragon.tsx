@@ -205,23 +205,23 @@ export function SuDragonShell({ className, missing, children }: { className?: st
       const gr = (14 + 26 * glow) * u;
       ctx.drawImage(fire[Math.floor(top * 0.55)]!, mx - gr, my - gr, gr * 2, gr * 2);
 
-      const heading = ha - 0.18; // along the edge, slightly away from the card
+      const heading = ha + 0.1; // along the edge, leaning onto the card so the jet stays inside the overlay and lights the frame
       if (Number.isNaN(pmx)) { pmx = mx; pmy = my; pHeading = heading; }
       if (dt > 0) {
         // Head velocity: the jet is carried a little by the moving head.
         const hvx = (mx - pmx) / dt, hvy = (my - pmy) / dt;
         const dh = Math.atan2(Math.sin(heading - pHeading), Math.cos(heading - pHeading));
-        acc += dt * k * Math.max(460, cw * 5.5);
+        acc += dt * k * Math.max(420, cw * 5);
         while (acc > 1 && parts.length < 700) {
           acc -= 1;
           // Born at a random instant inside this frame: start on the mouth's path and already advanced by the time left.
           const f = Math.random();
           const a = pHeading + dh * f + (Math.random() - 0.5) * 0.3;
-          const sp = (65 + Math.random() * 35) * u;
+          const sp = (48 + Math.random() * 26) * u;
           const vx = Math.cos(a) * sp + hvx * 0.35, vy = Math.sin(a) * sp + hvy * 0.35;
           // The update loop below advances every particle by dt, so start it dt earlier than its true age.
           const lead = (1 - f) * dt - dt;
-          parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.3, size: (2 + Math.random() * 1.5) * u, grow: (8 + Math.random() * 8) * u, ember: false, seed: Math.random() * 1000 });
+          parts.push({ x: pmx + (mx - pmx) * f + vx * lead, y: pmy + (my - pmy) * f + vy * lead, vx, vy, age: lead, life: 0.5 + Math.random() * 0.25, size: (1.8 + Math.random() * 1.2) * u, grow: (7 + Math.random() * 6) * u, ember: false, seed: Math.random() * 1000 });
         }
         if (acc > 1) acc = 0;
         embers += dt * (2 + k * 24);
@@ -250,7 +250,7 @@ export function SuDragonShell({ className, missing, children }: { className?: st
         p.y += (p.vy + Math.cos(p.seed * 1.7 + time * 5 + q * 3) * 5 * u * q) * dt;
         const size = p.size + (p.grow - p.size) * Math.sqrt(q);
         const stretch = Math.min(2.2, 1 + Math.hypot(p.vx, p.vy) / (50 * u));
-        ctx.globalAlpha = (q < 0.12 ? smoothstep(q / 0.12) : Math.pow(1 - q, 1.1)) * 0.26;
+        ctx.globalAlpha = (q < 0.12 ? smoothstep(q / 0.12) : Math.pow(1 - q, 1.1)) * 0.17;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
         ctx.drawImage(fire[Math.min(top, Math.floor((0.2 + 0.8 * Math.pow(q, 1.2)) * fire.length))]!, (-size * stretch) / 2, -size / 2, size * stretch, size);
         ctx.restore();
