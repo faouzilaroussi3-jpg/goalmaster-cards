@@ -17,6 +17,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
 import { Route as ApiPublicCardPhotoSplatRouteImport } from './routes/api/public/card-photo/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -58,6 +59,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTransfertsRoute = AuthenticatedTransfertsRouteImport.update({
+  id: '/transferts',
+  path: '/transferts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicCardPhotoSplatRoute = ApiPublicCardPhotoSplatRouteImport.update({
   id: '/api/public/card-photo/$',
   path: '/api/public/card-photo/$',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof AuthenticatedCollectionRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/transferts': typeof AuthenticatedTransfertsRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesByTo {
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/collection': typeof AuthenticatedCollectionRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/transferts': typeof AuthenticatedTransfertsRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesById {
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRouteTypes {
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/packs'
     | '/profile'
+    | '/transferts'
     | '/api/public/card-photo/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/packs'
     | '/profile'
+    | '/transferts'
     | '/api/public/card-photo/$'
   id:
     | '__root__'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/_authenticated/collection'
     | '/_authenticated/packs'
     | '/_authenticated/profile'
+    | '/_authenticated/transferts'
     | '/api/public/card-photo/$'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/transferts': {
+      id: '/_authenticated/transferts'
+      path: '/transferts'
+      fullPath: '/transferts'
+      preLoaderRoute: typeof AuthenticatedTransfertsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/card-photo/$': {
       id: '/api/public/card-photo/$'
       path: '/api/public/card-photo/$'
@@ -211,6 +230,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -218,6 +238,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
