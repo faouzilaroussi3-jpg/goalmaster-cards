@@ -1,6 +1,5 @@
 import { Suspense, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
 import { Vector3, PerspectiveCamera } from "three";
 import { Athlete } from "./Athlete";
 import { Stadium } from "./Stadium";
@@ -26,7 +25,7 @@ export function Scene({ tier, palette, reduced, onReady, onComplete }: { tier: n
   }, -1);
   return <>
     <Stadium palette={palette} />
-    <Suspense fallback={<Html center><span className="font-display text-xl text-primary">Préparation…</span></Html>}><Athlete time={progress} tier={tier} palette={palette} onReady={handleReady} /></Suspense>
+    <Suspense fallback={null}><Athlete time={progress} tier={tier} palette={palette} onReady={handleReady} /></Suspense>
     <FootballEffects time={progress} tier={tier} palette={palette} />
   </>;
 }
