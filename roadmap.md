@@ -26,3 +26,4 @@
 - [x] Admin : créer / supprimer des raretés, avec un effet visuel choisi appliqué à toutes les cartes de cette rareté
 - [x] Défis quotidiens et hebdomadaires qui donnent des packs et des pièces
 - [x] Admin : modifier à volonté le visuel des raretés (nom, sigle, effet, couleur)
+- [ ] Mode Matchs 11 contre 11 : équipe de 11 + 5 remplaçants, formation/tactique, collectif (postes, club, nationalité, rareté), match simulé contre l'équipe d'un autre joueur, 2 mi-temps de 1 min 20 sur un terrain avec pions et prénoms, changements à la mi-temps, pièces + classement

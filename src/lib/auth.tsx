@@ -117,3 +117,25 @@ export function useMyDuels() {
     },
   });
 }
+
+export interface MyMatch {
+  match_id: string; status: string; is_home: boolean; opponent_id: string | null; opponent_name: string | null;
+  my_goals: number; their_goals: number; needs_me: boolean; incoming: boolean; open_invite: boolean; they_ready: boolean;
+  result: "win" | "loss" | "draw" | null; my_reward: number | null; my_elo_delta: number | null;
+  my_general: number | null; their_general: number | null;
+  created_at: string; halftime_at: string | null; finished_at: string | null;
+}
+
+export function useMyMatches() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["matches", "mine", session?.user.id],
+    enabled: !!session,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_matches");
+      if (error) throw error;
+      return (data ?? []) as MyMatch[];
+    },
+  });
+}

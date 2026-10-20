@@ -169,6 +169,13 @@
       "when": 1792490804805,
       "tag": "0023_rarity_more_style_effects",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792492428627,
+      "tag": "0024_manager_matches_11v11",
+      "breakpoints": true
     }
   ]
 }
