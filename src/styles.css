@@ -560,3 +560,11 @@
 .sl-border-gems i:nth-child(-n+4) { width: 10px; height: 10px; }
 @keyframes sl-gem-glint { 0%, 70%, 100% { filter: brightness(1); } 80% { filter: brightness(1.9) drop-shadow(0 0 5px var(--card-light)); } }
 @media (prefers-reduced-motion: reduce) { .sl-border-gems i { animation: none; } }
+
+/* Secret Legendary (normal): softer, photo-friendly frame */
+.fm-card[data-rarity="secret_legendary"][data-version="normal"] { box-shadow: 0 0 18px -2px color-mix(in oklab, var(--diamond-ice) 45%, transparent), 0 0 34px -14px var(--diamond-lilac); }
+.fm-card[data-rarity="secret_legendary"][data-version="normal"] .card-foil-border { filter: saturate(.55) brightness(.92); opacity: .82; }
+.fm-card[data-rarity="secret_legendary"][data-version="normal"]::after { border-color: color-mix(in oklab, var(--card-light) 60%, transparent); box-shadow: 0 0 3px color-mix(in oklab, var(--diamond-ice) 60%, transparent); }
+.fm-card[data-rarity="secret_legendary"][data-version="normal"] .card-border-glitter { opacity: .6; }
+.fm-card[data-rarity="secret_legendary"][data-version="normal"] .card-pattern { opacity: .55; }
+.fm-card[data-rarity="secret_legendary"][data-version="normal"] .sl-border-gems i { box-shadow: 0 0 0 1px color-mix(in oklab, var(--card-light) 50%, transparent), 0 0 4px color-mix(in oklab, var(--diamond-ice) 70%, transparent); }
