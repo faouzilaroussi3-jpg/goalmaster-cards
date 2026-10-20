@@ -5,9 +5,10 @@ import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
-import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyPacks, useProfile } from "@/lib/auth";
+import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyPacks, useMyPeriodicChallenges, useProfile } from "@/lib/auth";
 import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
+import { periodicSummary } from "@/lib/periodic-challenges";
 import { giftSummary } from "@/lib/admin-grants";
 
 const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
@@ -21,7 +22,8 @@ export function AppHeader() {
   const navigate = useNavigate();
   const totalPacks = packs?.reduce((s, p) => s + p.count, 0) ?? 0;
   const { data: challenges } = useMyChallenges();
-  const ready = claimableSummary(challenges ?? []).count;
+  const { data: periodic } = useMyPeriodicChallenges();
+  const ready = claimableSummary(challenges ?? []).count + periodicSummary(periodic ?? []).count;
   const { data: duels } = useMyDuels();
   const duelTodo = (duels ?? []).filter((d) => d.my_turn || d.incoming).length;
   const uid = session?.user.id;

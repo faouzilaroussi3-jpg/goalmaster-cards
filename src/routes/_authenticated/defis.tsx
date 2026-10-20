@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CalendarDays, Check, Clock, Coins, Gift, Lock, Package, Sun, Target } from "lucide-react";
@@ -210,7 +210,7 @@ function ChallengesPage() {
 }
 
 function PeriodSection({ icon, title, items, now, loading, busy, onClaim }: {
-  icon: React.ReactNode; title: string; items: PeriodicChallenge[]; now: number; loading: boolean; busy: boolean;
+  icon: ReactNode; title: string; items: PeriodicChallenge[]; now: number; loading: boolean; busy: boolean;
   onClaim: (c: PeriodicChallenge) => void;
 }) {
   const endsAt = items[0]?.ends_at;
