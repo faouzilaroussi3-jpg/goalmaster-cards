@@ -81,18 +81,24 @@ export interface RatedTeam {
 const r1 = (n: number) => Math.round(n * 10) / 10;
 const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
 
-/** Rate a full XI exactly like _mm_rate. */
-export function rateTeam(formation: FormationKey, tactic: Tactic, xi: MatchCard[], bench: MatchCard[] = []): RatedTeam {
+/** Rate each filled slot (empty slots stay null); used live by the team builder. */
+export function rateSlots(formation: FormationKey, xi: (MatchCard | null | undefined)[]): (RatedPlayer | null)[] {
   const slots = FORMATIONS[formation].slots;
-  const players: RatedPlayer[] = xi.map((p, i) => {
-    const slot = slots[i]!;
+  return slots.map((slot, i) => {
+    const p = xi[i];
+    if (!p) return null;
     const fit = positionFit(p.pos, slot.role);
-    const others = xi.filter((_, j) => j !== i);
+    const others = xi.filter((q, j): q is MatchCard => !!q && j !== i);
     const cm = others.filter((q) => q.club.toLowerCase() === p.club.toLowerCase()).length;
     const nm = others.filter((q) => q.nationality.toLowerCase() === p.nationality.toLowerCase()).length;
     const chem = chemistry(cm, nm, fit);
     return { ...p, slot: i, role: slot.role, line: slot.line, fit, chem, eff: p.rating + rarityBonus(p.rarity, p.version) + chem + fit };
   });
+}
+
+/** Rate a full XI exactly like _mm_rate. */
+export function rateTeam(formation: FormationKey, tactic: Tactic, xi: MatchCard[], bench: MatchCard[] = []): RatedTeam {
+  const players = rateSlots(formation, xi) as RatedPlayer[];
   const by = (l: Line) => players.filter((p) => p.line === l).map((p) => p.eff);
   const att = by("att"), mid = by("mid"), def = by("def");
   const t = tactic === "offensive" ? 3 : tactic === "defensive" ? -3 : 0;
