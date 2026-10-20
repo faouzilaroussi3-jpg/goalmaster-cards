@@ -53,6 +53,8 @@ export interface RarityInfo {
   tier: number;
   rank: number;
   fx: RarityKey;
+  /** Built-in rarity it plays as (duels): built-ins keep their own key whatever look they wear. Mirrors _rarity_fx. */
+  play: RarityKey;
   /** Extra look drawn instead of the base effect's frame (admin-created rarities only). */
   style: RarityStyle | null;
   color: string | null;
@@ -71,19 +73,22 @@ export interface RarityRow {
   builtin: boolean;
 }
 
-const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, style: null, color: null, builtin: true }));
+const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, color: null, builtin: true }));
+const isBuiltinKey = (k: string): k is RarityKey => RARITIES.some((r) => r.key === k);
 
 let current: RarityInfo[] = BUILTIN;
 const listeners = new Set<() => void>();
 
 export function toRarityInfo(row: RarityRow): RarityInfo {
+  const fx = effectBase(row.effect) ?? "common";
   return {
     key: row.key,
     label: row.label,
     short: row.short_label,
     tier: row.tier,
     rank: Number(row.rank),
-    fx: effectBase(row.effect) ?? "common",
+    fx,
+    play: row.builtin && isBuiltinKey(row.key) ? row.key : fx,
     style: effectStyle(row.effect),
     color: row.color,
     builtin: row.builtin,
@@ -106,13 +111,13 @@ function subscribe(cb: () => void) {
   return () => listeners.delete(cb);
 }
 
-/** All rarities, least rare first; re-renders when an admin adds or removes one. */
+/** All rarities, least rare first; re-renders when an admin adds, edits or removes one. */
 export function useRarities(): RarityInfo[] {
   return useSyncExternalStore(subscribe, getRarities, () => BUILTIN);
 }
 
 export function rarityMeta(key: string): RarityInfo {
-  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", style: null, color: null, builtin: false };
+  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, color: null, builtin: false };
 }
 
 /** Reactive rarityMeta for components that render cards. */
