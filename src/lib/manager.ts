@@ -133,7 +133,7 @@ export function firstName(name: string) {
 }
 
 /** Fill each slot with the owned card that plays it best (greedy, best slots first), then the bench with the best of the rest. */
-export function autoPick(formation: FormationKey, options: MatchCard[]): { xi: MatchCard[]; bench: MatchCard[] } {
+export function autoPick(formation: FormationKey, options: MatchCard[]): { xi: (MatchCard | null)[]; bench: MatchCard[] } {
   const pool = options.filter(canPlayMatch);
   const used = new Set<string>();
   const slots = FORMATIONS[formation].slots.map((sl, i) => ({ sl, i }));
@@ -153,7 +153,7 @@ export function autoPick(formation: FormationKey, options: MatchCard[]): { xi: M
     .sort((a, b) => b.rating + rarityBonus(b.rarity, b.version) - (a.rating + rarityBonus(a.rarity, a.version)))
     .filter((c) => { if (used.has(c.card_id)) return false; used.add(c.card_id); return true; })
     .slice(0, BENCH_SIZE);
-  return { xi: xi.filter(Boolean) as MatchCard[], bench };
+  return { xi, bench };
 }
 
 /** Clock shown on the board: a half of HALF_SECONDS lasts 45 minutes. */
