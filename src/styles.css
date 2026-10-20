@@ -122,6 +122,29 @@
   --fx-galaxy: oklch(0.68 0.21 305);
   --fx-galaxy-blue: oklch(0.55 0.2 265);
   --fx-galaxy-night: oklch(0.14 0.06 285);
+  /* Second batch of looks (Arrachée, Marbre, Lave, Électrique, Aquarelle, Verre brisé, Fumée, Carbone) */
+  --fx-torn: oklch(0.93 0.03 85);
+  --fx-torn-shadow: oklch(0.5 0.04 70);
+  --fx-marble: oklch(0.95 0.008 85);
+  --fx-marble-vein: oklch(0.3 0.012 260);
+  --fx-lava: oklch(0.72 0.2 45);
+  --fx-lava-hot: oklch(0.92 0.15 90);
+  --fx-lava-rock: oklch(0.16 0.012 30);
+  --fx-electric: oklch(0.85 0.14 230);
+  --fx-watercolor: oklch(0.72 0.13 15);
+  --fx-watercolor-2: oklch(0.74 0.11 230);
+  --fx-shattered: oklch(0.9 0.06 205);
+  --fx-smoke: oklch(0.8 0.02 280);
+  --fx-smoke-dark: oklch(0.18 0.012 280);
+  --fx-carbon: oklch(0.8 0.17 70);
+  --fx-carbon-a: oklch(0.17 0.004 260);
+  --fx-carbon-b: oklch(0.27 0.006 260);
+  /* Grayscale procedural textures (SVG turbulence), coloured in CSS through blend modes */
+  --tex-marble: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='440'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='turbulence' baseFrequency='.006 .014' numOctaves='5' seed='4'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.28 .72 .92 1 1 1'/%3E%3CfeFuncG type='table' tableValues='.28 .72 .92 1 1 1'/%3E%3CfeFuncB type='table' tableValues='.28 .72 .92 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-cracks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='440'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='turbulence' baseFrequency='.018 .022' numOctaves='3' seed='9'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='1 .18 0 0 0 0 0'/%3E%3CfeFuncG type='table' tableValues='1 .18 0 0 0 0 0'/%3E%3CfeFuncB type='table' tableValues='1 .18 0 0 0 0 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-arcs: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='440'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='turbulence' baseFrequency='.035 .012' numOctaves='2' seed='21'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='1 .1 0 0 0 0 0 0'/%3E%3CfeFuncG type='table' tableValues='1 .1 0 0 0 0 0 0'/%3E%3CfeFuncB type='table' tableValues='1 .1 0 0 0 0 0 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-smoke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='440'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.009 .016' numOctaves='4' seed='13'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='0 0 .15 .55 .9 1'/%3E%3CfeFuncG type='table' tableValues='0 0 .15 .55 .9 1'/%3E%3CfeFuncB type='table' tableValues='0 0 .15 .55 .9 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='2'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='0 1'/%3E%3CfeFuncG type='table' tableValues='0 1'/%3E%3CfeFuncB type='table' tableValues='0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23f)'/%3E%3C/svg%3E");
 }
 
 @layer base {
@@ -542,6 +565,104 @@
 .fm-card[data-rarity="galaxy"] .card-foil-border { background: conic-gradient(from var(--facet, 0deg), var(--rc), var(--fx-galaxy-blue), var(--card-light), var(--fx-galaxy-night), var(--rc), var(--primary), var(--card-light), var(--rc)); background-size: 100% 100%; animation: facet-spin 6s linear infinite; }
 .fm-card[data-rarity="galaxy"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; font-size: clamp(10px, 8.4cqw, 23px); letter-spacing: .08em; line-height: 1.06; background: linear-gradient(170deg, var(--card-light) 25%, color-mix(in oklab, var(--rc) 55%, var(--card-light)) 55%, var(--fx-galaxy-blue)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 6px var(--rc)); }
 .fm-card[data-rarity="galaxy"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--fx-galaxy-night) 90%, transparent) 40%, color-mix(in oklab, var(--rc) 35%, var(--fx-galaxy-night))); }
+
+.fm-card[data-rarity="torn"] { --rc: var(--fx-torn); }
+.fm-card[data-rarity="marble"] { --rc: var(--fx-marble); }
+.fm-card[data-rarity="lava"] { --rc: var(--fx-lava); }
+.fm-card[data-rarity="electric"] { --rc: var(--fx-electric); }
+.fm-card[data-rarity="watercolor"] { --rc: var(--fx-watercolor); }
+.fm-card[data-rarity="shattered"] { --rc: var(--fx-shattered); }
+.fm-card[data-rarity="smoke"] { --rc: var(--fx-smoke); }
+.fm-card[data-rarity="carbon"] { --rc: var(--fx-carbon); }
+
+/* --- Carte arrachée: paper with ripped, jagged edges and a top corner peeling off --- */
+.fm-card[data-rarity="torn"] { background: var(--fx-torn); border-color: var(--fx-torn); box-shadow: 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="torn"] .card-portrait { filter: contrast(1.08) saturate(.92); }
+.card-style-fx[data-fx="torn"]::before { background: var(--tex-grain) 0 0 / 200px 200px, radial-gradient(ellipse at center, transparent 55%, color-mix(in oklab, var(--fx-torn-shadow) 70%, transparent)); mix-blend-mode: overlay; opacity: .45; }
+.card-style-fx[data-fx="torn"]::after { inset: -1px; background: linear-gradient(225deg, color-mix(in oklab, var(--rc) 25%, var(--card-light)) 0 6%, color-mix(in oklab, var(--rc) 55%, var(--fx-torn)) 13%, color-mix(in oklab, var(--rc) 40%, var(--fx-torn-shadow)) 19%, var(--card-night) 24%); clip-path: polygon(60% 0, 100% 0, 100% 27%, 97% 24.5%, 94.5% 22.5%, 91% 21%, 88.5% 17.5%, 85% 16%, 82% 12.5%, 78.5% 11%, 76% 7.5%, 72% 6%, 69.5% 3%, 65% 2%); transform-origin: 100% 0; animation: fx-peel 3.8s ease-in-out infinite; }
+.card-style-fx[data-fx="torn"] i { background:
+    linear-gradient(var(--fx-torn), var(--fx-torn)) top / 100% 4px no-repeat, linear-gradient(var(--fx-torn), var(--fx-torn)) bottom / 100% 4px no-repeat,
+    linear-gradient(var(--fx-torn), var(--fx-torn)) left / 4px 100% no-repeat, linear-gradient(var(--fx-torn), var(--fx-torn)) right / 4px 100% no-repeat,
+    linear-gradient(135deg, var(--fx-torn) 34%, transparent 35%) 0 4px / 9px 9px repeat-x, linear-gradient(225deg, var(--fx-torn) 34%, transparent 35%) 0 4px / 9px 9px repeat-x,
+    linear-gradient(45deg, var(--fx-torn) 34%, transparent 35%) 3px calc(100% - 4px) / 11px 11px repeat-x, linear-gradient(315deg, var(--fx-torn) 34%, transparent 35%) 3px calc(100% - 4px) / 11px 11px repeat-x,
+    linear-gradient(45deg, var(--fx-torn) 34%, transparent 35%) 4px 2px / 7px 7px repeat-y, linear-gradient(135deg, var(--fx-torn) 34%, transparent 35%) 4px 2px / 7px 7px repeat-y,
+    linear-gradient(225deg, var(--fx-torn) 34%, transparent 35%) calc(100% - 4px) 5px / 10px 10px repeat-y, linear-gradient(315deg, var(--fx-torn) 34%, transparent 35%) calc(100% - 4px) 5px / 10px 10px repeat-y;
+  filter: drop-shadow(0 0 1.5px var(--fx-torn-shadow)); }
+.fm-card[data-rarity="torn"] .card-name { font-family: var(--font-card-sport); font-weight: 800; font-size: clamp(11px, 10cqw, 28px); letter-spacing: .04em; color: var(--fx-torn); text-shadow: 0 2px 0 var(--fx-torn-shadow), 0 0 8px color-mix(in oklab, var(--rc) 50%, transparent); transform: rotate(-1.5deg); }
+
+/* --- Marbre: veined polished stone frame with a thin gold inlay and a slow polish glint --- */
+.fm-card[data-rarity="marble"] { background: var(--tex-marble) 0 0 / 100% 100%, var(--rc); background-blend-mode: multiply, normal; border-color: var(--fx-marble); box-shadow: 0 0 22px -8px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="marble"] .card-portrait { filter: contrast(1.05) saturate(.9); }
+.card-style-fx[data-fx="marble"]::before { background: var(--tex-marble) 0 0 / 100% 100%; mix-blend-mode: multiply; opacity: .55; mask: radial-gradient(ellipse at 50% 38%, transparent 42%, var(--card-light) 88%); }
+.card-style-fx[data-fx="marble"]::after { background: linear-gradient(115deg, transparent 40%, color-mix(in oklab, var(--card-light) 45%, transparent) 50%, transparent 60%); background-size: 300% 100%; mix-blend-mode: overlay; animation: fx-glide 6s ease-in-out infinite; }
+.card-style-fx[data-fx="marble"] i { padding: 7px; background:
+    linear-gradient(var(--gold-bright), var(--gold-bright)) 6px 6px / calc(100% - 12px) 1px no-repeat, linear-gradient(var(--gold-bright), var(--gold-bright)) 6px calc(100% - 6px) / calc(100% - 12px) 1px no-repeat,
+    linear-gradient(var(--gold-bright), var(--gold-bright)) 6px 6px / 1px calc(100% - 12px) no-repeat, linear-gradient(var(--gold-bright), var(--gold-bright)) calc(100% - 6px) 6px / 1px calc(100% - 12px) no-repeat,
+    var(--tex-marble) 0 0 / 100% 100%, linear-gradient(var(--rc), var(--rc));
+  background-blend-mode: normal, normal, normal, normal, multiply, normal; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; }
+.fm-card[data-rarity="marble"] .card-name { font-family: var(--font-card-engraved); font-weight: 700; font-size: clamp(10px, 8.4cqw, 23px); letter-spacing: .08em; line-height: 1.06; color: var(--fx-marble); text-shadow: 0 1px 0 var(--fx-marble-vein), 0 0 6px color-mix(in oklab, var(--gold-bright) 45%, transparent); }
+.fm-card[data-rarity="marble"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--fx-marble-vein) 88%, transparent) 45%, var(--fx-marble-vein)); }
+
+/* --- Lave: black rock split by glowing lava cracks, embers rising --- */
+.fm-card[data-rarity="lava"] { background: var(--fx-lava-rock); box-shadow: 0 0 34px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="lava"] .card-portrait { filter: contrast(1.15) saturate(1.15) brightness(.9); }
+.card-style-fx[data-fx="lava"]::before { background: var(--tex-cracks) 0 0 / 100% 100%, linear-gradient(var(--rc), var(--rc)); background-blend-mode: multiply, normal; mix-blend-mode: screen; mask: radial-gradient(ellipse at 50% 40%, transparent 38%, var(--card-light) 82%); animation: fx-breathe 3s ease-in-out infinite; }
+.card-style-fx[data-fx="lava"]::after { background-image: radial-gradient(circle, var(--fx-lava-hot) 0 1px, transparent 2px), radial-gradient(circle, var(--rc) 0 1.5px, transparent 2.5px), radial-gradient(circle, color-mix(in oklab, var(--fx-lava-hot) 70%, var(--rc)) 0 1px, transparent 2px); background-size: 37px 53px, 61px 89px, 23px 41px; mix-blend-mode: screen; mask: linear-gradient(to top, var(--card-light), transparent 85%); animation: fx-embers 9s linear infinite; }
+.card-style-fx[data-fx="lava"] i { padding: 6px; background: var(--tex-cracks) 30% 60% / 140% 140%, linear-gradient(var(--rc), var(--rc)); background-blend-mode: multiply, normal; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; animation: fx-breathe 2.2s ease-in-out infinite; }
+.fm-card[data-rarity="lava"] .card-foil-border { background: conic-gradient(from var(--facet, 0deg), var(--fx-lava-rock), var(--rc), var(--fx-lava-hot), var(--rc), var(--fx-lava-rock), var(--rc), var(--fx-lava-rock)); background-size: 100% 100%; animation: facet-spin 5s linear infinite; }
+.fm-card[data-rarity="lava"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .06em; color: var(--fx-lava-hot); text-shadow: 0 0 8px var(--rc), 0 2px 0 var(--fx-lava-rock); }
+.fm-card[data-rarity="lava"] .card-details { background: linear-gradient(transparent, color-mix(in oklab, var(--fx-lava-rock) 90%, transparent) 40%, color-mix(in oklab, var(--rc) 30%, var(--fx-lava-rock))); }
+
+/* --- Électrique: lightning arcs crackling round the edges, a humming glow tube --- */
+.fm-card[data-rarity="electric"] { background: var(--card-night); border-color: color-mix(in oklab, var(--rc) 50%, var(--card-night)); box-shadow: 0 0 28px -4px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="electric"] .card-portrait { filter: contrast(1.12) saturate(1.05) brightness(.92); }
+.card-style-fx[data-fx="electric"]::before { background: radial-gradient(ellipse at 50% 45%, transparent 50%, color-mix(in oklab, var(--rc) 45%, transparent)); mix-blend-mode: screen; }
+.card-style-fx[data-fx="electric"]::after { background: var(--tex-arcs), linear-gradient(var(--rc), var(--rc)); background-size: 220% 220%, 100% 100%; background-blend-mode: multiply, normal; mix-blend-mode: screen; mask: radial-gradient(ellipse at center, transparent 52%, var(--card-light) 78%); animation: fx-zap 2.1s steps(1) infinite; }
+.card-style-fx[data-fx="electric"] i { inset: 4px; border: 1.5px solid color-mix(in oklab, var(--rc) 35%, var(--card-light)); border-radius: 6px; box-shadow: 0 0 4px var(--rc), 0 0 12px var(--rc), inset 0 0 6px var(--rc), inset 0 0 16px color-mix(in oklab, var(--rc) 50%, transparent); animation: fx-hum 2.1s steps(1) infinite; }
+.fm-card[data-rarity="electric"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .08em; color: color-mix(in oklab, var(--rc) 20%, var(--card-light)); text-shadow: 0 0 4px var(--rc), 0 0 12px var(--rc); }
+
+/* --- Aquarelle: soft washes of colour bleeding over grainy paper --- */
+.fm-card[data-rarity="watercolor"] { background: var(--card-light); border-color: var(--card-light); box-shadow: 0 0 20px -8px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="watercolor"] .card-portrait { filter: saturate(.85) brightness(1.04); mask: radial-gradient(ellipse 78% 72% at 50% 40%, var(--card-light) 55%, transparent 100%); }
+.card-style-fx[data-fx="watercolor"]::before { background: radial-gradient(ellipse 55% 40% at 8% 10%, color-mix(in oklab, var(--rc) 75%, transparent), transparent 70%), radial-gradient(ellipse 50% 45% at 95% 30%, color-mix(in oklab, var(--fx-watercolor-2) 70%, transparent), transparent 70%), radial-gradient(ellipse 60% 35% at 20% 80%, color-mix(in oklab, var(--fx-watercolor-2) 55%, transparent), transparent 70%), radial-gradient(ellipse 45% 40% at 90% 92%, color-mix(in oklab, var(--rc) 65%, transparent), transparent 70%); mix-blend-mode: multiply; opacity: .7; }
+.card-style-fx[data-fx="watercolor"]::after { background: radial-gradient(ellipse 35% 25% at 70% 12%, color-mix(in oklab, var(--rc) 45%, transparent), transparent 70%), radial-gradient(ellipse 30% 30% at 12% 50%, color-mix(in oklab, var(--fx-watercolor-2) 40%, transparent), transparent 70%); mix-blend-mode: multiply; animation: fx-breathe 6s ease-in-out infinite; }
+.card-style-fx[data-fx="watercolor"] i { background: var(--tex-grain) 0 0 / 160px 160px; mix-blend-mode: overlay; opacity: .3; box-shadow: inset 0 0 14px 3px color-mix(in oklab, var(--rc) 35%, transparent); }
+.fm-card[data-rarity="watercolor"] .card-name { font-family: var(--font-card-engraved); font-weight: 700; text-transform: none; font-style: italic; font-size: clamp(10px, 8.6cqw, 24px); letter-spacing: .02em; color: color-mix(in oklab, var(--rc) 35%, var(--card-light)); text-shadow: 0 1px 0 color-mix(in oklab, var(--rc) 60%, var(--card-night)), 0 0 10px color-mix(in oklab, var(--rc) 60%, transparent); }
+
+/* --- Verre brisé: a star-shaped crack in the glass, a glint sliding over the shards --- */
+.fm-card[data-rarity="shattered"] { box-shadow: 0 0 30px -6px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="shattered"] .card-portrait { filter: contrast(1.08) saturate(1.05); }
+.card-style-fx[data-fx="shattered"]::before { background: radial-gradient(circle at 68% 28%, var(--card-light) 0 1.5px, color-mix(in oklab, var(--card-light) 60%, transparent) 3px, transparent 12px), repeating-conic-gradient(from 7deg at 68% 28%, transparent 0 13deg, color-mix(in oklab, var(--card-light) 85%, transparent) 13deg 13.5deg, transparent 13.5deg 29deg), repeating-conic-gradient(from 22deg at 68% 28%, transparent 0 37deg, color-mix(in oklab, var(--rc) 80%, var(--card-light)) 37deg 37.4deg, transparent 37.4deg 52deg), repeating-radial-gradient(circle at 68% 28%, transparent 0 16px, color-mix(in oklab, var(--card-light) 45%, transparent) 16px 17px, transparent 17px 37px); mask: radial-gradient(circle at 68% 28%, var(--card-light) 0, var(--card-light) 20%, transparent 68%); opacity: .85; }
+.card-style-fx[data-fx="shattered"]::after { background: conic-gradient(from 20deg at 68% 28%, color-mix(in oklab, var(--rc) 25%, transparent) 0 40deg, transparent 40deg 110deg, color-mix(in oklab, var(--card-light) 18%, transparent) 110deg 160deg, transparent 160deg 250deg, color-mix(in oklab, var(--rc) 20%, transparent) 250deg 300deg, transparent 300deg), linear-gradient(115deg, transparent 40%, color-mix(in oklab, var(--card-light) 55%, transparent) 50%, transparent 60%); background-size: 100% 100%, 300% 100%; mix-blend-mode: overlay; animation: fx-shard-glint 5s ease-in-out infinite; }
+.card-style-fx[data-fx="shattered"] i { padding: 5px; background: linear-gradient(135deg, var(--card-light), var(--rc) 25%, color-mix(in oklab, var(--rc) 30%, transparent) 50%, var(--rc) 72%, var(--card-light)); background-size: 200% 200%; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; opacity: .85; animation: foil-travel 6s linear infinite; }
+.fm-card[data-rarity="shattered"] .card-foil-border { background: conic-gradient(from var(--facet, 0deg), var(--rc), var(--card-light), color-mix(in oklab, var(--rc) 40%, var(--card-night)), var(--card-light), var(--rc)); background-size: 100% 100%; animation: facet-spin 7s linear infinite; }
+.fm-card[data-rarity="shattered"] .card-name { font-family: var(--font-card-engraved); font-weight: 900; font-size: clamp(10px, 8.4cqw, 23px); letter-spacing: .08em; line-height: 1.06; background: linear-gradient(170deg, var(--card-light) 30%, var(--rc) 65%, var(--card-light)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 var(--card-night)) drop-shadow(0 0 5px color-mix(in oklab, var(--rc) 60%, transparent)); }
+
+/* --- Fumée: dark card with smoke wisps drifting up over the player --- */
+.fm-card[data-rarity="smoke"] { background: var(--fx-smoke-dark); box-shadow: 0 0 26px -8px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="smoke"] .card-portrait { filter: contrast(1.1) saturate(.75) brightness(.9); }
+.card-style-fx[data-fx="smoke"]::before { background: var(--tex-smoke), linear-gradient(var(--rc), var(--rc)); background-size: 200% 200%, 100% 100%; background-blend-mode: multiply, normal; mix-blend-mode: screen; opacity: .6; mask: linear-gradient(to top, var(--card-light) 0 30%, transparent 80%); animation: fx-drift 16s linear infinite alternate; }
+.card-style-fx[data-fx="smoke"]::after { background: var(--tex-smoke), linear-gradient(var(--rc), var(--rc)); background-size: 160% 240%, 100% 100%; background-blend-mode: multiply, normal; mix-blend-mode: screen; opacity: .35; mask: radial-gradient(ellipse at 10% 10%, var(--card-light), transparent 55%), radial-gradient(ellipse at 95% 60%, var(--card-light), transparent 45%); animation: fx-drift-rev 12s linear infinite alternate; }
+.card-style-fx[data-fx="smoke"] i { box-shadow: inset 0 0 30px 6px color-mix(in oklab, var(--fx-smoke-dark) 85%, transparent), inset 0 0 0 1px color-mix(in oklab, var(--rc) 50%, transparent); }
+.fm-card[data-rarity="smoke"] .card-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(11px, 11cqw, 30px); letter-spacing: .07em; color: var(--fx-smoke); text-shadow: 0 0 10px var(--rc), 0 2px 0 var(--fx-smoke-dark); }
+
+/* --- Carbone: woven carbon fibre frame, racing stripes and a satin glint --- */
+.fm-card[data-rarity="carbon"] { background: repeating-linear-gradient(90deg, transparent 0 3px, color-mix(in oklab, var(--card-light) 5%, transparent) 3px 6px), repeating-conic-gradient(var(--fx-carbon-a) 0 25%, var(--fx-carbon-b) 0 50%) 0 0 / 6px 6px; border-color: var(--fx-carbon-b); box-shadow: 0 0 22px -8px var(--rc), 0 10px 30px -12px var(--card-shadow); }
+.fm-card[data-rarity="carbon"] .card-portrait { filter: contrast(1.12) saturate(1.05); }
+.card-style-fx[data-fx="carbon"]::before { background: linear-gradient(135deg, transparent 0 8%, var(--rc) 8% 10.5%, transparent 10.5% 12%, var(--rc) 12% 13.2%, transparent 13.2%); opacity: .9; }
+.card-style-fx[data-fx="carbon"]::after { background: linear-gradient(110deg, transparent 38%, color-mix(in oklab, var(--card-light) 35%, transparent) 50%, transparent 62%); background-size: 300% 100%; mix-blend-mode: soft-light; animation: fx-glide 5s ease-in-out infinite; }
+.card-style-fx[data-fx="carbon"] i { padding: 6px; background: linear-gradient(110deg, transparent 40%, color-mix(in oklab, var(--card-light) 30%, transparent) 50%, transparent 60%) 0 0 / 300% 100%, repeating-linear-gradient(90deg, transparent 0 2px, color-mix(in oklab, var(--card-light) 7%, transparent) 2px 4px), repeating-conic-gradient(var(--fx-carbon-a) 0 25%, var(--fx-carbon-b) 0 50%) 0 0 / 4px 4px; mask: linear-gradient(var(--card-light) 0 0) content-box, linear-gradient(var(--card-light) 0 0); mask-composite: exclude; box-shadow: none; animation: fx-glide 5s ease-in-out infinite; }
+.fm-card[data-rarity="carbon"] .card-name { font-family: var(--font-card-sport); font-weight: 800; font-style: italic; font-size: clamp(11px, 10cqw, 28px); letter-spacing: .06em; color: var(--card-light); text-shadow: 0 0 6px var(--rc), 2px 2px 0 var(--fx-carbon-a); }
+.fm-card[data-rarity="carbon"] .card-rating > span:first-child { color: var(--rc); }
+
+@keyframes fx-peel { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06) rotate(-1deg); } }
+@keyframes fx-embers { to { background-position: 0 -530px, 0 -890px, 0 -410px; } }
+@keyframes fx-zap { 0% { opacity: 1; background-position: 0 0, 0 0; } 7% { opacity: 0; } 18% { opacity: .9; background-position: 45% 70%, 0 0; } 22% { opacity: 0; } 48% { opacity: 1; background-position: 85% 25%, 0 0; } 51% { opacity: .2; } 54% { opacity: 1; background-position: 20% 90%, 0 0; } 60%, 100% { opacity: 0; } }
+@keyframes fx-hum { 0%, 48%, 54% { opacity: 1; } 7%, 51% { opacity: .45; } 60%, 100% { opacity: .8; } }
+@keyframes fx-drift { from { background-position: 0% 100%, 0 0; } to { background-position: 100% 0%, 0 0; } }
+@keyframes fx-drift-rev { from { background-position: 100% 100%, 0 0; } to { background-position: 0% 0%, 0 0; } }
+@keyframes fx-shard-glint { 0% { background-position: 0 0, 150% 0; } 60%, 100% { background-position: 0 0, -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .card-style-fx::before, .card-style-fx::after, .card-style-fx i { animation: none; } }
 
 @keyframes fx-glide { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
 @keyframes fx-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
