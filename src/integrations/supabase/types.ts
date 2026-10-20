@@ -638,6 +638,170 @@ export type Database = {
           },
         ]
       }
+      manager_teams: {
+        Row: {
+          bench: string[]
+          formation: string
+          starters: string[]
+          tactic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bench?: string[]
+          formation: string
+          starters: string[]
+          tactic?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bench?: string[]
+          formation?: string
+          starters?: string[]
+          tactic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      match_halftime: {
+        Row: {
+          created_at: string
+          match_id: string
+          player_id: string
+          subs: Json
+          team: Json
+        }
+        Insert: {
+          created_at?: string
+          match_id: string
+          player_id: string
+          subs?: Json
+          team: Json
+        }
+        Update: {
+          created_at?: string
+          match_id?: string
+          player_id?: string
+          subs?: Json
+          team?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_halftime_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_stats: {
+        Row: {
+          draws: number
+          goals_against: number
+          goals_for: number
+          losses: number
+          played: number
+          rating: number
+          updated_at: string
+          user_id: string
+          wins: number
+        }
+        Insert: {
+          draws?: number
+          goals_against?: number
+          goals_for?: number
+          losses?: number
+          played?: number
+          rating?: number
+          updated_at?: string
+          user_id: string
+          wins?: number
+        }
+        Update: {
+          draws?: number
+          goals_against?: number
+          goals_for?: number
+          losses?: number
+          played?: number
+          rating?: number
+          updated_at?: string
+          user_id?: string
+          wins?: number
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          away_elo_delta: number | null
+          away_goals: number
+          away_id: string | null
+          away_reward: number | null
+          away_team: Json | null
+          away_team2: Json | null
+          created_at: string
+          finished_at: string | null
+          first_half: Json | null
+          halftime_at: string | null
+          home_elo_delta: number | null
+          home_goals: number
+          home_id: string
+          home_reward: number | null
+          home_team: Json
+          home_team2: Json | null
+          id: string
+          second_half: Json | null
+          status: string
+          winner_id: string | null
+        }
+        Insert: {
+          away_elo_delta?: number | null
+          away_goals?: number
+          away_id?: string | null
+          away_reward?: number | null
+          away_team?: Json | null
+          away_team2?: Json | null
+          created_at?: string
+          finished_at?: string | null
+          first_half?: Json | null
+          halftime_at?: string | null
+          home_elo_delta?: number | null
+          home_goals?: number
+          home_id: string
+          home_reward?: number | null
+          home_team: Json
+          home_team2?: Json | null
+          id?: string
+          second_half?: Json | null
+          status?: string
+          winner_id?: string | null
+        }
+        Update: {
+          away_elo_delta?: number | null
+          away_goals?: number
+          away_id?: string | null
+          away_reward?: number | null
+          away_team?: Json | null
+          away_team2?: Json | null
+          created_at?: string
+          finished_at?: string | null
+          first_half?: Json | null
+          halftime_at?: string | null
+          home_elo_delta?: number | null
+          home_goals?: number
+          home_id?: string
+          home_reward?: number | null
+          home_team?: Json
+          home_team2?: Json | null
+          id?: string
+          second_half?: Json | null
+          status?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -1091,6 +1255,23 @@ export type Database = {
         Args: { _forfeit: boolean; _id: string; _winner: string }
         Returns: undefined
       }
+      _mm_cards: { Args: { _ids: string[]; _uid: string }; Returns: Json }
+      _mm_fit: { Args: { _pos: string; _role: string }; Returns: number }
+      _mm_formation: { Args: { _f: string }; Returns: string[] }
+      _mm_lines: { Args: { _f: string }; Returns: string[] }
+      _mm_payout: { Args: { _score: number }; Returns: number }
+      _mm_rarity_bonus: {
+        Args: { _rarity: string; _version: string }
+        Returns: number
+      }
+      _mm_rate: {
+        Args: { _bench: Json; _formation: string; _tactic: string; _xi: Json }
+        Returns: Json
+      }
+      _mm_reward_ok: { Args: { _uid: string }; Returns: boolean }
+      _mm_second_half: { Args: { _id: string }; Returns: undefined }
+      _mm_sim_half: { Args: { _a: Json; _h: Json }; Returns: Json }
+      _mm_snapshot: { Args: { _uid: string }; Returns: Json }
       _period_bounds: {
         Args: { _period: string }
         Returns: Record<string, unknown>
@@ -1113,11 +1294,13 @@ export type Database = {
       _rarity_fx: { Args: { _key: string }; Returns: string }
       _settle_auctions: { Args: never; Returns: undefined }
       _settle_duels: { Args: never; Returns: undefined }
+      _settle_matches: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
       accept_duel: {
         Args: { _duel_id: string; _user_card_ids: string[] }
         Returns: string
       }
+      accept_match: { Args: { _match_id: string }; Returns: string }
       admin_card_stats: {
         Args: never
         Returns: {
@@ -1223,6 +1406,7 @@ export type Database = {
         Args: { _opponent: string; _user_card_ids: string[] }
         Returns: string
       }
+      create_match: { Args: { _opponent: string }; Returns: string }
       get_auctions: {
         Args: { _scope?: string }
         Returns: {
@@ -1313,6 +1497,22 @@ export type Database = {
           username: string
         }[]
       }
+      get_match: { Args: { _match_id: string }; Returns: Json }
+      get_match_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          draws: number
+          goals_against: number
+          goals_for: number
+          level: number
+          losses: number
+          played: number
+          rating: number
+          user_id: string
+          username: string
+          wins: number
+        }[]
+      }
       get_my_challenges: {
         Args: never
         Returns: {
@@ -1360,6 +1560,30 @@ export type Database = {
           user_card_id: string
         }[]
       }
+      get_my_matches: {
+        Args: never
+        Returns: {
+          created_at: string
+          finished_at: string
+          halftime_at: string
+          incoming: boolean
+          is_home: boolean
+          match_id: string
+          my_elo_delta: number
+          my_general: number
+          my_goals: number
+          my_reward: number
+          needs_me: boolean
+          open_invite: boolean
+          opponent_id: string
+          opponent_name: string
+          result: string
+          status: string
+          their_general: number
+          their_goals: number
+          they_ready: boolean
+        }[]
+      }
       get_my_packs: {
         Args: never
         Returns: {
@@ -1403,6 +1627,18 @@ export type Database = {
           duel_id: string
         }[]
       }
+      get_open_matches: {
+        Args: never
+        Returns: {
+          created_at: string
+          formation: string
+          home_general: number
+          home_id: string
+          home_name: string
+          home_rating: number
+          match_id: string
+        }[]
+      }
       get_recent_drops: {
         Args: { _limit?: number }
         Returns: {
@@ -1426,6 +1662,7 @@ export type Database = {
         Returns: boolean
       }
       leave_duel: { Args: { _duel_id: string }; Returns: undefined }
+      leave_match: { Args: { _match_id: string }; Returns: undefined }
       mark_messages_read: { Args: { _from: string }; Returns: undefined }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
       place_bid: {
@@ -1438,6 +1675,15 @@ export type Database = {
         Args: { _accept: boolean; _friendship_id: string }
         Returns: undefined
       }
+      save_manager_team: {
+        Args: {
+          _bench: string[]
+          _formation: string
+          _starters: string[]
+          _tactic: string
+        }
+        Returns: Json
+      }
       search_players: {
         Args: { _q: string }
         Returns: {
@@ -1449,6 +1695,10 @@ export type Database = {
       }
       send_friend_request: { Args: { _to: string }; Returns: string }
       send_message: { Args: { _body: string; _to: string }; Returns: string }
+      submit_halftime: {
+        Args: { _match_id: string; _subs: Json; _tactic: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
