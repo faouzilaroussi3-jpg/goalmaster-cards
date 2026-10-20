@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { Pencil, Power, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -95,7 +95,7 @@ export function RaritiesAdmin() {
 
       <section className="panel p-4">
         <h3 className="mb-1 text-2xl">Raretés ({rarities.length})</h3>
-        <p className="mb-3 text-xs text-muted-foreground">Clique sur « Modifier » pour changer le nom, le sigle, l'effet visuel ou la couleur d'une rareté : toutes ses cartes changent aussitôt.</p>
+        <p className="mb-3 text-xs text-muted-foreground">Clique sur « Modifier » pour changer le nom, le sigle, l'effet visuel ou la couleur d'une rareté : toutes ses cartes changent aussitôt. Le bouton « Activée / Désactivée » arrête ou relance la sortie de ses cartes dans les packs ; les joueurs gardent les cartes qu'ils ont déjà.</p>
         <ul className="divide-y divide-border">
           {rarities.map((r) => (
             <RarityRowItem
@@ -185,6 +185,15 @@ function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editi
     onDone();
   }
 
+  async function toggleActive() {
+    setBusy(true);
+    const { error } = await supabase.rpc("admin_set_rarity_active", { _key: r.key, _active: !r.active });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success(r.active ? `« ${r.label} » désactivée : ses cartes ne sortent plus des packs.` : `« ${r.label} » réactivée : ses cartes sortent de nouveau des packs.`);
+    onDone();
+  }
+
   async function remove() {
     if (!canDeleteRarity(r, moveTo)) return;
     const { data, error } = await supabase.rpc("admin_delete_rarity", { _key: r.key, _move_to: moveTo });
@@ -195,12 +204,26 @@ function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editi
 
   return (
     <li className="py-2 text-sm">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className={`flex flex-wrap items-center gap-3 ${r.active ? "" : "opacity-60"}`}>
         <span className="inline-flex h-7 min-w-10 items-center justify-center rounded-md border border-border px-1.5 font-display" style={r.color ? { borderColor: r.color, color: r.color } : undefined}>{r.short}</span>
         <span className="min-w-0 flex-1">
           <b className="text-foreground">{r.label}</b>
+          {!r.active && <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">Désactivée</span>}
           <span className="block text-xs text-muted-foreground">Effet : {effectLabel} · {count} carte{count > 1 ? "s" : ""}{r.builtin ? " · rareté de base" : ""}</span>
         </span>
+        {!editing && (
+          <button
+            type="button"
+            onClick={toggleActive}
+            disabled={busy}
+            role="switch"
+            aria-checked={r.active}
+            aria-label={`${r.active ? "Désactiver" : "Activer"} ${r.label}`}
+            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold disabled:opacity-50 ${r.active ? "border-primary/60 text-primary" : "border-border text-muted-foreground"}`}
+          >
+            <Power className="h-3.5 w-3.5" /> {r.active ? "Activée" : "Désactivée"}
+          </button>
+        )}
         {!editing && (
           <button type="button" onClick={startEdit} className="inline-flex items-center gap-1 text-xs text-primary"><Pencil className="h-3.5 w-3.5" /> Modifier</button>
         )}
