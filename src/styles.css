@@ -568,3 +568,12 @@
 .fm-card[data-rarity="secret_legendary"][data-version="normal"] .card-border-glitter { opacity: .6; }
 .fm-card[data-rarity="secret_legendary"][data-version="normal"] .card-pattern { opacity: .55; }
 .fm-card[data-rarity="secret_legendary"][data-version="normal"] .sl-border-gems i { box-shadow: 0 0 0 1px color-mix(in oklab, var(--card-light) 50%, transparent), 0 0 4px color-mix(in oklab, var(--diamond-ice) 70%, transparent); }
+
+/* ===== Mixed effects: a rarity's extra effects are drawn as extra layers over its main look (card-level fonts/photo stay the main effect's).
+   Style extras reuse .card-style-fx[data-fx]; built-in extras live in .card-fx-group[data-fx] with their own --rc. ===== */
+.card-fx-group { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+.card-extra-frame { position: absolute; inset: 6px; z-index: 5; pointer-events: none; border: 2px solid var(--rc); border-radius: 5px; box-shadow: inset 0 0 10px -3px var(--rc), 0 0 8px -3px var(--rc); }
+.fm-card .card-fx-group[data-fx="legendary"] .card-foil-border { padding: 5px; filter: none; opacity: 1; background: conic-gradient(from 0deg, var(--gold-deep), var(--gold-bright), var(--r-legendary), var(--gold-deep), var(--gold-bright), var(--r-legendary), var(--gold-deep)); background-size: 200% 200%; animation: foil-travel 3s linear infinite; }
+.fm-card .card-fx-group[data-fx="secret_legendary"] .card-foil-border { padding: 7px; filter: saturate(.55) brightness(.92); opacity: .82; background: linear-gradient(115deg, transparent 42%, var(--card-light) 50%, transparent 58%) no-repeat, repeating-conic-gradient(from var(--facet) at 50% 50%, var(--card-light) 0deg 5deg, var(--diamond-ice) 5deg 11deg, var(--r-sl) 11deg 16deg, var(--diamond-lilac) 16deg 21deg, color-mix(in oklab, var(--diamond-ice) 45%, var(--card-night)) 21deg 26deg, var(--card-light) 26deg 30deg); background-size: 250% 100%, 100% 100%; animation: facet-spin 8s linear infinite, diamond-glint 2.6s ease-in-out infinite; }
+.fm-card .card-fx-group[data-fx="secret_legendary"] .card-border-glitter { opacity: .6; }
+@media (prefers-reduced-motion: reduce) { .card-fx-group .card-foil-border, .card-fx-group .sheen, .card-fx-group .card-sparks, .card-style-fx.is-extra::after { animation: none; } }
