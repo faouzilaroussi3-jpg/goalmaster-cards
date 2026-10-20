@@ -37,7 +37,7 @@ export function claimableSummary(list: Challenge[]) {
 }
 
 /** Challenges that became claimable between two snapshots (used to announce them after a pack). */
-export function newlyClaimable(before: Challenge[], after: Challenge[]) {
+export function newlyClaimable<T extends Pick<Challenge, "challenge_id" | "progress" | "target" | "claimed">>(before: T[], after: T[]) {
   const was = new Set(before.filter(isClaimable).map((c) => c.challenge_id));
   return after.filter((c) => isClaimable(c) && !was.has(c.challenge_id));
 }
