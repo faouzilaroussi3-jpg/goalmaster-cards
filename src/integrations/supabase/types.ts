@@ -798,6 +798,113 @@ export type Database = {
         }
         Relationships: []
       }
+      periodic_challenge_claims: {
+        Row: {
+          challenge_id: string
+          claimed_at: string
+          id: string
+          period_start: string
+          reward_coins: number
+          reward_pack_key: string | null
+          reward_packs: number
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          claimed_at?: string
+          id?: string
+          period_start: string
+          reward_coins?: number
+          reward_pack_key?: string | null
+          reward_packs?: number
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          claimed_at?: string
+          id?: string
+          period_start?: string
+          reward_coins?: number
+          reward_pack_key?: string | null
+          reward_packs?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "periodic_challenge_claims_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "periodic_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      periodic_challenges: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          key: string
+          metric: string
+          period: string
+          rarity: string | null
+          reward_coins: number
+          reward_pack_key: string | null
+          reward_packs: number
+          slot: number
+          target: number
+          title: string
+          version: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key: string
+          metric: string
+          period: string
+          rarity?: string | null
+          reward_coins?: number
+          reward_pack_key?: string | null
+          reward_packs?: number
+          slot?: number
+          target: number
+          title: string
+          version?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key?: string
+          metric?: string
+          period?: string
+          rarity?: string | null
+          reward_coins?: number
+          reward_pack_key?: string | null
+          reward_packs?: number
+          slot?: number
+          target?: number
+          title?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "periodic_challenges_rarity_fkey"
+            columns: ["rarity"]
+            isOneToOne: false
+            referencedRelation: "rarities"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "periodic_challenges_reward_pack_key_fkey"
+            columns: ["reward_pack_key"]
+            isOneToOne: false
+            referencedRelation: "pack_types"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -945,6 +1052,16 @@ export type Database = {
         Args: { _cid: string; _uid: string }
         Returns: number
       }
+      _claim_periodic: { Args: { _cid: string; _uid: string }; Returns: Json }
+      _current_periodic_challenges: {
+        Args: never
+        Returns: {
+          challenge_id: string
+          period: string
+          period_end: string
+          period_start: string
+        }[]
+      }
       _draw_key: { Args: { _w: Json }; Returns: string }
       _duel_cost: { Args: { _rarity: string }; Returns: number }
       _duel_deck: { Args: { _ids: string[]; _uid: string }; Returns: Json }
@@ -967,6 +1084,21 @@ export type Database = {
       _finish_duel: {
         Args: { _forfeit: boolean; _id: string; _winner: string }
         Returns: undefined
+      }
+      _period_bounds: {
+        Args: { _period: string }
+        Returns: Record<string, unknown>
+      }
+      _periodic_progress: {
+        Args: {
+          _from: string
+          _metric: string
+          _rarity: string
+          _to: string
+          _uid: string
+          _version: string
+        }
+        Returns: number
       }
       _pick_card: {
         Args: { _exclude?: string[]; _rarity: string }
@@ -1040,6 +1172,7 @@ export type Database = {
       buy_pack: { Args: { _pack_key: string }; Returns: undefined }
       cancel_auction: { Args: { _auction_id: string }; Returns: undefined }
       claim_all_challenges: { Args: never; Returns: Json }
+      claim_all_periodic_challenges: { Args: never; Returns: Json }
       claim_challenge: { Args: { _challenge_id: string }; Returns: number }
       claim_gift_notices: {
         Args: never
@@ -1054,6 +1187,10 @@ export type Database = {
           pack_name: string
           packs: number
         }[]
+      }
+      claim_periodic_challenge: {
+        Args: { _challenge_id: string }
+        Returns: Json
       }
       create_auction: {
         Args: { _hours: number; _start_price: number; _user_card_id: string }
@@ -1211,6 +1348,26 @@ export type Database = {
           pack_key: string
           price_coins: number
           regen_minutes: number
+        }[]
+      }
+      get_my_periodic_challenges: {
+        Args: never
+        Returns: {
+          challenge_id: string
+          claimed: boolean
+          ends_at: string
+          key: string
+          metric: string
+          period: string
+          progress: number
+          rarity: string
+          reward_coins: number
+          reward_pack_key: string
+          reward_pack_name: string
+          reward_packs: number
+          target: number
+          title: string
+          version: string
         }[]
       }
       get_open_duels: {
