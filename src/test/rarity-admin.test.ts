@@ -86,9 +86,10 @@ describe("switching rarities on and off", () => {
   });
 
   it("refuses to switch off the last rarity an active pack can drop", () => {
-    const packs = [{ name: "Premium", active: true, slot_rates: { rare: 100, custom_1: 5 } }];
+    const premium = { name: "Premium", active: true, slot_rates: { rare: 100, custom_1: 5 } };
+    const packs = [premium];
     expect(packBlockingDisable("rare", list, packs)).toBe("Premium");
     expect(packBlockingDisable("common", list, packs)).toBeNull();
-    expect(packBlockingDisable("rare", list, [{ ...packs[0], active: false }])).toBeNull();
+    expect(packBlockingDisable("rare", list, [{ ...premium, active: false }])).toBeNull();
   });
 });
