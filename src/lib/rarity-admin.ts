@@ -52,3 +52,20 @@ export function rankAfter(after: number, next: number | null): number {
 export function canDeleteRarity(r: { key: string; builtin: boolean }, moveTo: string | null): boolean {
   return !r.builtin && !!moveTo && moveTo !== r.key;
 }
+
+type PackRates = { name: string; active: boolean; slot_rates: unknown };
+const inactiveSet = (rarities: { key: string; active: boolean }[]) => new Set(rarities.filter((r) => !r.active).map((r) => r.key));
+
+/** Drop chances a pack really uses: switched-off rarities are left out (the others share their chance). Mirrors _draw_key. */
+export function activeRates(rates: Record<string, number>, rarities: { key: string; active: boolean }[]): Record<string, number> {
+  const off = inactiveSet(rarities);
+  return Object.fromEntries(Object.entries(rates).filter(([k, v]) => !off.has(k) && Number(v) > 0));
+}
+
+/** Name of an active pack that would have nothing left to drop if `key` were switched off, or null. Mirrors admin_set_rarity_active. */
+export function packBlockingDisable(key: string, rarities: { key: string; active: boolean }[], packs: PackRates[]): string | null {
+  const after = rarities.map((r) => (r.key === key ? { ...r, active: false } : r));
+  const known = new Set(rarities.map((r) => r.key));
+  const blocked = packs.find((p) => p.active && !Object.keys(activeRates((p.slot_rates ?? {}) as Record<string, number>, after)).some((k) => known.has(k)));
+  return blocked?.name ?? null;
+}
