@@ -23,6 +23,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
 import { Route as AuthenticatedDuelsIndexRouteImport } from './routes/_authenticated/duels.index'
 import { Route as AuthenticatedDuelsDuelIdRouteImport } from './routes/_authenticated/duels.$duelId'
+import { Route as AuthenticatedMatchsIndexRouteImport } from './routes/_authenticated/matchs.index'
 import { Route as ApiPublicCardPhotoSplatRouteImport } from './routes/api/public/card-photo/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -95,6 +96,12 @@ const AuthenticatedDuelsDuelIdRoute =
     path: '/duels/$duelId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMatchsIndexRoute =
+  AuthenticatedMatchsIndexRouteImport.update({
+    id: '/matchs/',
+    path: '/matchs/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicCardPhotoSplatRoute = ApiPublicCardPhotoSplatRouteImport.update({
   id: '/api/public/card-photo/$',
   path: '/api/public/card-photo/$',
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
   '/duels/': typeof AuthenticatedDuelsIndexRoute
+  '/matchs/': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesByTo {
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
   '/duels': typeof AuthenticatedDuelsIndexRoute
+  '/matchs': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRoutesById {
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
   '/_authenticated/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
   '/_authenticated/duels/': typeof AuthenticatedDuelsIndexRoute
+  '/_authenticated/matchs/': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
 }
 export interface FileRouteTypes {
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/transferts'
     | '/duels/$duelId'
     | '/duels/'
+    | '/matchs/'
     | '/api/public/card-photo/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/transferts'
     | '/duels/$duelId'
     | '/duels'
+    | '/matchs'
     | '/api/public/card-photo/$'
   id:
     | '__root__'
@@ -200,6 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated/transferts'
     | '/_authenticated/duels/$duelId'
     | '/_authenticated/duels/'
+    | '/_authenticated/matchs/'
     | '/api/public/card-photo/$'
   fileRoutesById: FileRoutesById
 }
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDuelsDuelIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/matchs/': {
+      id: '/_authenticated/matchs/'
+      path: '/matchs'
+      fullPath: '/matchs/'
+      preLoaderRoute: typeof AuthenticatedMatchsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/card-photo/$': {
       id: '/api/public/card-photo/$'
       path: '/api/public/card-photo/$'
@@ -332,6 +352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
   AuthenticatedDuelsDuelIdRoute: typeof AuthenticatedDuelsDuelIdRoute
   AuthenticatedDuelsIndexRoute: typeof AuthenticatedDuelsIndexRoute
+  AuthenticatedMatchsIndexRoute: typeof AuthenticatedMatchsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -345,6 +366,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
   AuthenticatedDuelsDuelIdRoute: AuthenticatedDuelsDuelIdRoute,
   AuthenticatedDuelsIndexRoute: AuthenticatedDuelsIndexRoute,
+  AuthenticatedMatchsIndexRoute: AuthenticatedMatchsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
