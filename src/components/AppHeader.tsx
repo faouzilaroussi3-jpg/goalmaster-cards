@@ -179,7 +179,6 @@ export function AppHeader() {
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
           {session && defis}
           {session && duelLink}
-        {session && matchLink}
           {session && matchLink}
           {session && amis}
           {session && messages}
