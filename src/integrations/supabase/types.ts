@@ -1164,6 +1164,17 @@ export type Database = {
         Args: { _from: string; _to: string }
         Returns: number
       }
+      admin_update_rarity: {
+        Args: {
+          _color: string
+          _duplicate_coins: number
+          _effect: string
+          _key: string
+          _label: string
+          _short: string
+        }
+        Returns: undefined
+      }
       auction_min_bid: {
         Args: { _current: number; _start: number }
         Returns: number
