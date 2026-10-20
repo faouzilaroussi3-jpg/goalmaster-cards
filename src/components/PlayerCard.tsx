@@ -77,6 +77,11 @@ export function PlayerCard({
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
       {r.style && <div className="card-style-fx" aria-hidden="true"><i /></div>}
       {r.fx === "secret_legendary" && !r.style && version === "normal" && <DiamondOrbitFx />}
+      {r.fx === "secret_legendary" && !r.style && version === "normal" && (
+        <div className="sl-border-gems" aria-hidden="true">
+          {SL_GEMS.map(([x, y], i) => <i key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${(i * 0.37) % 2.4}s` }} />)}
+        </div>
+      )}
       {ultimate && <SecretUltimateFx />}
     </div>
   );
