@@ -3,6 +3,7 @@ import { canDeleteRarity, rankAfter, rarityDraftError } from "@/lib/rarity-admin
 import { RARITIES, RARITY_STYLES, effectBase, rarityMeta, setRarities, type RarityRow } from "@/lib/rarity";
 import { RARITY_EFFECTS } from "@/lib/rarity-admin";
 import { rarityEffects } from "@/lib/card-photo";
+import { duelCost } from "@/lib/duel";
 
 const ok = { label: "Mythique", short: "M", effect: "legendary", color: "#ff3366", duplicateCoins: 200 };
 
@@ -59,5 +60,20 @@ describe("admin-created rarities", () => {
     expect(rarityMeta("custom_2").style).toBe("metal");
     expect(rarityMeta("custom_2").fx).toBe("super_rare");
     expect(rarityEffects("custom_2")).toContain("Chrome brossé");
+  });
+
+  it("a built-in rarity given a new look changes its cards' look but keeps its duel cost", () => {
+    const before = duelCost("legendary");
+    setRarities([{ key: "legendary", label: "Légendaire", short_label: "L", tier: 5, rank: 5, effect: "metal", color: "#3366ff", builtin: true }]);
+    expect(rarityMeta("legendary").style).toBe("metal");
+    expect(rarityMeta("legendary").color).toBe("#3366ff");
+    expect(rarityMeta("legendary").play).toBe("legendary");
+    expect(duelCost("legendary")).toBe(before);
+  });
+
+  it("an edited created rarity plays like its new effect", () => {
+    setRarities([{ key: "custom_3", label: "Mythique", short_label: "M", tier: 6, rank: 6.5, effect: "vintage", color: null, builtin: false }]);
+    expect(rarityMeta("custom_3").play).toBe("uncommon");
+    expect(duelCost("custom_3")).toBe(duelCost("uncommon"));
   });
 });

@@ -36,8 +36,8 @@ export interface DuelCardLike {
   rating: number;
 }
 
-// Admin-created rarities play like the built-in rarity whose effect they wear (as _rarity_fx does on the server).
-export const duelCost = (rarity: string) => DUEL_COST[rarityMeta(rarity).fx] ?? 99;
+// Built-ins play as themselves; admin-created rarities play like the built-in rarity whose effect they wear (as _rarity_fx does on the server).
+export const duelCost = (rarity: string) => DUEL_COST[rarityMeta(rarity).play] ?? 99;
 
 export function positionModifier(pos: string, theme: Theme) {
   const p = pos.toUpperCase();
@@ -52,7 +52,7 @@ export function cardPower(card: DuelCardLike, theme: Theme) {
   const version = card.version ?? "normal";
   return (
     card.rating +
-    (RARITY_BONUS[rarityMeta(card.rarity).fx] ?? 0) +
+    (RARITY_BONUS[rarityMeta(card.rarity).play] ?? 0) +
     (version === "alt" || version === "shiny" ? 2 : 0) +
     positionModifier(card.pos, theme)
   );
