@@ -20,7 +20,7 @@ function previewInfo(f: Fields, base?: RarityInfo): RarityInfo {
   return {
     key: "preview", label: f.label.trim() || "Nouvelle rareté", short: f.short.trim().toUpperCase() || "?",
     tier: base?.builtin ? base.tier : rarityMeta(fx).tier, rank: 0, fx, play: base?.play ?? fx, style: effectStyle(f.effect),
-    color: f.tint ? f.color : null, builtin: base?.builtin ?? false,
+    color: f.tint ? f.color : null, builtin: base?.builtin ?? false, active: true,
   };
 }
 
