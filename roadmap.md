@@ -25,3 +25,4 @@
 - [x] SU : accentuer l'effet rouge teinté métallisé sur la carte
 - [x] Admin : créer / supprimer des raretés, avec un effet visuel choisi appliqué à toutes les cartes de cette rareté
 - [x] Défis quotidiens et hebdomadaires qui donnent des packs et des pièces
+- [x] Admin : modifier à volonté le visuel des raretés (nom, sigle, effet, couleur)
