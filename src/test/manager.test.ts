@@ -28,7 +28,7 @@ describe("manager team rules", () => {
     const xi = xi433();
     xi[9] = card(9, "BU", { rarity: "secret_legendary", version: "shiny", club: "Club 10", nationality: "Pays 8" });
     const t = rateTeam("4-3-3", "equilibre", xi);
-    // 80 + 5 (SL) + 2 (Shiny) + 1 (one club mate) + 1 (two compatriots? no: one) → only club mate counts
+    // 80 + 5 (SL) + 2 (Shiny) + 1 (one club mate); a single compatriot gives nothing
     expect(t.players[9]!.chem).toBe(1);
     expect(t.players[9]!.eff).toBe(88);
     expect(t.general).toBe(80);
