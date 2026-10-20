@@ -68,6 +68,21 @@ export function useMyChallenges() {
   });
 }
 
+export function useMyPeriodicChallenges() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["challenges", "periodic", session?.user.id],
+    enabled: !!session,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_periodic_challenges");
+      if (error) throw error;
+      return (data ?? []) as import("@/lib/periodic-challenges").PeriodicChallenge[];
+    },
+  });
+}
+
+
 export function useFriends() {
   const { session } = useAuth();
   return useQuery({

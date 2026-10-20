@@ -24,3 +24,4 @@
 - [x] SU : remplacer le dragon qui tient la carte par un dragon 2D qui fait le tour de la carte (proportions compactes, ne gêne pas les voisines)
 - [x] SU : accentuer l'effet rouge teinté métallisé sur la carte
 - [x] Admin : créer / supprimer des raretés, avec un effet visuel choisi appliqué à toutes les cartes de cette rareté
+- [x] Défis quotidiens et hebdomadaires qui donnent des packs et des pièces

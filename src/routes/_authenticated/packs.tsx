@@ -9,6 +9,7 @@ import packPremium from "@/assets/pack-premium.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useMyPacks, useProfile } from "@/lib/auth";
 import { newlyClaimable, type Challenge } from "@/lib/challenges";
+import type { PeriodicChallenge } from "@/lib/periodic-challenges";
 import { PackOpening, type OpenResult } from "@/components/PackOpening";
 import { SwipePack } from "@/components/SwipePack";
 import { LivePulls } from "@/components/LivePulls";
@@ -92,14 +93,19 @@ function PacksPage() {
     setBusy(false);
     setRound((r) => r + 1);
     const key = ["challenges", session?.user.id];
+    const pKey = ["challenges", "periodic", session?.user.id];
     const before = qc.getQueryData<Challenge[]>(key) ?? [];
+    const pBefore = qc.getQueryData<PeriodicChallenge[]>(pKey) ?? [];
     await qc.invalidateQueries();
     const fresh = newlyClaimable(before, qc.getQueryData<Challenge[]>(key) ?? []);
-    if (fresh.length > 0) {
+    const pFresh = newlyClaimable(pBefore, qc.getQueryData<PeriodicChallenge[]>(pKey) ?? []);
+    const all = [...pFresh, ...fresh];
+    if (all.length > 0) {
       sfx.sparkle();
-      const coins = fresh.reduce((s, c) => s + c.reward_coins, 0);
-      toast.success(fresh.length > 1 ? `${fresh.length} défis accomplis !` : `Défi accompli : ${fresh[0]?.title ?? ""}`, {
-        description: `${coins} pièces à récupérer`,
+      const coins = all.reduce((s, c) => s + c.reward_coins, 0);
+      const packs = pFresh.reduce((s, c) => s + c.reward_packs, 0);
+      toast.success(all.length > 1 ? `${all.length} défis accomplis !` : `Défi accompli : ${all[0]?.title ?? ""}`, {
+        description: [coins > 0 && `${coins} pièces`, packs > 0 && `${packs} pack${packs > 1 ? "s" : ""}`].filter(Boolean).join(" et ") + " à récupérer",
         action: { label: "Récupérer", onClick: () => navigate({ to: "/defis" }) },
       });
     }
