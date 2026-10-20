@@ -42,7 +42,9 @@ export function periodicSummary(list: PeriodicChallenge[]) {
 }
 
 export function packText(n: number, name: string | null) {
-  return `${n} ${name ?? "Pack"}`;
+  const label = name ?? "Pack";
+  if (n <= 1) return `${n} ${label}`;
+  return `${n} ${label.replace(/^Pack\b/, "Packs").replace(/\bClassique\b/, "Classiques")}`;
 }
 
 /** Human countdown until the challenge is replaced, e.g. "5 h 12 min" or "2 j 4 h". */
