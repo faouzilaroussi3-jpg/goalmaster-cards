@@ -14,11 +14,11 @@ const DEFAULT_TINT = "#ff3d8b";
 /** effects: ticked looks in order, the first one is the main effect. */
 interface Fields { label: string; short: string; effects: RarityEffect[]; tint: boolean; color: string; duplicateCoins: number }
 
-const toDraft = (f: Fields) => ({ label: f.label, short: f.short, effect: f.effects[0], extras: f.effects.slice(1), color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins });
+const toDraft = (f: Fields) => ({ label: f.label, short: f.short, effect: f.effects[0] ?? "common", extras: f.effects.slice(1), color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins });
 const effectsLabel = (list: string[]) => list.map((fx) => RARITY_EFFECTS.find((e) => e.fx === fx)?.label ?? fx).join(" + ");
 
 function previewInfo(f: Fields, base?: RarityInfo): RarityInfo {
-  const main = f.effects[0];
+  const main = f.effects[0] ?? "common";
   const fx = effectBase(main) ?? "common";
   return {
     key: "preview", label: f.label.trim() || "Nouvelle rareté", short: f.short.trim().toUpperCase() || "?",
