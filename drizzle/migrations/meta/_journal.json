@@ -162,6 +162,13 @@
       "when": 1792489598988,
       "tag": "0022_rarity_mixed_effects",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792490804805,
+      "tag": "0023_rarity_more_style_effects",
+      "breakpoints": true
     }
   ]
 }
