@@ -42,15 +42,22 @@ describe("admin-created rarities", () => {
     expect(rarityMeta("custom_1").color).toBe("#ff3366");
   });
 
-  it("offers 8 extra looks on top of the 7 built-in ones", () => {
-    expect(RARITY_EFFECTS).toHaveLength(15);
-    expect(RARITY_EFFECTS.filter((e) => e.isNew).map((e) => e.fx).sort()).toEqual(["cartoon", "frost", "galaxy", "holo", "metal", "neon", "tinted", "vintage"]);
+  it("offers 16 extra looks on top of the 7 built-in ones, the latest 8 marked new", () => {
+    expect(RARITY_EFFECTS).toHaveLength(23);
+    expect(RARITY_EFFECTS.filter((e) => e.isNew).map((e) => e.fx).sort()).toEqual(["carbon", "electric", "lava", "marble", "shattered", "smoke", "torn", "watercolor"]);
     expect(rarityDraftError({ ...ok, effect: "metal" })).toBeNull();
-    expect(rarityDraftError({ ...ok, effect: "cartoon" })).toBeNull();
+    expect(rarityDraftError({ ...ok, effect: "torn" })).toBeNull();
+    expect(rarityDraftError({ ...ok, effect: "marble", extras: ["torn", "lava", "electric", "smoke"] })).toBeNull();
   });
 
   it("each extra look plays like the same base rarity as _effect_base in the database", () => {
-    expect(RARITY_STYLES).toEqual({ vintage: "uncommon", tinted: "rare", cartoon: "rare", metal: "super_rare", neon: "super_rare", holo: "legendary", frost: "legendary", galaxy: "secret_legendary" });
+    expect(RARITY_STYLES).toEqual({
+      vintage: "uncommon", watercolor: "uncommon",
+      tinted: "rare", cartoon: "rare", torn: "rare", smoke: "rare",
+      metal: "super_rare", neon: "super_rare", marble: "super_rare", electric: "super_rare", carbon: "super_rare",
+      holo: "legendary", frost: "legendary", lava: "legendary", shattered: "legendary",
+      galaxy: "secret_legendary",
+    });
     expect(effectBase("legendary")).toBe("legendary");
     expect(effectBase("glitter")).toBeNull();
   });
