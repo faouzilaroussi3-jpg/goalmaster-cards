@@ -166,3 +166,20 @@ export function matchClock(half: 1 | 2, t: number, length = HALF_SECONDS) {
 
 export const minuteOf = (half: 1 | 2, t: number, length = HALF_SECONDS) =>
   Math.min(45, Math.floor((Math.min(Math.max(t, 0), length) / length) * 45) + 1) + (half === 2 ? 45 : 0);
+
+/** Shape returned by get_match. */
+export interface HalfResult { events: import("@/lib/match-replay").MatchEvent[]; home: number; away: number }
+export interface MatchSideView {
+  id: string | null; name: string | null; team: RatedTeam | null; team2: RatedTeam | null;
+  goals: number; reward: number | null; elo_delta: number | null; ready: boolean;
+}
+export interface MatchView {
+  id: string; status: "pending" | "halftime" | "finished" | "cancelled" | "declined"; side: "home" | "away" | null;
+  winner_id: string | null; home: MatchSideView; away: MatchSideView;
+  first_half: HalfResult | null; second_half: HalfResult | null; my_halftime: RatedTeam | null;
+  created_at: string; halftime_at: string | null; finished_at: string | null;
+}
+
+/** Strip the rating fields so a lineup can be rated again (half-time changes). */
+export const toCard = ({ user_card_id, card_id, name, club, nationality, pos, rating, rarity, version, image_url }: MatchCard): MatchCard =>
+  ({ user_card_id, card_id, name, club, nationality, pos, rating, rarity, version, image_url });
