@@ -24,6 +24,7 @@ import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDuelsIndexRouteImport } from './routes/_authenticated/duels.index'
 import { Route as AuthenticatedDuelsDuelIdRouteImport } from './routes/_authenticated/duels.$duelId'
 import { Route as AuthenticatedMatchsIndexRouteImport } from './routes/_authenticated/matchs.index'
+import { Route as AuthenticatedMatchsEquipeRouteImport } from './routes/_authenticated/matchs.equipe'
 import { Route as ApiPublicCardPhotoSplatRouteImport } from './routes/api/public/card-photo/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -102,6 +103,12 @@ const AuthenticatedMatchsIndexRoute =
     path: '/matchs/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMatchsEquipeRoute =
+  AuthenticatedMatchsEquipeRouteImport.update({
+    id: '/matchs/equipe',
+    path: '/matchs/equipe',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicCardPhotoSplatRoute = ApiPublicCardPhotoSplatRouteImport.update({
   id: '/api/public/card-photo/$',
   path: '/api/public/card-photo/$',
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/duels/': typeof AuthenticatedDuelsIndexRoute
   '/matchs/': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
@@ -138,6 +146,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/duels': typeof AuthenticatedDuelsIndexRoute
   '/matchs': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
@@ -157,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
   '/_authenticated/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/_authenticated/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/_authenticated/duels/': typeof AuthenticatedDuelsIndexRoute
   '/_authenticated/matchs/': typeof AuthenticatedMatchsIndexRoute
   '/api/public/card-photo/$': typeof ApiPublicCardPhotoSplatRoute
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/transferts'
     | '/duels/$duelId'
+    | '/matchs/equipe'
     | '/duels/'
     | '/matchs/'
     | '/api/public/card-photo/$'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/transferts'
     | '/duels/$duelId'
+    | '/matchs/equipe'
     | '/duels'
     | '/matchs'
     | '/api/public/card-photo/$'
@@ -211,6 +223,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/transferts'
     | '/_authenticated/duels/$duelId'
+    | '/_authenticated/matchs/equipe'
     | '/_authenticated/duels/'
     | '/_authenticated/matchs/'
     | '/api/public/card-photo/$'
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMatchsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/matchs/equipe': {
+      id: '/_authenticated/matchs/equipe'
+      path: '/matchs/equipe'
+      fullPath: '/matchs/equipe'
+      preLoaderRoute: typeof AuthenticatedMatchsEquipeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/card-photo/$': {
       id: '/api/public/card-photo/$'
       path: '/api/public/card-photo/$'
@@ -351,6 +371,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
   AuthenticatedDuelsDuelIdRoute: typeof AuthenticatedDuelsDuelIdRoute
+  AuthenticatedMatchsEquipeRoute: typeof AuthenticatedMatchsEquipeRoute
   AuthenticatedDuelsIndexRoute: typeof AuthenticatedDuelsIndexRoute
   AuthenticatedMatchsIndexRoute: typeof AuthenticatedMatchsIndexRoute
 }
@@ -365,6 +386,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
   AuthenticatedDuelsDuelIdRoute: AuthenticatedDuelsDuelIdRoute,
+  AuthenticatedMatchsEquipeRoute: AuthenticatedMatchsEquipeRoute,
   AuthenticatedDuelsIndexRoute: AuthenticatedDuelsIndexRoute,
   AuthenticatedMatchsIndexRoute: AuthenticatedMatchsIndexRoute,
 }
