@@ -444,6 +444,36 @@ export const sfx = {
     special();
     [392, 329.63, 261.63].forEach((f, i) => tone(e, { freq: f, start: i * 0.2, dur: 0.45, type: "triangle", gain: 0.08, reverb: 0.4 }));
   }),
+
+  // ---------- 11 v 11 matches ----------
+  /** Referee whistle: a pea trill (fast alternating pitches) over breathy noise. blasts = 3 for the final whistle. */
+  whistle: (blasts = 1) => play((e) => {
+    special();
+    for (let b = 0; b < blasts; b++) {
+      const at = b * 0.42;
+      const len = blasts > 1 && b === blasts - 1 ? 0.7 : 0.32;
+      for (let k = 0; k * 0.028 < len; k++) {
+        tone(e, { freq: k % 2 ? 2950 : 3150, start: at + k * 0.028, dur: 0.04, gain: 0.07, reverb: 0.15 });
+      }
+      noise(e, { start: at, dur: len, freq: 3000, q: 6, gain: 0.05, attack: 0.02, reverb: 0.15 });
+    }
+  }),
+  kick: () => play((e) => {
+    tone(e, { freq: 150, to: 70, dur: 0.09, gain: 0.12 });
+    noise(e, { dur: 0.05, filter: "lowpass", freq: 1200, gain: 0.06 });
+  }),
+  goal: () => play((e) => {
+    special();
+    noise(e, { dur: 2.6, freq: 650, to: 1100, q: 0.6, gain: 0.16, attack: 0.25, reverb: 0.5 });
+    noise(e, { dur: 2.2, filter: "highpass", freq: 2500, gain: 0.04, attack: 0.3, reverb: 0.4 });
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(e, { freq: f, start: 0.15 + i * 0.1, dur: 0.4, type: "triangle", gain: 0.08, reverb: 0.4 }));
+    bell(e, 1046.5, 0.6, 1.6, 0.06);
+  }),
+  save: () => play((e) => {
+    special();
+    noise(e, { dur: 0.9, freq: 520, to: 380, q: 0.8, gain: 0.08, attack: 0.12, reverb: 0.4 });
+    tone(e, { freq: 210, to: 120, dur: 0.12, gain: 0.12 });
+  }),
 };
 
 export type SfxName = keyof typeof sfx;
