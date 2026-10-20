@@ -5,7 +5,7 @@ import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
-import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyPacks, useMyPeriodicChallenges, useProfile } from "@/lib/auth";
+import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyMatches, useMyPacks, useMyPeriodicChallenges, useProfile } from "@/lib/auth";
 import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
 import { periodicSummary } from "@/lib/periodic-challenges";
@@ -26,6 +26,8 @@ export function AppHeader() {
   const ready = claimableSummary(challenges ?? []).count + periodicSummary(periodic ?? []).count;
   const { data: duels } = useMyDuels();
   const duelTodo = (duels ?? []).filter((d) => d.my_turn || d.incoming).length;
+  const { data: matches } = useMyMatches();
+  const matchTodo = (matches ?? []).filter((m) => m.needs_me).length;
   const uid = session?.user.id;
   const { data: friendList } = useFriends();
   const friendTodo = splitFriends(friendList ?? []).incoming.length;
@@ -102,6 +104,10 @@ export function AppHeader() {
         qc.invalidateQueries({ queryKey: ["duels"] });
         qc.invalidateQueries({ queryKey: ["duel"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, () => {
+        qc.invalidateQueries({ queryKey: ["matches"] });
+        qc.invalidateQueries({ queryKey: ["match"] });
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [uid, qc]);
@@ -112,6 +118,16 @@ export function AppHeader() {
       {duelTodo > 0 && (
         <span aria-label={`${duelTodo} duel${duelTodo > 1 ? "s" : ""} en attente de toi`} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
           {duelTodo}
+        </span>
+      )}
+    </Link>
+  );
+  const matchLink = (
+    <Link to="/matchs" className={linkCls} activeProps={activeCls}>
+      Matchs
+      {matchTodo > 0 && (
+        <span aria-label={`${matchTodo} match${matchTodo > 1 ? "s" : ""} en attente de toi`} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+          {matchTodo}
         </span>
       )}
     </Link>
@@ -163,6 +179,8 @@ export function AppHeader() {
           <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
           {session && defis}
           {session && duelLink}
+        {session && matchLink}
+          {session && matchLink}
           {session && amis}
           {session && messages}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
@@ -198,6 +216,7 @@ export function AppHeader() {
         <Link to="/transferts" className={linkCls} activeProps={activeCls}>Transferts</Link>
         {session && defis}
         {session && duelLink}
+        {session && matchLink}
         {session && amis}
         {session && messages}
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
