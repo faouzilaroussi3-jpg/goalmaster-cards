@@ -16,12 +16,20 @@ export type RarityKey = (typeof RARITIES)[number]["key"];
 /** Extra looks an admin-created rarity can wear, each playing (duel cost, reveal, tier) like a built-in base rarity. Mirrors _effect_base in SQL. */
 export const RARITY_STYLES = {
   vintage: "uncommon",
+  watercolor: "uncommon",
   tinted: "rare",
   cartoon: "rare",
+  torn: "rare",
+  smoke: "rare",
   metal: "super_rare",
   neon: "super_rare",
+  marble: "super_rare",
+  electric: "super_rare",
+  carbon: "super_rare",
   holo: "legendary",
   frost: "legendary",
+  lava: "legendary",
+  shattered: "legendary",
   galaxy: "secret_legendary",
 } as const satisfies Record<string, RarityKey>;
 

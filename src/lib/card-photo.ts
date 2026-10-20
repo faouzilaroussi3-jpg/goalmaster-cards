@@ -45,6 +45,14 @@ const STYLE_EFFECTS: Record<RarityStyle, string[]> = {
   holo: ["Film holographique", "Bordure arc-en-ciel", "Étincelles"],
   frost: ["Bordure givrée", "Cristaux de glace", "Neige qui tombe"],
   galaxy: ["Nébuleuse cosmique", "Étoiles scintillantes"],
+  torn: ["Bords déchirés", "Coin arraché"],
+  marble: ["Cadre en marbre veiné", "Reflet poli"],
+  lava: ["Fissures de lave", "Lueur qui pulse"],
+  electric: ["Éclairs crépitants", "Halo électrique"],
+  watercolor: ["Taches d'aquarelle", "Papier à grain"],
+  shattered: ["Vitre fêlée en étoile", "Éclat de verre"],
+  smoke: ["Volutes de fumée", "Lueur voilée"],
+  carbon: ["Fibre de carbone tressée", "Reflet satiné"],
 };
 
 function builtinEffects(rarity: string, version: "normal" | "alt" | "shiny"): string[] {

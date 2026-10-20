@@ -1,7 +1,7 @@
 // Rules for admin-created rarities, mirrored from the database (_validate_rarity, admin_create_rarity, admin_delete_rarity).
 import type { RarityEffect } from "@/lib/rarity";
 
-/** Visual effects an admin can give a new rarity: the look of each built-in rarity, then 8 extra styles (isNew). */
+/** Visual effects an admin can give a rarity: the look of each built-in rarity, then extra styles (isNew = the latest batch). */
 export const RARITY_EFFECTS: { fx: RarityEffect; label: string; hint: string; isNew?: boolean }[] = [
   { fx: "common", label: "Simple", hint: "Cadre sobre, comme une Commune" },
   { fx: "uncommon", label: "Liseré", hint: "Cadre coloré, comme une Peu commune" },
@@ -10,14 +10,22 @@ export const RARITY_EFFECTS: { fx: RarityEffect; label: string; hint: string; is
   { fx: "legendary", label: "Or et paillettes", hint: "Bordure dorée pailletée, comme une Légendaire" },
   { fx: "secret_legendary", label: "Diamant", hint: "Bordure diamant + diamants en orbite, comme une Secrète Légendaire" },
   { fx: "secret_ultimate", label: "Rouge métal, feu et dragon", hint: "Rouge métallisé, feu et dragon, comme une Secrète Ultime" },
-  { fx: "metal", label: "Métallique", hint: "Chrome brossé avec reflet d'acier qui glisse", isNew: true },
-  { fx: "tinted", label: "Teinté", hint: "Photo teintée dans la couleur de la rareté", isNew: true },
-  { fx: "cartoon", label: "Cartoon", hint: "Gros contour noir, trame BD et couleurs vives", isNew: true },
-  { fx: "vintage", label: "Vintage", hint: "Photo sépia, papier ancien et bord crème", isNew: true },
-  { fx: "neon", label: "Néon", hint: "Tube néon lumineux qui clignote autour de la carte", isNew: true },
-  { fx: "holo", label: "Holographique", hint: "Film holographique arc-en-ciel sur toute la carte", isNew: true },
-  { fx: "frost", label: "Glace", hint: "Bordure givrée, cristaux et neige qui tombe", isNew: true },
-  { fx: "galaxy", label: "Galaxie", hint: "Nébuleuse cosmique et étoiles qui scintillent", isNew: true },
+  { fx: "metal", label: "Métallique", hint: "Chrome brossé avec reflet d'acier qui glisse" },
+  { fx: "tinted", label: "Teinté", hint: "Photo teintée dans la couleur de la rareté" },
+  { fx: "cartoon", label: "Cartoon", hint: "Gros contour noir, trame BD et couleurs vives" },
+  { fx: "vintage", label: "Vintage", hint: "Photo sépia, papier ancien et bord crème" },
+  { fx: "neon", label: "Néon", hint: "Tube néon lumineux qui clignote autour de la carte" },
+  { fx: "holo", label: "Holographique", hint: "Film holographique arc-en-ciel sur toute la carte" },
+  { fx: "frost", label: "Glace", hint: "Bordure givrée, cristaux et neige qui tombe" },
+  { fx: "galaxy", label: "Galaxie", hint: "Nébuleuse cosmique et étoiles qui scintillent" },
+  { fx: "torn", label: "Carte arrachée", hint: "Bords de papier déchirés et coin arraché qui se soulève", isNew: true },
+  { fx: "marble", label: "Marbre", hint: "Cadre en marbre veiné poli, reflet de pierre", isNew: true },
+  { fx: "lava", label: "Lave", hint: "Roche noire fissurée de lave qui pulse", isNew: true },
+  { fx: "electric", label: "Électrique", hint: "Éclairs qui crépitent autour de la carte", isNew: true },
+  { fx: "watercolor", label: "Aquarelle", hint: "Taches de peinture à l'eau sur papier", isNew: true },
+  { fx: "shattered", label: "Verre brisé", hint: "Vitre fêlée en étoile qui scintille", isNew: true },
+  { fx: "smoke", label: "Fumée", hint: "Volutes de fumée qui dérivent sur la carte", isNew: true },
+  { fx: "carbon", label: "Carbone", hint: "Fibre de carbone tressée, finition course", isNew: true },
 ];
 
 export const LABEL_MAX = 30;
