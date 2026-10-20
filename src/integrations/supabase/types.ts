@@ -937,6 +937,7 @@ export type Database = {
       }
       rarities: {
         Row: {
+          active: boolean
           builtin: boolean
           color: string | null
           created_at: string
@@ -949,6 +950,7 @@ export type Database = {
           tier: number
         }
         Insert: {
+          active?: boolean
           builtin?: boolean
           color?: string | null
           created_at?: string
@@ -961,6 +963,7 @@ export type Database = {
           tier: number
         }
         Update: {
+          active?: boolean
           builtin?: boolean
           color?: string | null
           created_at?: string
@@ -1163,6 +1166,10 @@ export type Database = {
       admin_replace_card: {
         Args: { _from: string; _to: string }
         Returns: number
+      }
+      admin_set_rarity_active: {
+        Args: { _active: boolean; _key: string }
+        Returns: undefined
       }
       admin_update_rarity: {
         Args: {

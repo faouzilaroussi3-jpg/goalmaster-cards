@@ -86,8 +86,8 @@ function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
       <div>
         <p className="mb-1 text-xs uppercase text-muted-foreground">Taux par carte (total {sum(slot).toFixed(1)}%)</p>
         {rarities.map((r) => (
-          <label key={r.key} className="flex items-center justify-between gap-2 py-0.5 text-sm">
-            {r.label}
+          <label key={r.key} className={`flex items-center justify-between gap-2 py-0.5 text-sm ${r.active ? "" : "opacity-50"}`}>
+            <span>{r.label}{!r.active && <span className="ml-1 text-xs text-muted-foreground">(désactivée, ne sort pas)</span>}</span>
             <input className={`${inp} w-24`} type="number" step="0.1" min={0} value={slot[r.key] ?? 0} onChange={(e) => setSlot({ ...slot, [r.key]: +e.target.value })} />
           </label>
         ))}

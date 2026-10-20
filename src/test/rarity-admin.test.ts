@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { canDeleteRarity, rankAfter, rarityDraftError } from "@/lib/rarity-admin";
+import { activeRates, canDeleteRarity, packBlockingDisable, rankAfter, rarityDraftError } from "@/lib/rarity-admin";
 import { RARITIES, RARITY_STYLES, effectBase, rarityMeta, setRarities, type RarityRow } from "@/lib/rarity";
 import { RARITY_EFFECTS } from "@/lib/rarity-admin";
 import { rarityEffects } from "@/lib/card-photo";
@@ -75,5 +75,21 @@ describe("admin-created rarities", () => {
     setRarities([{ key: "custom_3", label: "Mythique", short_label: "M", tier: 6, rank: 6.5, effect: "vintage", color: null, builtin: false }]);
     expect(rarityMeta("custom_3").play).toBe("uncommon");
     expect(duelCost("custom_3")).toBe(duelCost("uncommon"));
+  });
+});
+
+describe("switching rarities on and off", () => {
+  const list = [{ key: "common", active: true }, { key: "rare", active: true }, { key: "custom_1", active: false }];
+
+  it("a switched-off rarity no longer drops from packs", () => {
+    expect(activeRates({ common: 70, rare: 20, custom_1: 10 }, list)).toEqual({ common: 70, rare: 20 });
+  });
+
+  it("refuses to switch off the last rarity an active pack can drop", () => {
+    const premium = { name: "Premium", active: true, slot_rates: { rare: 100, custom_1: 5 } };
+    const packs = [premium];
+    expect(packBlockingDisable("rare", list, packs)).toBe("Premium");
+    expect(packBlockingDisable("common", list, packs)).toBeNull();
+    expect(packBlockingDisable("rare", list, [{ ...premium, active: false }])).toBeNull();
   });
 });

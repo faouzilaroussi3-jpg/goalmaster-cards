@@ -59,6 +59,8 @@ export interface RarityInfo {
   style: RarityStyle | null;
   color: string | null;
   builtin: boolean;
+  /** Switched-off rarities no longer drop from packs (cards already owned are kept). */
+  active: boolean;
 }
 
 /** Row shape of the rarities table. */
@@ -71,9 +73,10 @@ export interface RarityRow {
   effect: string;
   color: string | null;
   builtin: boolean;
+  active?: boolean;
 }
 
-const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, color: null, builtin: true }));
+const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, color: null, builtin: true, active: true }));
 const isBuiltinKey = (k: string): k is RarityKey => RARITIES.some((r) => r.key === k);
 
 let current: RarityInfo[] = BUILTIN;
@@ -92,6 +95,7 @@ export function toRarityInfo(row: RarityRow): RarityInfo {
     style: effectStyle(row.effect),
     color: row.color,
     builtin: row.builtin,
+    active: row.active !== false,
   };
 }
 
@@ -117,7 +121,7 @@ export function useRarities(): RarityInfo[] {
 }
 
 export function rarityMeta(key: string): RarityInfo {
-  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, color: null, builtin: false };
+  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, color: null, builtin: false, active: true };
 }
 
 /** Reactive rarityMeta for components that render cards. */
