@@ -553,3 +553,10 @@
 @keyframes fx-snow { to { background-position: 0 410px, 13px 690px, 7px 295px; } }
 @keyframes fx-nebula { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
 @keyframes fx-twinkle { from { opacity: .25; } to { opacity: 1; } }
+
+/* Secret Legendary (normal): diamonds inlaid in the frame */
+.sl-border-gems { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
+.sl-border-gems i { position: absolute; width: 7px; height: 7px; translate: -50% -50%; rotate: 45deg; border-radius: 1px; background: linear-gradient(135deg, var(--card-light) 0 30%, var(--diamond-ice) 45%, var(--diamond-lilac) 70%, var(--card-light)); box-shadow: 0 0 0 1px color-mix(in oklab, var(--card-light) 70%, transparent), 0 0 6px var(--diamond-ice); animation: sl-gem-glint 2.4s ease-in-out infinite; }
+.sl-border-gems i:nth-child(-n+4) { width: 10px; height: 10px; }
+@keyframes sl-gem-glint { 0%, 70%, 100% { filter: brightness(1); } 80% { filter: brightness(1.9) drop-shadow(0 0 5px var(--card-light)); } }
+@media (prefers-reduced-motion: reduce) { .sl-border-gems i { animation: none; } }

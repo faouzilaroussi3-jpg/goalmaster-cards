@@ -77,6 +77,11 @@ export function PlayerCard({
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
       {r.style && <div className="card-style-fx" aria-hidden="true"><i /></div>}
       {r.fx === "secret_legendary" && !r.style && version === "normal" && <DiamondOrbitFx />}
+      {r.fx === "secret_legendary" && !r.style && version === "normal" && (
+        <div className="sl-border-gems" aria-hidden="true">
+          {SL_GEMS.map(([x, y], i) => <i key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${(i * 0.37) % 2.4}s` }} />)}
+        </div>
+      )}
       {ultimate && <SecretUltimateFx />}
     </div>
   );
@@ -84,3 +89,10 @@ export function PlayerCard({
   // The dragon's limbs and head stick out of the card's clipped frame, so Secret Ultimate cards get an unclipped shell.
   return <SuDragonShell className={className} missing={missing}>{body}</SuDragonShell>;
 }
+
+// Diamonds set into the Secret Legendary frame: corners, then evenly along each edge (x%, y%).
+const SL_GEMS: [number, number][] = [
+  [2.2, 1.6], [97.8, 1.6], [2.2, 98.4], [97.8, 98.4],
+  ...[20, 35, 50, 65, 80].flatMap((x) => [[x, 1.6], [x, 98.4]] as [number, number][]),
+  ...[15, 28, 41, 54, 67, 80].flatMap((y) => [[2.2, y], [97.8, y]] as [number, number][]),
+];
