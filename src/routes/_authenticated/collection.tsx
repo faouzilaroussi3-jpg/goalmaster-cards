@@ -59,10 +59,16 @@ function CollectionPage() {
     const list: { card: (typeof catalog)[number]; version: string; count: number }[] = [];
     for (const c of catalog) {
       const versions = ["normal", ...(c.has_alt ? ["alt"] : []), ...(c.has_shiny ? ["shiny"] : [])];
-      for (const v of versions) list.push({ card: c, version: v, count: counts.get(`${c.id}:${v}`) ?? 0 });
+      const off = !rarityMeta(c.rarity).active;
+      for (const v of versions) {
+        const count = counts.get(`${c.id}:${v}`) ?? 0;
+        // Switched-off rarities: players only keep seeing the cards they own; the admin still sees them all.
+        if (off && !count && !profile?.isAdmin) continue;
+        list.push({ card: c, version: v, count });
+      }
     }
     return list;
-  }, [catalog, counts]);
+  }, [catalog, counts, rarities, profile?.isAdmin]);
 
   const filtered = entries
     .filter((e) => (view === "owned" ? e.count > 0 : view === "missing" ? e.count === 0 : true))
@@ -81,7 +87,7 @@ function CollectionPage() {
   const uniqueOwned = entries.filter((e) => e.count > 0).length;
   // Secret Ultimate cards only come back for their owners (and the admin), so the tier stays invisible until pulled.
   const hasUltimate = catalog.some((c) => c.rarity === "secret_ultimate");
-  const visibleRarities = rarities.filter((r) => r.key !== "secret_ultimate" || hasUltimate);
+  const visibleRarities = rarities.filter((r) => (r.key !== "secret_ultimate" || hasUltimate) && (r.active || profile?.isAdmin || entries.some((e) => e.card.rarity === r.key)));
   const sel = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 
   return (
