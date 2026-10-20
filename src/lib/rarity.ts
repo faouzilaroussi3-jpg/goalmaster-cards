@@ -37,6 +37,19 @@ export function effectBase(effect: string): RarityKey | null {
   return RARITIES.some((r) => r.key === effect) ? (effect as RarityKey) : null;
 }
 
+/** True for any value rarities.effect accepts (built-in look or style). */
+export function isEffect(k: string): k is RarityEffect {
+  return effectBase(k) !== null;
+}
+
+/** Extra effects a rarity really draws: known, not the main one, no duplicates, never "common" (Simple doesn't mix). Mirrors _validate_rarity. */
+export function cleanExtras(main: string, extras: readonly string[] | null | undefined): RarityEffect[] {
+  if (main === "common") return [];
+  const out: RarityEffect[] = [];
+  for (const e of extras ?? []) if (isEffect(e) && e !== "common" && e !== main && !out.includes(e)) out.push(e);
+  return out;
+}
+
 /** The style an effect draws on the card (null for the 7 built-in looks). */
 export function effectStyle(effect: string): RarityStyle | null {
   return isStyle(effect) ? effect : null;
@@ -57,6 +70,8 @@ export interface RarityInfo {
   play: RarityKey;
   /** Extra look drawn instead of the base effect's frame (admin-created rarities only). */
   style: RarityStyle | null;
+  /** Extra effects layered over the main look, in order (looks only: gameplay follows the main effect). */
+  extras: RarityEffect[];
   color: string | null;
   builtin: boolean;
   /** Switched-off rarities no longer drop from packs (cards already owned are kept). */
@@ -71,12 +86,13 @@ export interface RarityRow {
   tier: number;
   rank: number;
   effect: string;
+  extra_effects?: string[] | null;
   color: string | null;
   builtin: boolean;
   active?: boolean;
 }
 
-const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, color: null, builtin: true, active: true }));
+const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, extras: [], color: null, builtin: true, active: true }));
 const isBuiltinKey = (k: string): k is RarityKey => RARITIES.some((r) => r.key === k);
 
 let current: RarityInfo[] = BUILTIN;
@@ -93,6 +109,7 @@ export function toRarityInfo(row: RarityRow): RarityInfo {
     fx,
     play: row.builtin && isBuiltinKey(row.key) ? row.key : fx,
     style: effectStyle(row.effect),
+    extras: cleanExtras(row.effect, row.extra_effects),
     color: row.color,
     builtin: row.builtin,
     active: row.active !== false,
@@ -121,7 +138,7 @@ export function useRarities(): RarityInfo[] {
 }
 
 export function rarityMeta(key: string): RarityInfo {
-  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, color: null, builtin: false, active: true };
+  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, extras: [], color: null, builtin: false, active: true };
 }
 
 /** Reactive rarityMeta for components that render cards. */

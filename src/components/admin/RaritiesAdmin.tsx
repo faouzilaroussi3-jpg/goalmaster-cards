@@ -5,21 +5,24 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PlayerCard } from "@/components/PlayerCard";
 import { RARITIES_QUERY_KEY } from "@/components/RarityRegistry";
-import { effectBase, effectStyle, rarityMeta, useRarities, type CardData, type RarityEffect, type RarityInfo } from "@/lib/rarity";
-import { canDeleteRarity, LABEL_MAX, RARITY_EFFECTS, rarityDraftError, SHORT_MAX } from "@/lib/rarity-admin";
+import { cleanExtras, effectBase, effectStyle, rarityMeta, useRarities, type CardData, type RarityEffect, type RarityInfo } from "@/lib/rarity";
+import { canDeleteRarity, LABEL_MAX, makeMainEffect, RARITY_EFFECTS, rarityDraftError, SHORT_MAX, toggleEffect } from "@/lib/rarity-admin";
 
 const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 const DEFAULT_TINT = "#ff3d8b";
 
-interface Fields { label: string; short: string; effect: RarityEffect; tint: boolean; color: string; duplicateCoins: number }
+/** effects: ticked looks in order, the first one is the main effect. */
+interface Fields { label: string; short: string; effects: RarityEffect[]; tint: boolean; color: string; duplicateCoins: number }
 
-const toDraft = (f: Fields) => ({ label: f.label, short: f.short, effect: f.effect, color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins });
+const toDraft = (f: Fields) => ({ label: f.label, short: f.short, effect: f.effects[0] ?? "common", extras: f.effects.slice(1), color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins });
+const effectsLabel = (list: string[]) => list.map((fx) => RARITY_EFFECTS.find((e) => e.fx === fx)?.label ?? fx).join(" + ");
 
 function previewInfo(f: Fields, base?: RarityInfo): RarityInfo {
-  const fx = effectBase(f.effect) ?? "common";
+  const main = f.effects[0] ?? "common";
+  const fx = effectBase(main) ?? "common";
   return {
     key: "preview", label: f.label.trim() || "Nouvelle rareté", short: f.short.trim().toUpperCase() || "?",
-    tier: base?.builtin ? base.tier : rarityMeta(fx).tier, rank: 0, fx, play: base?.play ?? fx, style: effectStyle(f.effect),
+    tier: base?.builtin ? base.tier : rarityMeta(fx).tier, rank: 0, fx, play: base?.builtin ? base.play : fx, style: effectStyle(main), extras: cleanExtras(main, f.effects.slice(1)),
     color: f.tint ? f.color : null, builtin: base?.builtin ?? false, active: true,
   };
 }
@@ -34,7 +37,7 @@ export function RaritiesAdmin() {
   });
   const { data: coinRows = [] } = useQuery({
     queryKey: ["admin-rarity-rows"],
-    queryFn: async () => (await supabase.from("rarities").select("key, duplicate_coins, effect")).data ?? [],
+    queryFn: async () => (await supabase.from("rarities").select("key, duplicate_coins, effect, extra_effects")).data ?? [],
   });
   const rows = useMemo(() => Object.fromEntries(coinRows.map((r) => [r.key, r])), [coinRows]);
   const counts = useMemo(() => cards.reduce<Record<string, number>>((m, c) => ({ ...m, [c.rarity]: (m[c.rarity] ?? 0) + 1 }), {}), [cards]);
@@ -43,7 +46,7 @@ export function RaritiesAdmin() {
     return c ? { ...c, version: "normal" } : { name: "Joueur exemple", club: "Goalmaster FC", nationality: "France", pos: "BU", rating: 88, rarity: "common", image_url: null };
   };
 
-  const [f, setF] = useState<Fields>({ label: "", short: "", effect: "legendary", tint: false, color: DEFAULT_TINT, duplicateCoins: 200 });
+  const [f, setF] = useState<Fields>({ label: "", short: "", effects: ["legendary"], tint: false, color: DEFAULT_TINT, duplicateCoins: 200 });
   const [after, setAfter] = useState("legendary");
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -63,7 +66,7 @@ export function RaritiesAdmin() {
     if (problem) { toast.error(problem); return; }
     setBusy(true);
     const { error } = await supabase.rpc("admin_create_rarity", {
-      _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _color: draft.color, _after_key: after, _duplicate_coins: draft.duplicateCoins,
+      _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _extra_effects: draft.extras, _color: draft.color, _after_key: after, _duplicate_coins: draft.duplicateCoins,
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
@@ -103,7 +106,7 @@ export function RaritiesAdmin() {
               r={r}
               count={counts[r.key] ?? 0}
               duplicateCoins={rows[r.key]?.duplicate_coins ?? 0}
-              effect={(rows[r.key]?.effect ?? r.style ?? r.fx) as RarityEffect}
+              effects={[(rows[r.key]?.effect ?? r.style ?? r.fx) as RarityEffect, ...r.extras]}
               sample={sampleFor(r.key)}
               others={rarities.filter((o) => o.key !== r.key)}
               editing={editing === r.key}
@@ -129,14 +132,30 @@ function RarityFields({ f, setF }: { f: Fields; setF: (f: Fields) => void }) {
         </label>
       </div>
       <fieldset>
-        <legend className="mb-1 text-xs text-muted-foreground">Effet visuel appliqué à toutes ses cartes</legend>
+        <legend className="mb-1 text-xs text-muted-foreground">Effets visuels appliqués à toutes ses cartes</legend>
+        <p className="mb-2 text-xs text-muted-foreground">Coche autant d'effets que tu veux pour les mélanger. Le n°1 est l'effet principal : il donne le cadre et l'écriture, les autres s'ajoutent par-dessus. « Simple » ne se mélange pas.</p>
+        <p className="mb-2 text-xs text-foreground">Sélection : <b>{effectsLabel(f.effects)}</b></p>
         <div className="grid gap-2 sm:grid-cols-2">
-          {RARITY_EFFECTS.map((fx) => (
-            <label key={fx.fx} className={`flex cursor-pointer gap-2 rounded-lg border p-2 text-sm ${f.effect === fx.fx ? "border-primary bg-primary/10" : "border-border"}`}>
-              <input type="radio" className="mt-1" checked={f.effect === fx.fx} onChange={() => setF({ ...f, effect: fx.fx })} />
-              <span><b className="text-foreground">{fx.label}</b>{fx.isNew && <span className="ml-1.5 rounded bg-primary/20 px-1 text-[10px] font-bold uppercase text-primary">Nouveau</span>}<span className="block text-xs text-muted-foreground">{fx.hint}</span></span>
-            </label>
-          ))}
+          {RARITY_EFFECTS.map((fx) => {
+            const pos = f.effects.indexOf(fx.fx);
+            const on = pos >= 0;
+            return (
+              <div key={fx.fx} className={`flex gap-2 rounded-lg border p-2 text-sm ${pos === 0 ? "border-primary bg-primary/15" : on ? "border-primary/60 bg-primary/5" : "border-border"}`}>
+                <label className="flex flex-1 cursor-pointer gap-2">
+                  <input type="checkbox" className="mt-1" checked={on} onChange={() => setF({ ...f, effects: toggleEffect(f.effects, fx.fx) as RarityEffect[] })} />
+                  <span>
+                    <b className="text-foreground">{fx.label}</b>
+                    {fx.isNew && <span className="ml-1.5 rounded bg-primary/20 px-1 text-[10px] font-bold uppercase text-primary">Nouveau</span>}
+                    {on && <span className="ml-1.5 rounded bg-primary px-1 text-[10px] font-bold text-primary-foreground">{pos === 0 ? "N°1 · Principal" : `N°${pos + 1}`}</span>}
+                    <span className="block text-xs text-muted-foreground">{fx.hint}</span>
+                  </span>
+                </label>
+                {on && pos > 0 && (
+                  <button type="button" onClick={() => setF({ ...f, effects: makeMainEffect(f.effects, fx.fx) as RarityEffect[] })} className="self-start whitespace-nowrap text-[11px] font-bold text-primary">Mettre en n°1</button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </fieldset>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -155,16 +174,16 @@ function RarityFields({ f, setF }: { f: Fields; setF: (f: Fields) => void }) {
   );
 }
 
-function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editing, onEdit, onDone }: {
-  r: RarityInfo; count: number; duplicateCoins: number; effect: RarityEffect; sample: CardData; others: RarityInfo[];
+function RarityRowItem({ r, count, duplicateCoins, effects, sample, others, editing, onEdit, onDone }: {
+  r: RarityInfo; count: number; duplicateCoins: number; effects: RarityEffect[]; sample: CardData; others: RarityInfo[];
   editing: boolean; onEdit: (on: boolean) => void; onDone: () => void;
 }) {
   const [moveTo, setMoveTo] = useState<string>(others.find((o) => o.rank < r.rank && o.builtin)?.key ?? others[0]?.key ?? "");
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
-  const current: Fields = { label: r.label, short: r.short, effect, tint: !!r.color, color: r.color ?? DEFAULT_TINT, duplicateCoins };
+  const current: Fields = { label: r.label, short: r.short, effects, tint: !!r.color, color: r.color ?? DEFAULT_TINT, duplicateCoins };
   const [f, setF] = useState<Fields>(current);
-  const effectLabel = RARITY_EFFECTS.find((e) => e.fx === effect)?.label ?? effect;
+  const effectLabel = effectsLabel(effects);
   const draft = toDraft(f);
   const problem = rarityDraftError(draft);
   const original = r.builtin ? RARITY_EFFECTS.find((e) => e.fx === r.key) : undefined;
@@ -176,7 +195,7 @@ function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editi
     if (problem) { toast.error(problem); return; }
     setBusy(true);
     const { error } = await supabase.rpc("admin_update_rarity", {
-      _key: r.key, _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _color: draft.color, _duplicate_coins: draft.duplicateCoins,
+      _key: r.key, _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _extra_effects: draft.extras, _color: draft.color, _duplicate_coins: draft.duplicateCoins,
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
@@ -209,7 +228,7 @@ function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editi
         <span className="min-w-0 flex-1">
           <b className="text-foreground">{r.label}</b>
           {!r.active && <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">Désactivée</span>}
-          <span className="block text-xs text-muted-foreground">Effet : {effectLabel} · {count} carte{count > 1 ? "s" : ""}{r.builtin ? " · rareté de base" : ""}</span>
+          <span className="block text-xs text-muted-foreground">Effet{effects.length > 1 ? "s" : ""} : {effectLabel} · {count} carte{count > 1 ? "s" : ""}{r.builtin ? " · rareté de base" : ""}</span>
         </span>
         {!editing && (
           <button
@@ -245,8 +264,8 @@ function RarityRowItem({ r, count, duplicateCoins, effect, sample, others, editi
         <form onSubmit={save} aria-label={`Modifier ${r.label}`} className="mt-3 grid gap-6 rounded-lg border border-primary/40 bg-background/40 p-4 md:grid-cols-[1fr_220px]">
           <div className="space-y-3">
             <RarityFields f={f} setF={setF} />
-            {original && f.effect !== r.key && (
-              <button type="button" onClick={() => setF({ ...f, effect: r.key as RarityEffect, tint: false })} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+            {original && (f.effects.length !== 1 || f.effects[0] !== r.key) && (
+              <button type="button" onClick={() => setF({ ...f, effects: [r.key as RarityEffect], tint: false })} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
                 <RotateCcw className="h-3.5 w-3.5" /> Remettre l'effet d'origine ({original.label})
               </button>
             )}

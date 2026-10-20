@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Shield, Star, Crown, Sparkles } from "lucide-react";
-import { useRarityMeta, VERSION_LABEL, type CardData, type RarityInfo } from "@/lib/rarity";
+import { effectStyle, useRarityMeta, VERSION_LABEL, type CardData, type RarityEffect, type RarityInfo } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { DiamondOrbitFx, NeonInvertFilter, SecretUltimateFx, SuDragonShell, useNeonFilterId } from "@/components/RareCardFx";
 
@@ -29,7 +29,8 @@ export function PlayerCard({
   const neonId = useNeonFilterId();
   const shiny = version === "shiny";
   const Emblem = r.tier >= 5 ? Crown : r.tier >= 3 ? Star : Shield;
-  const ultimate = r.fx === "secret_ultimate";
+  const extras = r.extras ?? [];
+  const ultimate = r.fx === "secret_ultimate" || extras.includes("secret_ultimate");
   const body = (
     <div
       className={cn("fm-card select-none", missing && "is-missing", !ultimate && className)}
@@ -75,7 +76,8 @@ export function PlayerCard({
       {r.tier >= 5 && <div className="card-border-glitter" aria-hidden="true" />}
       {r.tier >= 3 && <div className="sheen" />}
       {r.tier >= 4 && <div className="card-sparks" aria-hidden="true" />}
-      {r.style && <div className="card-style-fx" aria-hidden="true"><i /></div>}
+      {r.style && <div className="card-style-fx" data-fx={r.style} aria-hidden="true"><i /></div>}
+      {extras.map((e) => <ExtraFx key={e} fx={e} color={r.color} mainTier={r.tier} version={version} />)}
       {r.fx === "secret_legendary" && !r.style && version === "normal" && <DiamondOrbitFx />}
       {r.fx === "secret_legendary" && !r.style && version === "normal" && (
         <div className="sl-border-gems" aria-hidden="true">
@@ -88,6 +90,48 @@ export function PlayerCard({
   if (!ultimate) return body;
   // The dragon's limbs and head stick out of the card's clipped frame, so Secret Ultimate cards get an unclipped shell.
   return <SuDragonShell className={className} missing={missing}>{body}</SuDragonShell>;
+}
+
+// Colour each extra layer wears when the rarity has no custom tint.
+const EXTRA_TINT: Partial<Record<RarityEffect, string>> = {
+  uncommon: "var(--r-uncommon)", rare: "var(--r-rare)", super_rare: "var(--r-sr)", legendary: "var(--r-legendary)", secret_legendary: "var(--r-sl)",
+};
+
+/** One extra effect mixed over a rarity's main look: the effect's own layers (frame, light, particles), never its fonts or photo treatment. */
+function ExtraFx({ fx, color, mainTier, version }: { fx: RarityEffect; color: string | null; mainTier: number; version: string }) {
+  const style = effectStyle(fx);
+  const tint = { "--rc": color ?? (style ? `var(--fx-${style})` : EXTRA_TINT[fx] ?? "var(--rc)") } as React.CSSProperties;
+  if (style) return <div className="card-style-fx is-extra" data-fx={style} style={tint} aria-hidden="true"><i /></div>;
+  switch (fx) {
+    case "uncommon":
+      return <div className="card-extra-frame" style={tint} aria-hidden="true" />;
+    case "rare":
+      return mainTier >= 3 ? null : <div className="card-fx-group" data-fx={fx} style={tint} aria-hidden="true"><div className="sheen" /></div>;
+    case "super_rare":
+      return (
+        <div className="card-fx-group" data-fx={fx} style={tint} aria-hidden="true">
+          {mainTier < 3 && <div className="sheen" />}
+          {mainTier < 4 && <div className="card-sparks" />}
+        </div>
+      );
+    case "legendary":
+      return <div className="card-fx-group" data-fx={fx} style={tint} aria-hidden="true"><div className="card-foil-border" /><div className="card-border-glitter" /></div>;
+    case "secret_legendary":
+      return (
+        <div className="card-fx-group" data-fx={fx} style={tint} aria-hidden="true">
+          <div className="card-foil-border" />
+          <div className="card-border-glitter" />
+          {version === "normal" && <DiamondOrbitFx />}
+          {version === "normal" && (
+            <div className="sl-border-gems">
+              {SL_GEMS.map(([x, y], i) => <i key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${(i * 0.37) % 2.4}s` }} />)}
+            </div>
+          )}
+        </div>
+      );
+    default:
+      return null; // common: nothing to add; secret_ultimate: fire + dragon are drawn by the card itself.
+  }
 }
 
 // Diamonds set into the Secret Legendary frame: corners, then evenly along each edge (x%, y%).

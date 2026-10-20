@@ -27,9 +27,24 @@ export const DUPLICATE_COINS_MAX = 100_000;
 export interface RarityDraft {
   label: string;
   short: string;
+  /** Main effect: gives the frame and, for created rarities, how it plays in duels. */
   effect: string;
+  /** Extra effects drawn on top of the main one, in order. */
+  extras?: string[];
   color: string;
   duplicateCoins: number;
+}
+
+/** Tick or untick an effect in an ordered list (first = main). "Simple" doesn't mix: ticking it clears the rest, ticking another replaces it. Never leaves the list empty. */
+export function toggleEffect(list: string[], fx: string): string[] {
+  if (list.includes(fx)) return list.length > 1 ? list.filter((e) => e !== fx) : list;
+  if (fx === "common") return ["common"];
+  return [...list.filter((e) => e !== "common"), fx];
+}
+
+/** Move an already ticked effect to the front, making it the main one. */
+export function makeMainEffect(list: string[], fx: string): string[] {
+  return list.includes(fx) ? [fx, ...list.filter((e) => e !== fx)] : list;
 }
 
 /** First problem with a new rarity, or null when the database will accept it. */
@@ -37,7 +52,12 @@ export function rarityDraftError(d: RarityDraft): string | null {
   const label = d.label.trim(), short = d.short.trim();
   if (label.length < 1 || label.length > LABEL_MAX) return `Nom : 1 à ${LABEL_MAX} caractères`;
   if (short.length < 1 || short.length > SHORT_MAX) return `Sigle : 1 à ${SHORT_MAX} caractères`;
-  if (!RARITY_EFFECTS.some((e) => e.fx === d.effect)) return "Choisis un effet visuel";
+  const known = (fx: string) => RARITY_EFFECTS.some((e) => e.fx === fx);
+  if (!known(d.effect)) return "Choisis un effet visuel";
+  const extras = d.extras ?? [];
+  if (extras.some((e) => !known(e))) return "Effet visuel inconnu";
+  if (extras.length && (d.effect === "common" || extras.includes("common"))) return "L'effet Simple ne se mélange pas";
+  if (new Set([d.effect, ...extras]).size !== extras.length + 1) return "Effet choisi deux fois";
   if (d.color.trim() && !/^#[0-9a-fA-F]{6}$/.test(d.color.trim())) return "Couleur invalide";
   if (!Number.isInteger(d.duplicateCoins) || d.duplicateCoins < 0 || d.duplicateCoins > DUPLICATE_COINS_MAX) return `Pièces par doublon : 0 à ${DUPLICATE_COINS_MAX.toLocaleString("fr-FR")}`;
   return null;

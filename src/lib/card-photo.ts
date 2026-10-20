@@ -28,11 +28,13 @@ export function fitWithin(w: number, h: number, max = CARD_PHOTO_MAX): { width: 
 export function rarityEffects(rarity: string, version: "normal" | "alt" | "shiny" = "normal"): string[] {
   // Admin-created rarities wear the effect of a built-in one; only the real Secrète Ultime is hidden until pulled.
   const meta = rarityMeta(rarity);
-  if (meta.style) return STYLE_EFFECTS[meta.style];
-  const fx = meta.fx;
-  const list = builtinEffects(fx, version);
-  return rarity === fx ? list : list.filter((e) => !e.startsWith("Cachée"));
+  const own = meta.style ? STYLE_EFFECTS[meta.style] : builtinEffects(meta.fx, version);
+  const list = [...own, ...meta.extras.flatMap((e) => (isStyleKey(e) ? STYLE_EFFECTS[e] : builtinEffects(e, "normal")))];
+  const unique = [...new Set(list)];
+  return rarity === "secret_ultimate" ? unique : unique.filter((e) => !e.startsWith("Cachée"));
 }
+
+const isStyleKey = (k: string): k is RarityStyle => Object.prototype.hasOwnProperty.call(STYLE_EFFECTS, k);
 
 const STYLE_EFFECTS: Record<RarityStyle, string[]> = {
   metal: ["Chrome brossé", "Reflet d'acier"],
