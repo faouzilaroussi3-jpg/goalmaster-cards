@@ -943,6 +943,7 @@ export type Database = {
           created_at: string
           duplicate_coins: number
           effect: string
+          extra_effects: string[]
           key: string
           label: string
           rank: number
@@ -956,6 +957,7 @@ export type Database = {
           created_at?: string
           duplicate_coins?: number
           effect?: string
+          extra_effects?: string[]
           key: string
           label: string
           rank?: number
@@ -969,6 +971,7 @@ export type Database = {
           created_at?: string
           duplicate_coins?: number
           effect?: string
+          extra_effects?: string[]
           key?: string
           label?: string
           rank?: number
@@ -1129,6 +1132,7 @@ export type Database = {
           _color: string
           _duplicate_coins: number
           _effect: string
+          _extra_effects?: string[]
           _label: string
           _short: string
         }
@@ -1176,6 +1180,7 @@ export type Database = {
           _color: string
           _duplicate_coins: number
           _effect: string
+          _extra_effects?: string[]
           _key: string
           _label: string
           _short: string
