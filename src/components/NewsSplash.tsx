@@ -13,7 +13,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
 
-type Slide =
+export type Slide =
   | { kind: "card" | "rarity" | "pack"; a: Announcement; fresh: boolean }
   | { kind: "modes" }
   | { kind: "stars" };
