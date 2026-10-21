@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { ImageUp, Loader2, Plus, Trash2, Wand2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRarities } from "@/lib/rarity";
 import { exactChances, PACK_ARTS, PACK_EFFECTS, packDraftError, packLookOf, type PackArt, type PackEffect } from "@/lib/pack-look";
 import { PackFx, packImageOf, packImgStyle } from "@/components/PackArt";
 import { PhotoField } from "@/components/admin/CardsAdmin";
 import { cn } from "@/lib/utils";
+import { CARD_PHOTO_BUCKET, cardPhotoUrl } from "@/lib/card-photo";
+import { loadPicture, packifyImage } from "@/lib/packify";
 import { CardBack } from "@/components/CardBack";
 import { BACK_EXCLUDED_EFFECTS, cardBackOf, type CardBackLook } from "@/lib/card-back";
 import { RARITY_EFFECTS } from "@/lib/rarity-admin";
@@ -133,7 +135,7 @@ function PackEditor({ p, onSaved }: { p: PackRow; onSaved: () => void }) {
               className={cn("rounded-full px-3 py-1 text-xs font-bold", d.effect === f.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}>{f.label}</button>
           ))}
         </div>
-        <div className="mt-2 grid"><PhotoField label="Image du pack (facultatif, remplace le visuel)" value={d.image_url} onChange={(v) => setD({ ...d, image_url: v })} /></div>
+        <div className="mt-2 grid"><PackPhotoField value={d.image_url} tint={d.tint || "#ff3d9a"} onChange={(v) => setD({ ...d, image_url: v })} /></div>
       </div>
 
       <CardBackEditor back={back} onChange={setBack} />
@@ -232,6 +234,52 @@ function CardBackEditor({ back, onChange }: { back: CardBackLook; onChange: (b: 
           </div>
           <div className="grid"><PhotoField label="Image du dos (facultatif, remplace le logo GM)" value={back.image_url ?? ""} onChange={(v) => onChange({ ...back, image_url: v || null })} /></div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Pack picture: any photo is reshaped into a crimped foil pack (tinted, glossy, GOALMASTER logo) so it matches the base packs. */
+function PackPhotoField({ value, tint, onChange }: { value: string; tint: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  async function make(src: File | string) {
+    setBusy(true);
+    try {
+      const pic = await loadPicture(src);
+      const canvas = await packifyImage(pic, tint);
+      if ("close" in pic) pic.close();
+      const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/png"));
+      if (!blob) throw new Error("Impossible de préparer l'image.");
+      const name = `${crypto.randomUUID()}.png`;
+      const { error } = await supabase.storage.from(CARD_PHOTO_BUCKET).upload(name, blob, { contentType: "image/png" });
+      if (error) throw error;
+      onChange(cardPhotoUrl(name));
+      toast.success("Image intégrée au pack");
+    } catch (e) {
+      toast.error(typeof src === "string" ? "Ce lien ne peut pas être transformé : importe plutôt la photo depuis ton PC." : e instanceof Error ? e.message : "Import impossible");
+    } finally {
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
+    }
+  }
+  return (
+    <div className="text-xs text-muted-foreground">
+      <span>Image du pack (facultatif) : elle prend la forme d'un vrai pack, aux couleurs choisies</span>
+      <div className="mt-1 flex flex-wrap gap-2">
+        <button type="button" disabled={busy} onClick={() => ref.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-sm font-bold text-foreground disabled:opacity-60">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />} Photo depuis ce PC
+        </button>
+        <input ref={ref} type="file" accept="image/*" className="hidden" aria-label="Image du pack : fichier" onChange={(e) => { const f = e.target.files?.[0]; if (f) void make(f); }} />
+        <input className={`${inp} min-w-48 flex-1`} placeholder="ou colle un lien https://…/photo.jpg" aria-label="Image du pack : lien" value={value} onChange={(e) => onChange(e.target.value)} />
+        {value && (
+          <button type="button" disabled={busy} onClick={() => make(value)} title="Remettre l'image en forme de pack avec la couleur actuelle" className="inline-flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-sm font-bold text-foreground disabled:opacity-60">
+            <Wand2 className="h-4 w-4" /> Intégrer au pack
+          </button>
+        )}
+        {value && (
+          <button type="button" onClick={() => onChange("")} className="rounded-lg p-2 hover:bg-secondary" aria-label="Retirer l'image" title="Retirer l'image"><X className="h-4 w-4" /></button>
+        )}
       </div>
     </div>
   );

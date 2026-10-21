@@ -859,7 +859,24 @@
 
 /* ---------- Pack card backs: same outlines as the card shapes (data-shape on .gm-back, set per pack) ---------- */
 .gm-back-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-.gm-back[data-image] .gm-back-pattern { opacity: .35; }
+.gm-back[data-image] .gm-back-pattern { opacity: .3; mix-blend-mode: overlay; }
+/* Custom back picture: tinted in the back colour, vignetted so the frame and shape edges stay readable. */
+.gm-back[data-image] .gm-back-image { filter: saturate(1.1) contrast(1.05); }
+.gm-back[data-image]::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--card-night) 55%, transparent), transparent 28%, transparent 62%, color-mix(in oklab, var(--card-night) 85%, transparent)),
+    radial-gradient(ellipse at 50% 45%, transparent 45%, color-mix(in oklab, var(--card-night) 70%, transparent) 100%),
+    linear-gradient(color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--primary) 22%, transparent));
+  mix-blend-mode: normal; }
+.gm-back[data-image] .gm-back-frame { z-index: 2; }
+.gm-back-image-word { position: absolute; left: 0; right: 0; bottom: 9%; z-index: 2; text-align: center; font-family: var(--font-display); font-size: 9cqw; letter-spacing: .3em; padding-left: .3em; color: var(--card-light); text-shadow: 0 0 10px var(--primary), 0 2px 0 var(--card-night); }
+.gm-back[data-shape="wanted"][data-image] .gm-back-image, .gm-back[data-shape="torn"][data-image] .gm-back-image { filter: sepia(.8) contrast(1.05) brightness(.95); mix-blend-mode: multiply; opacity: .9; }
+.gm-back[data-shape="wanted"][data-image]::before { background: radial-gradient(ellipse at 50% 45%, transparent 50%, oklch(0.35 0.07 50 / .6) 100%); }
+.gm-back[data-shape="wanted"] .gm-back-image-word { color: oklch(0.27 0.045 55); font-family: "Rye", var(--font-display); text-shadow: none; }
+.gm-back[data-shape="polaroid"][data-image]::before { background: none; }
+.gm-back[data-shape="polaroid"] .gm-back-image-word { bottom: -17cqw; color: oklch(0.3 0.02 60); text-shadow: none; font-family: "Special Elite", monospace; letter-spacing: .15em; font-size: 7cqw; }
+.gm-back[data-shape="round"][data-image] .gm-back-image-word { bottom: 14%; }
+.gm-back[data-shape="shield"][data-image] .gm-back-image-word { bottom: 30%; }
+.gm-back[data-shape="hexagon"][data-image] .gm-back-image-word { bottom: 18%; }
 .gm-back .card-style-fx, .gm-back .card-fx-group, .gm-back .card-extra-frame { z-index: 3; }
 .gm-back[data-shape] { box-shadow: none; }
 .gm-back[data-shape] .gm-back-frame { border-radius: inherit; }
