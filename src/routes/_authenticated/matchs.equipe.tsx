@@ -11,6 +11,7 @@ import {
   autoPick, BENCH_SIZE, canPlayMatch, firstName, FORMATION_KEYS, FORMATIONS, POSITION_LABEL, positionFit, rarityBonus,
   rateSlots, rateTeam, TACTICS, teamProblem, XI_SIZE, type FormationKey, type MatchCard, type Tactic,
 } from "@/lib/manager";
+import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChemDots, fitTone, rarityColor, TeamStats } from "@/components/match/TeamSheet";
@@ -176,7 +177,7 @@ function TeamBuilderPage() {
 
       {savedLost && <p className="mt-4 rounded-lg border border-destructive/60 bg-destructive/10 p-3 text-sm">Une carte de ton équipe enregistrée n'est plus dans ta collection : remplace-la puis enregistre.</p>}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,32rem)_1fr]">
         <div>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {FORMATION_KEYS.map((f) => (
@@ -186,49 +187,35 @@ function TeamBuilderPage() {
               </button>
             ))}
           </div>
-          <div className="mm-builder-pitch relative mx-auto aspect-[68/105] w-full max-w-md overflow-hidden rounded-xl">
+          <div className="mm-builder-pitch relative mx-auto aspect-[68/105] w-full max-w-lg overflow-hidden rounded-xl">
             {slots.map((sl, i) => {
               const p = rated[i];
               const on = sel?.kind === "xi" && sel.i === i;
               return (
                 <button key={i} type="button" data-sfx="none" onClick={() => { sfx.select(); setSel({ kind: "xi", i }); }}
-                  className={cn("absolute z-10 flex w-[19%] -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-lg border px-0.5 py-1 text-center transition",
-                    p ? "border-border bg-card/95" : "border-dashed border-foreground/40 bg-background/40",
-                    on && "ring-2 ring-primary ring-offset-1 ring-offset-background")}
-                  style={{ left: `${sl.y}%`, top: `${92 - (sl.x - 5) * 1.86}%` }}
+                  className={cn("absolute z-10 flex w-[17%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg transition", on && "z-20 scale-105")}
+                  style={{ left: `${sl.y}%`, top: `${90 - (sl.x - 5) * 1.78}%` }}
                   aria-label={`${POSITION_LABEL[sl.role]}${p ? ` : ${p.name}` : " : vide"}`}>
-                  {p ? (
-                    <>
-                      <span className="flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full" style={{ background: rarityColor(p.rarity) }} />
-                        <span className="font-display text-lg leading-none text-primary">{p.eff}</span>
-                      </span>
-                      <span className="w-full truncate text-[10px] font-semibold leading-tight sm:text-[11px]">{firstName(p.name)}</span>
-                      <span className={cn("text-[9px] font-bold", fitTone(p.fit))}>{sl.role}{p.pos !== sl.role ? ` · ${p.pos}` : ""}</span>
+                  <PitchCard card={p} role={sl.role} on={on} />
+                  {p && (
+                    <span className="flex items-center gap-1 rounded-full bg-background/85 px-1.5 py-px leading-none">
+                      <span className={cn("text-[9px] font-bold", fitTone(p.fit))}>{sl.role}</span>
+                      <span className="font-display text-xs text-primary">{p.eff}</span>
                       <ChemDots chem={p.chem} />
-                    </>
-                  ) : (
-                    <span className="py-1.5 font-display text-base text-muted-foreground">{sl.role}</span>
+                    </span>
                   )}
                 </button>
               );
             })}
           </div>
           <h3 className="mb-2 mt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Remplaçants ({bench.filter(Boolean).length}/{BENCH_SIZE})</h3>
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-5 gap-2">
             {bench.map((c, i) => {
               const on = sel?.kind === "bench" && sel.i === i;
               return (
                 <button key={i} type="button" data-sfx="none" onClick={() => { sfx.select(); setSel({ kind: "bench", i }); }}
-                  className={cn("flex min-h-14 flex-col items-center justify-center rounded-lg border px-0.5 py-1 text-center",
-                    c ? "border-border bg-card" : "border-dashed border-border text-muted-foreground", on && "ring-2 ring-primary")}>
-                  {c ? (
-                    <>
-                      <span className="font-display text-base leading-none text-primary">{c.rating}</span>
-                      <span className="w-full truncate text-[10px] font-semibold">{firstName(c.name)}</span>
-                      <span className="text-[9px] text-muted-foreground">{c.pos}</span>
-                    </>
-                  ) : <span className="text-xs">+</span>}
+                  className={cn("rounded-lg transition", on && "scale-105")} aria-label={`Remplaçant ${i + 1}${c ? ` : ${c.name}` : " : vide"}`}>
+                  <PitchCard card={c} role="+" on={on} />
                 </button>
               );
             })}
@@ -309,5 +296,20 @@ function TeamBuilderPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** A player's real card on the pitch (or an empty card-shaped slot showing the position to fill). */
+function PitchCard({ card, role, on }: { card: MatchCard | null; role: string; on: boolean }) {
+  return (
+    <span className={cn("pointer-events-none block w-full rounded-lg", on && "ring-2 ring-primary ring-offset-2 ring-offset-background")}>
+      {card ? (
+        <PlayerCard card={{ ...card, id: card.card_id, alt_image_url: card.version === "alt" ? card.image_url : null }} />
+      ) : (
+        <span className="flex aspect-[5/7] w-full items-center justify-center rounded-lg border-2 border-dashed border-foreground/40 bg-background/40 font-display text-base text-muted-foreground">
+          {role}
+        </span>
+      )}
+    </span>
   );
 }
