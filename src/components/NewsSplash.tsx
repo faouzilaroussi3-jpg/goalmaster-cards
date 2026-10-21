@@ -13,7 +13,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
 
-type Slide =
+export type Slide =
   | { kind: "card" | "rarity" | "pack"; a: Announcement; fresh: boolean }
   | { kind: "modes" }
   | { kind: "stars" };
@@ -27,7 +27,6 @@ export function NewsSplash() {
   const open = useSyncExternalStore(newsSplash.subscribe, newsSplash.get, () => false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: news } = useNews();
-  const { data: starRows = [] } = useStarCards();
   const autoOpened = useRef(false);
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -43,20 +42,7 @@ export function NewsSplash() {
     newsSplash.set(true);
   }, [session, news, unseen.length, pathname]);
 
-  const stars = useMemo(() => {
-    const seen = new Set<string>();
-    return starRows.filter((c) => rarityMeta(c.rarity).play !== "secret_ultimate" && !seen.has(c.name) && seen.add(c.name)).slice(0, 5);
-  }, [starRows]);
-
-  const slides = useMemo<Slide[]>(() => {
-    const fresh = new Set(unseen.map((a) => a.id));
-    const list = (unseen.length ? unseen : (news?.list ?? []).slice(0, 3)).slice(0, 5);
-    return [
-      ...list.map((a) => ({ kind: a.kind, a, fresh: fresh.has(a.id) }) as Slide),
-      { kind: "modes" } as Slide,
-      ...(stars.length ? [{ kind: "stars" } as Slide] : []),
-    ];
-  }, [unseen, news, stars.length]);
+  const { slides, stars } = useNewsSlides();
 
   useEffect(() => { if (open) { setI(0); sfx.sparkle(); } }, [open]);
 
@@ -125,6 +111,30 @@ export function NewsSplash() {
   );
 }
 
+
+/** Slides shared by the welcome screen and the looping banner on the Packs page. */
+export function useNewsSlides() {
+  const { data: news } = useNews();
+  const { data: starRows = [] } = useStarCards();
+  const unseen = useMemo(() => (news ? unseenNews(news.list, news.seenAt) : []), [news]);
+  const stars = useMemo(() => {
+    const seen = new Set<string>();
+    return starRows.filter((c) => rarityMeta(c.rarity).play !== "secret_ultimate" && !seen.has(c.name) && seen.add(c.name)).slice(0, 5);
+  }, [starRows]);
+
+  const slides = useMemo<Slide[]>(() => {
+    const fresh = new Set(unseen.map((a) => a.id));
+    const list = (unseen.length ? unseen : (news?.list ?? []).slice(0, 3)).slice(0, 5);
+    return [
+      ...list.map((a) => ({ kind: a.kind, a, fresh: fresh.has(a.id) }) as Slide),
+      { kind: "modes" } as Slide,
+      ...(stars.length ? [{ kind: "stars" } as Slide] : []),
+    ];
+  }, [unseen, news, stars.length]);
+
+  return { slides, stars };
+}
+
 function Ribbon({ children }: { children: React.ReactNode }) {
   return <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-primary-foreground"><Sparkles className="h-3.5 w-3.5" />{children}</span>;
 }
@@ -153,7 +163,7 @@ function CardFan({ cards }: { cards: CardData[] }) {
   );
 }
 
-function SlideBody({ slide, stars, onGo }: { slide: Slide; stars: CardData[]; onGo: () => void }) {
+export function SlideBody({ slide, stars, onGo }: { slide: Slide; stars: CardData[]; onGo: () => void }) {
   if (slide.kind === "modes") {
     return (
       <>

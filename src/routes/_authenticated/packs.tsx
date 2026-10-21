@@ -15,6 +15,7 @@ import { SwipePack } from "@/components/SwipePack";
 import { LivePulls } from "@/components/LivePulls";
 import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
+import { NewsBanner } from "@/components/NewsBanner";
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
@@ -116,6 +117,7 @@ function PacksPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-5xl text-gold">Mes packs</h1>
       <p className="text-muted-foreground">Choisis un pack, puis arrache le haut en glissant de gauche à droite.</p>
+      <NewsBanner />
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Choix du pack">
         {packs?.map((p) => (
