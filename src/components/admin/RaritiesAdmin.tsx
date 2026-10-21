@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Power, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { PlayerCard } from "@/components/PlayerCard";
 import { RARITIES_QUERY_KEY } from "@/components/RarityRegistry";
 import { CARD_SHAPES, cleanExtras, effectBase, effectStyle, rarityMeta, useRarities, type CardData, type CardShape, type RarityEffect, type RarityInfo } from "@/lib/rarity";
@@ -33,7 +34,7 @@ export function RaritiesAdmin() {
   const qc = useQueryClient();
   const { data: cards = [] } = useQuery({
     queryKey: ["admin-rarity-cards"],
-    queryFn: async () => (await supabase.from("cards").select("id, rarity, image_url, name, club, nationality, pos, rating").order("rating", { ascending: false })).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("cards").select("id, rarity, image_url, name, club, nationality, pos, rating").order("rating", { ascending: false }).order("id").range(from, to)),
   });
   const { data: coinRows = [] } = useQuery({
     queryKey: ["admin-rarity-rows"],

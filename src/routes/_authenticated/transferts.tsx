@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Clock, Coins, Gavel, Plus, Search, Tag, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, useRarities, VERSION_LABEL } from "@/lib/rarity";
 import { AUCTION_DURATIONS, bidCost, formatTimeLeft, MIN_START_PRICE, minBid, sellerPayout, TRANSFER_TAX } from "@/lib/transfer-market";
@@ -335,9 +336,8 @@ function SellDialog({ open, onClose, onListed }: { open: boolean; onClose: () =>
     queryKey: ["my-copies", uid],
     enabled: open,
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_cards").select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid);
-      if (error) throw error;
-      return (data ?? []) as unknown as OwnedCopy[];
+      const data = await fetchAll((from, to) => supabase.from("user_cards").select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid).order("id").range(from, to));
+      return data as unknown as OwnedCopy[];
     },
   });
   const { data: listed = [] } = useQuery({

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, useRarities } from "@/lib/rarity";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -32,11 +33,11 @@ function CollectionPage() {
   const showMissingColors = !!profile?.isAdmin && adminColors;
   const { data: catalog = [] } = useQuery({
     queryKey: ["catalog"],
-    queryFn: async () => (await supabase.from("cards").select("*").eq("active", true)).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("cards").select("*").eq("active", true).order("id").range(from, to)),
   });
   const { data: owned = [] } = useQuery({
     queryKey: ["my-cards", uid],
-    queryFn: async () => (await supabase.from("user_cards").select("card_id, version").eq("user_id", uid)).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("user_cards").select("card_id, version").eq("user_id", uid).order("id").range(from, to)),
   });
 
   const [view, setView] = useState<"owned" | "missing" | "all">("owned");

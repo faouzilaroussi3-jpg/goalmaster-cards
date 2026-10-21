@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 
@@ -38,9 +39,9 @@ function ProfilePage() {
   const { data: stats } = useQuery({
     queryKey: ["my-stats", uid],
     queryFn: async () => {
-      const [{ count: openings }, { data: cards }] = await Promise.all([
+      const [{ count: openings }, cards] = await Promise.all([
         supabase.from("pack_openings").select("id", { count: "exact", head: true }).eq("user_id", uid),
-        supabase.from("user_cards").select("version, cards(rarity)").eq("user_id", uid),
+        fetchAll((from, to) => supabase.from("user_cards").select("version, cards(rarity)").eq("user_id", uid).order("id").range(from, to)),
       ]);
       const c = cards ?? [];
       return {

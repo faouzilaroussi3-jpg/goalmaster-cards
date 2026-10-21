@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Eraser, Save, Wand2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth } from "@/lib/auth";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import {
@@ -44,10 +45,8 @@ function TeamBuilderPage() {
   const { data: copies = [], isLoading } = useQuery({
     queryKey: ["my-copies", uid],
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_cards")
-        .select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid);
-      if (error) throw error;
-      return (data ?? []) as unknown as OwnedCopy[];
+      const data = await fetchAll((from, to) => supabase.from("user_cards").select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid).order("id").range(from, to));
+      return data as unknown as OwnedCopy[];
     },
   });
   const { data: saved, isLoading: savedLoading } = useQuery({

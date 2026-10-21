@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageUp, Loader2, Pencil, Replace, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import type { Tables } from "@/integrations/supabase/types";
 import { rarityMeta, useRarities } from "@/lib/rarity";
 import { CARD_PHOTO_BUCKET, cardPhotoUrl, fitWithin, rarityEffects } from "@/lib/card-photo";
@@ -48,7 +49,7 @@ export function CardsAdmin() {
   const qc = useQueryClient();
   const { data: cards = [] } = useQuery({
     queryKey: ["admin-cards"],
-    queryFn: async () => (await supabase.from("cards").select("*").order("rating", { ascending: false }).order("name")).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("cards").select("*").order("rating", { ascending: false }).order("name").order("id").range(from, to)),
   });
   const { data: stats = {} } = useQuery({
     queryKey: ["admin-card-stats"],
