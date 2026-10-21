@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthProvider } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
+import { NewsSplash } from "@/components/NewsSplash";
 import { Toaster } from "@/components/ui/sonner";
 import { installGlobalSounds } from "@/lib/sfx";
 import { RarityRegistry } from "@/components/RarityRegistry";
@@ -119,6 +120,7 @@ function RootComponent() {
         <main className="pb-16">
           <Outlet />
         </main>
+        <NewsSplash />
         <Toaster richColors position="top-center" />
       </AuthProvider>
     </QueryClientProvider>

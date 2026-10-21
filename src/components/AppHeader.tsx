@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
+import { Bell, Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
@@ -10,6 +10,8 @@ import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
 import { periodicSummary } from "@/lib/periodic-challenges";
 import { giftSummary } from "@/lib/admin-grants";
+import { newsSplash, unseenNews } from "@/lib/news";
+import { useNews } from "@/lib/news-query";
 
 const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
@@ -33,6 +35,8 @@ export function AppHeader() {
   const { data: friendList } = useFriends();
   const friendTodo = splitFriends(friendList ?? []).incoming.length;
   const unread = unreadTotal(friendList ?? []);
+  const { data: news } = useNews();
+  const newsCount = news ? unseenNews(news.list, news.seenAt).length : 0;
   const pathname = useRouterState({ select: (st) => st.location.pathname });
   const pathRef = useRef(pathname);
   pathRef.current = pathname;
@@ -92,6 +96,22 @@ export function AppHeader() {
     const channel = supabase
       .channel(`gifts-${uid}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_grants", filter: `user_id=eq.${uid}` }, () => { announce(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [uid, qc]);
+
+  // Nouveautés: new packs / cards / rarities are announced live to everyone signed in.
+  useEffect(() => {
+    if (!uid) return;
+    const channel = supabase
+      .channel(`news-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, (p) => {
+        qc.invalidateQueries({ queryKey: ["news"] });
+        const row = p.new as { title?: string; body?: string | null } | null;
+        if (!row?.title) return;
+        sfx.sparkle();
+        toast(row.title, { description: row.body ?? undefined, duration: 9000, action: { label: "Voir", onClick: () => newsSplash.set(true) } });
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [uid, qc]);
@@ -203,6 +223,13 @@ export function AppHeader() {
           <SoundToggle />
           {session ? (
             <>
+              <button type="button" onClick={() => newsSplash.set(true)} aria-label={newsCount ? `${newsCount} nouveauté${newsCount > 1 ? "s" : ""}` : "Nouveautés"} title="Nouveautés"
+                className="relative rounded-full p-2 text-muted-foreground transition hover:text-foreground">
+                <Bell className={newsCount ? "h-4 w-4 text-primary" : "h-4 w-4"} />
+                {newsCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{newsCount > 9 ? "9+" : newsCount}</span>
+                )}
+              </button>
               <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm font-bold text-primary">
                 <Coins className="h-4 w-4" /> {profile?.coins ?? "…"}
               </span>
