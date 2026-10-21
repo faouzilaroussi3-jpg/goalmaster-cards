@@ -907,3 +907,4 @@
 .gm-back[data-shape="wanted"] .gm-back-pattern { opacity: .25; }
 .gm-back[data-shape="wanted"] .gm-back-frame { border-radius: 0; border-color: oklch(0.3 0.05 55 / .6); }
 .gm-back[data-shape="wanted"] .gm-back-word { color: oklch(0.27 0.045 55); font-family: "Rye", var(--font-display); }
+.gm-back[data-shape="polaroid"][data-image] .gm-back-pattern { background-color: transparent; }
