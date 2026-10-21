@@ -139,3 +139,18 @@ export function useMyMatches() {
     },
   });
 }
+
+/** Steered matches (against the computer or a friend live): invites, games under way and recent results. */
+export function useMyLiveMatches() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["live-matches", session?.user.id],
+    enabled: !!session,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_live_matches");
+      if (error) throw error;
+      return (data ?? []) as import("@/lib/live-match").MyLiveMatch[];
+    },
+  });
+}

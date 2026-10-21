@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, useRarities } from "@/lib/rarity";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -32,11 +33,11 @@ function CollectionPage() {
   const showMissingColors = !!profile?.isAdmin && adminColors;
   const { data: catalog = [] } = useQuery({
     queryKey: ["catalog"],
-    queryFn: async () => (await supabase.from("cards").select("*").eq("active", true)).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("cards").select("*").eq("active", true).order("id").range(from, to)),
   });
   const { data: owned = [] } = useQuery({
     queryKey: ["my-cards", uid],
-    queryFn: async () => (await supabase.from("user_cards").select("card_id, version").eq("user_id", uid)).data ?? [],
+    queryFn: () => fetchAll((from, to) => supabase.from("user_cards").select("card_id, version").eq("user_id", uid).order("id").range(from, to)),
   });
 
   const [view, setView] = useState<"owned" | "missing" | "all">("owned");
@@ -46,6 +47,9 @@ function CollectionPage() {
   const [rarity, setRarity] = useState("");
   const [version, setVersion] = useState("");
   const [sortDesc, setSortDesc] = useState(true);
+  // 3 000+ cards: show them in batches so the page stays smooth.
+  const [limit, setLimit] = useState(60);
+  useEffect(() => setLimit(60), [view, q, club, country, rarity, version, sortDesc]);
   const [viewing, setViewing] = useState<{ card: (typeof catalog)[number]; version: string; count: number } | null>(null);
 
   const counts = useMemo(() => {
@@ -85,6 +89,7 @@ function CollectionPage() {
   const clubs = [...new Set(catalog.map((c) => c.club))].sort();
   const countries = [...new Set(catalog.map((c) => c.nationality))].sort();
   const uniqueOwned = entries.filter((e) => e.count > 0).length;
+  const rarityById = useMemo(() => new Map(catalog.map((c) => [c.id, c.rarity])), [catalog]);
   // Secret Ultimate cards only come back for their owners (and the admin), so the tier stays invisible until pulled.
   const hasUltimate = catalog.some((c) => c.rarity === "secret_ultimate");
   const visibleRarities = rarities.filter((r) => (r.key !== "secret_ultimate" || hasUltimate) && (r.active || profile?.isAdmin || entries.some((e) => e.card.rarity === r.key)));
@@ -99,7 +104,7 @@ function CollectionPage() {
         <Stat label="Uniques" value={`${uniqueOwned}/${entries.length}`} />
         <Stat label="Complétion" value={`${entries.length ? Math.round((uniqueOwned / entries.length) * 100) : 0}%`} />
         {visibleRarities.slice(2).map((r) => (
-          <Stat key={r.key} label={r.label} value={owned.filter((o) => catalog.find((c) => c.id === o.card_id)?.rarity === r.key).length} />
+          <Stat key={r.key} label={r.label} value={owned.filter((o) => rarityById.get(o.card_id) === r.key).length} />
         ))}
       </div>
 
@@ -141,7 +146,7 @@ function CollectionPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-        {filtered.map((e) => (
+        {filtered.slice(0, limit).map((e) => (
           <button key={`${e.card.id}:${e.version}`} type="button" data-sfx="card" onClick={() => setViewing(e)} className="block w-full rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" aria-label={`Voir ${e.card.name} en grand`}>
             <span className="relative block">
               <PlayerCard card={{ ...e.card, version: e.version }} missing={e.count === 0 && !showMissingColors} count={e.count} />
@@ -152,6 +157,13 @@ function CollectionPage() {
           </button>
         ))}
       </div>
+      {filtered.length > limit && (
+        <div className="mt-6 flex justify-center">
+          <button type="button" onClick={() => setLimit(limit + 60)} className="rounded-full bg-secondary px-6 py-2 text-sm font-bold text-foreground hover:bg-secondary/80">
+            Voir plus ({filtered.length - limit} restantes)
+          </button>
+        </div>
+      )}
       {!filtered.length && <p className="mt-6 text-muted-foreground">Aucune carte ne correspond.</p>}
       <PhotoCredits cards={catalog} />
       <CardViewer card={viewing ? { ...viewing.card, version: viewing.version } : null} missing={viewing?.count === 0} showColor={showMissingColors} count={viewing?.count} onClose={() => setViewing(null)} />

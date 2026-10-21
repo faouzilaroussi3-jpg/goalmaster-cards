@@ -10,7 +10,7 @@ export function RarityRegistry() {
   const { data } = useQuery({
     queryKey: RARITIES_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from("rarities").select("key, label, short_label, tier, rank, effect, extra_effects, color, builtin, active").order("rank");
+      const { data, error } = await supabase.from("rarities").select("key, label, short_label, tier, rank, effect, extra_effects, color, builtin, active, shape").order("rank");
       if (error) throw error;
       return (data ?? []) as RarityRow[];
     },

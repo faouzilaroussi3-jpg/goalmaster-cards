@@ -4,8 +4,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Coins, FastForward, Timer } from "lucide-react";
-import packClassic from "@/assets/pack-classic.png";
-import packPremium from "@/assets/pack-premium.png";
+import { PackFx, packImageOf, packImgStyle } from "@/components/PackArt";
+import { packLookOf } from "@/lib/pack-look";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useMyPacks, useProfile } from "@/lib/auth";
 import { newlyClaimable, type Challenge } from "@/lib/challenges";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
     meta: [
       { title: "Mes packs — Goalmaster" },
-      { name: "description", content: "Ouvrez vos boosters Classique et Premium." },
+      { name: "description", content: "Ouvrez vos boosters Goalmaster." },
       { property: "og:title", content: "Mes packs — Goalmaster" },
       { property: "og:description", content: "Ouvrez vos boosters Goalmaster." },
       { property: "og:type", content: "website" },
@@ -30,7 +30,6 @@ export const Route = createFileRoute("/_authenticated/packs")({
   component: PacksPage,
 });
 
-const IMG: Record<string, string> = { classic: packClassic, premium: packPremium };
 
 function useCountdown(target: string | null) {
   const [now, setNow] = useState(Date.now());
@@ -130,9 +129,9 @@ function PacksPage() {
           <p className="text-sm text-muted-foreground">{selected.description}</p>
           <SwipePack
             key={`${selected.pack_key}-${round}`}
-            image={IMG[selected.pack_key] ?? packClassic}
+            image={packImageOf(packLookOf(selected))}
             name={selected.name}
-            premium={selected.pack_key === "premium"}
+            look={packLookOf(selected)}
             disabled={busy || selected.count < 1}
             onOpen={() => open(selected.pack_key)}
           />
@@ -156,7 +155,7 @@ function PacksPage() {
         </div>
       )}
       <LivePulls />
-      {opening && <PackOpening packImage={IMG[opening.key] ?? packClassic} result={opening.result} instant={opening.instant} onClose={close} />}
+      {opening && <PackOpening packImage={packImageOf(packLookOf(packs?.find((p) => p.pack_key === opening.key) ?? { pack_key: opening.key }))} result={opening.result} instant={opening.instant} onClose={close} />}
     </div>
   );
 }
@@ -166,7 +165,7 @@ function PackChoice({
   selected,
   onSelect,
 }: {
-  p: { pack_key: string; name: string; count: number; max_stock: number; next_at: string };
+  p: { pack_key: string; name: string; count: number; max_stock: number; next_at: string; art?: string | null; tint?: string | null; effect?: string | null; image_url?: string | null };
   selected: boolean;
   onSelect: () => void;
 }) {
@@ -181,7 +180,9 @@ function PackChoice({
         selected ? "ring-2 ring-primary shadow-gold" : "opacity-70 hover:opacity-100",
       )}
     >
-      <img src={IMG[p.pack_key] ?? packClassic} alt="" width={768} height={1152} className="w-14 shrink-0" />
+      <PackFx look={packLookOf(p)} active={false} className="w-14 shrink-0">
+        <img src={packImageOf(packLookOf(p))} alt="" width={768} height={1152} className="w-full" style={packImgStyle(packLookOf(p))} />
+      </PackFx>
       <div className="min-w-0 flex-1">
         <p className="font-display text-2xl leading-none">{p.name}</p>
         <p className="mt-1 font-display text-xl text-gold">

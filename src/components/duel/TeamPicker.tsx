@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAll } from "@/lib/fetch-all";
 import { useAuth } from "@/lib/auth";
 import { rarityMeta, useRarities } from "@/lib/rarity";
 import { cardPower, DECK_BUDGET, DECK_SIZE, deckCost, deckProblem, duelCost, THEMES, type Theme } from "@/lib/duel";
@@ -37,10 +38,8 @@ export function TeamPicker({ themes, submitLabel, busy, onSubmit }: {
   const { data: copies = [], isLoading } = useQuery({
     queryKey: ["my-copies", uid],
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_cards")
-        .select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid);
-      if (error) throw error;
-      return (data ?? []) as unknown as OwnedCopy[];
+      const data = await fetchAll((from, to) => supabase.from("user_cards").select("id, version, cards(id, name, club, nationality, pos, rating, rarity, image_url, alt_image_url)").eq("user_id", uid).order("id").range(from, to));
+      return data as unknown as OwnedCopy[];
     },
   });
 

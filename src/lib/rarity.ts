@@ -67,6 +67,24 @@ export function effectStyle(effect: string): RarityStyle | null {
  * A rarity as the UI sees it. `fx` is the built-in visual effect its cards wear (built-ins wear their own),
  * `tier` the visual intensity of that effect, `rank` its place from least to most rare, `color` an optional tint.
  */
+/** Card outline per rarity (a look only; mixes with every effect). Mirrors rarities_shape_check. */
+export const CARD_SHAPES = [
+  { key: "standard", label: "Classique", hint: "Rectangle aux coins légèrement arrondis." },
+  { key: "wanted", label: "Wanted arrachée", hint: "Vieil avis de recherche en papier jauni, bords déchirés, punaise." },
+  { key: "torn", label: "Papier déchiré", hint: "Carte aux bords arrachés à la main." },
+  { key: "round", label: "Ronde", hint: "Médaillon ovale." },
+  { key: "rounded", label: "Très arrondie", hint: "Coins très ronds, style galet." },
+  { key: "shield", label: "Écusson", hint: "Blason de club, pointe en bas." },
+  { key: "hexagon", label: "Hexagone", hint: "Six côtés, style alvéole." },
+  { key: "diamond", label: "Octogone", hint: "Coins coupés à 45°." },
+  { key: "arch", label: "Arche", hint: "Haut en arc de vitrail." },
+  { key: "ticket", label: "Ticket", hint: "Billet de match avec encoches sur les côtés." },
+  { key: "stamp", label: "Timbre", hint: "Bords dentelés de timbre-poste." },
+  { key: "polaroid", label: "Polaroid", hint: "Photo instantanée au cadre blanc." },
+] as const;
+export type CardShape = (typeof CARD_SHAPES)[number]["key"];
+export const isCardShape = (k: unknown): k is CardShape => CARD_SHAPES.some((x) => x.key === k);
+
 export interface RarityInfo {
   key: string;
   label: string;
@@ -84,6 +102,8 @@ export interface RarityInfo {
   builtin: boolean;
   /** Switched-off rarities no longer drop from packs (cards already owned are kept). */
   active: boolean;
+  /** Card outline (look only). */
+  shape: CardShape;
 }
 
 /** Row shape of the rarities table. */
@@ -98,9 +118,10 @@ export interface RarityRow {
   color: string | null;
   builtin: boolean;
   active?: boolean;
+  shape?: string | null;
 }
 
-const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, extras: [], color: null, builtin: true, active: true }));
+const BUILTIN: RarityInfo[] = RARITIES.map((r) => ({ ...r, rank: r.tier, fx: r.key, play: r.key, style: null, extras: [], color: null, builtin: true, active: true, shape: "standard" as CardShape }));
 const isBuiltinKey = (k: string): k is RarityKey => RARITIES.some((r) => r.key === k);
 
 let current: RarityInfo[] = BUILTIN;
@@ -121,6 +142,7 @@ export function toRarityInfo(row: RarityRow): RarityInfo {
     color: row.color,
     builtin: row.builtin,
     active: row.active !== false,
+    shape: isCardShape(row.shape) ? row.shape : "standard",
   };
 }
 
@@ -146,7 +168,7 @@ export function useRarities(): RarityInfo[] {
 }
 
 export function rarityMeta(key: string): RarityInfo {
-  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, extras: [], color: null, builtin: false, active: true };
+  return current.find((r) => r.key === key) ?? BUILTIN.find((r) => r.key === key) ?? { key, label: key, short: "?", tier: 0, rank: 0, fx: "common", play: "common", style: null, extras: [], color: null, builtin: false, active: true, shape: "standard" };
 }
 
 /** Reactive rarityMeta for components that render cards. */

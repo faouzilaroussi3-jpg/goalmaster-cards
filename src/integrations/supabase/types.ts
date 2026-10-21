@@ -638,6 +638,84 @@ export type Database = {
           },
         ]
       }
+      live_matches: {
+        Row: {
+          away_goals: number
+          away_id: string | null
+          away_report: Json | null
+          away_reward: number | null
+          away_seen_at: string | null
+          away_team: Json | null
+          bot_level: string | null
+          created_at: string
+          disputed: boolean
+          finished_at: string | null
+          forfeit_by: string | null
+          home_goals: number
+          home_id: string
+          home_report: Json | null
+          home_reward: number | null
+          home_seen_at: string | null
+          home_team: Json
+          id: string
+          mode: string
+          result: string | null
+          started_at: string | null
+          status: string
+          winner_id: string | null
+        }
+        Insert: {
+          away_goals?: number
+          away_id?: string | null
+          away_report?: Json | null
+          away_reward?: number | null
+          away_seen_at?: string | null
+          away_team?: Json | null
+          bot_level?: string | null
+          created_at?: string
+          disputed?: boolean
+          finished_at?: string | null
+          forfeit_by?: string | null
+          home_goals?: number
+          home_id: string
+          home_report?: Json | null
+          home_reward?: number | null
+          home_seen_at?: string | null
+          home_team: Json
+          id?: string
+          mode: string
+          result?: string | null
+          started_at?: string | null
+          status?: string
+          winner_id?: string | null
+        }
+        Update: {
+          away_goals?: number
+          away_id?: string | null
+          away_report?: Json | null
+          away_reward?: number | null
+          away_seen_at?: string | null
+          away_team?: Json | null
+          bot_level?: string | null
+          created_at?: string
+          disputed?: boolean
+          finished_at?: string | null
+          forfeit_by?: string | null
+          home_goals?: number
+          home_id?: string
+          home_report?: Json | null
+          home_reward?: number | null
+          home_seen_at?: string | null
+          home_team?: Json
+          id?: string
+          mode?: string
+          result?: string | null
+          started_at?: string | null
+          status?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       manager_teams: {
         Row: {
           bench: string[]
@@ -911,9 +989,13 @@ export type Database = {
       pack_types: {
         Row: {
           active: boolean
+          archived: boolean
+          art: string
           bonus_rates: Json
           description: string | null
+          effect: string
           id: string
+          image_url: string | null
           initial_stock: number
           key: string
           max_stock: number
@@ -923,14 +1005,19 @@ export type Database = {
           slot_count: number
           slot_rates: Json
           sort_order: number
+          tint: string | null
           version_rates: Json
           xp_reward: number
         }
         Insert: {
           active?: boolean
+          archived?: boolean
+          art?: string
           bonus_rates: Json
           description?: string | null
+          effect?: string
           id?: string
+          image_url?: string | null
           initial_stock?: number
           key: string
           max_stock?: number
@@ -940,14 +1027,19 @@ export type Database = {
           slot_count?: number
           slot_rates: Json
           sort_order?: number
+          tint?: string | null
           version_rates?: Json
           xp_reward?: number
         }
         Update: {
           active?: boolean
+          archived?: boolean
+          art?: string
           bonus_rates?: Json
           description?: string | null
+          effect?: string
           id?: string
+          image_url?: string | null
           initial_stock?: number
           key?: string
           max_stock?: number
@@ -957,6 +1049,7 @@ export type Database = {
           slot_count?: number
           slot_rates?: Json
           sort_order?: number
+          tint?: string | null
           version_rates?: Json
           xp_reward?: number
         }
@@ -1111,6 +1204,7 @@ export type Database = {
           key: string
           label: string
           rank: number
+          shape: string
           short_label: string
           tier: number
         }
@@ -1125,6 +1219,7 @@ export type Database = {
           key: string
           label: string
           rank?: number
+          shape?: string
           short_label: string
           tier: number
         }
@@ -1139,6 +1234,7 @@ export type Database = {
           key?: string
           label?: string
           rank?: number
+          shape?: string
           short_label?: string
           tier?: number
         }
@@ -1232,6 +1328,7 @@ export type Database = {
           period_start: string
         }[]
       }
+      _draw_card: { Args: { _exclude: string[]; _w: Json }; Returns: string }
       _draw_key: { Args: { _w: Json }; Returns: string }
       _duel_cost: { Args: { _rarity: string }; Returns: number }
       _duel_deck: { Args: { _ids: string[]; _uid: string }; Returns: Json }
@@ -1253,6 +1350,17 @@ export type Database = {
       _effect_base: { Args: { _effect: string }; Returns: string }
       _finish_duel: {
         Args: { _forfeit: boolean; _id: string; _winner: string }
+        Returns: undefined
+      }
+      _lm_bot_team: { Args: { _level: string }; Returns: Json }
+      _lm_finish: {
+        Args: {
+          _ag: number
+          _disputed?: boolean
+          _forfeit: string
+          _hg: number
+          _id: string
+        }
         Returns: undefined
       }
       _mm_cards: { Args: { _ids: string[]; _uid: string }; Returns: Json }
@@ -1294,12 +1402,14 @@ export type Database = {
       _rarity_fx: { Args: { _key: string }; Returns: string }
       _settle_auctions: { Args: never; Returns: undefined }
       _settle_duels: { Args: never; Returns: undefined }
+      _settle_live_matches: { Args: never; Returns: undefined }
       _settle_matches: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
       accept_duel: {
         Args: { _duel_id: string; _user_card_ids: string[] }
         Returns: string
       }
+      accept_live_match: { Args: { _match_id: string }; Returns: string }
       accept_match: { Args: { _match_id: string }; Returns: string }
       admin_card_stats: {
         Args: never
@@ -1321,6 +1431,7 @@ export type Database = {
         }
         Returns: string
       }
+      admin_delete_pack: { Args: { _pack_id: string }; Returns: string }
       admin_delete_rarity: {
         Args: { _key: string; _move_to: string }
         Returns: number
@@ -1356,6 +1467,10 @@ export type Database = {
       }
       admin_set_rarity_active: {
         Args: { _active: boolean; _key: string }
+        Returns: undefined
+      }
+      admin_set_rarity_shape: {
+        Args: { _key: string; _shape: string }
         Returns: undefined
       }
       admin_update_rarity: {
@@ -1394,6 +1509,7 @@ export type Database = {
           packs: number
         }[]
       }
+      claim_live_forfeit: { Args: { _match_id: string }; Returns: undefined }
       claim_periodic_challenge: {
         Args: { _challenge_id: string }
         Returns: Json
@@ -1406,6 +1522,7 @@ export type Database = {
         Args: { _opponent: string; _user_card_ids: string[] }
         Returns: string
       }
+      create_live_match: { Args: { _opponent: string }; Returns: string }
       create_match: { Args: { _opponent: string }; Returns: string }
       get_auctions: {
         Args: { _scope?: string }
@@ -1497,6 +1614,7 @@ export type Database = {
           username: string
         }[]
       }
+      get_live_match: { Args: { _match_id: string }; Returns: Json }
       get_match: { Args: { _match_id: string }; Returns: Json }
       get_match_leaderboard: {
         Args: { _limit?: number }
@@ -1560,6 +1678,24 @@ export type Database = {
           user_card_id: string
         }[]
       }
+      get_my_live_matches: {
+        Args: never
+        Returns: {
+          bot_level: string
+          created_at: string
+          finished_at: string
+          incoming: boolean
+          is_home: boolean
+          match_id: string
+          mode: string
+          my_goals: number
+          my_reward: number
+          opponent_name: string
+          result: string
+          status: string
+          their_goals: number
+        }[]
+      }
       get_my_matches: {
         Args: never
         Returns: {
@@ -1587,14 +1723,19 @@ export type Database = {
       get_my_packs: {
         Args: never
         Returns: {
+          art: string
           count: number
           description: string
+          effect: string
+          image_url: string
           max_stock: number
           name: string
           next_at: string
           pack_key: string
           price_coins: number
           regen_minutes: number
+          slot_count: number
+          tint: string
         }[]
       }
       get_my_periodic_challenges: {
@@ -1662,7 +1803,9 @@ export type Database = {
         Returns: boolean
       }
       leave_duel: { Args: { _duel_id: string }; Returns: undefined }
+      leave_live_match: { Args: { _match_id: string }; Returns: undefined }
       leave_match: { Args: { _match_id: string }; Returns: undefined }
+      live_ping: { Args: { _match_id: string }; Returns: string }
       mark_messages_read: { Args: { _from: string }; Returns: undefined }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
       place_bid: {
@@ -1671,6 +1814,10 @@ export type Database = {
       }
       play_card: { Args: { _duel_id: string; _slot: number }; Returns: Json }
       remove_friend: { Args: { _friendship_id: string }; Returns: undefined }
+      report_live_result: {
+        Args: { _away: number; _home: number; _match_id: string }
+        Returns: undefined
+      }
       respond_friend_request: {
         Args: { _accept: boolean; _friendship_id: string }
         Returns: undefined
@@ -1695,6 +1842,7 @@ export type Database = {
       }
       send_friend_request: { Args: { _to: string }; Returns: string }
       send_message: { Args: { _body: string; _to: string }; Returns: string }
+      start_bot_match: { Args: { _level: string }; Returns: string }
       submit_halftime: {
         Args: { _match_id: string; _subs: Json; _tactic: string }
         Returns: undefined

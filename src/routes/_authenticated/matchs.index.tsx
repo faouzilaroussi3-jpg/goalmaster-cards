@@ -10,6 +10,7 @@ import { formatTimeLeft } from "@/lib/transfer-market";
 import { Button } from "@/components/ui/button";
 import { NewMatchDialog } from "@/components/match/NewMatchDialog";
 import { MatchLeaderboard } from "@/components/MatchLeaderboard";
+import { PlayYourself } from "@/components/match/PlayYourself";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/matchs/")({
@@ -111,6 +112,8 @@ function MatchesPage() {
           <Button asChild className="bg-gold text-primary-foreground"><Link to="/matchs/equipe">Composer mon équipe</Link></Button>
         </div>
       )}
+
+      <PlayYourself noTeam={noTeam} />
 
       <Rules />
 
