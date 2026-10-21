@@ -16,6 +16,7 @@ import { LivePulls } from "@/components/LivePulls";
 import { sfx } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
 import { NewsBanner } from "@/components/NewsBanner";
+import { cardBackOf } from "@/lib/card-back";
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
@@ -157,7 +158,7 @@ function PacksPage() {
         </div>
       )}
       <LivePulls />
-      {opening && <PackOpening packImage={packImageOf(packLookOf(packs?.find((p) => p.pack_key === opening.key) ?? { pack_key: opening.key }))} result={opening.result} instant={opening.instant} onClose={close} />}
+      {opening && <PackOpening packImage={packImageOf(packLookOf(packs?.find((p) => p.pack_key === opening.key) ?? { pack_key: opening.key }))} back={cardBackOf(packs?.find((p) => p.pack_key === opening.key)?.card_back)} result={opening.result} instant={opening.instant} onClose={close} />}
     </div>
   );
 }

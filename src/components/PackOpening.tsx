@@ -4,6 +4,7 @@ import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CardBack } from "@/components/CardBack";
+import type { CardBackLook } from "@/lib/card-back";
 import { RARITY_VAR } from "@/lib/card-reveal";
 import { revealTiming, type RareFx } from "@/lib/rare-reveal";
 import { RareRevealFx } from "@/components/RareRevealFx";
@@ -41,11 +42,14 @@ function stackOffset(depth: number) {
 
 export function PackOpening({
   packImage,
+  back,
   result,
   instant = false,
   onClose,
 }: {
   packImage: string;
+  /** The pack's own card back (colour, effects, shape, picture). */
+  back?: CardBackLook | null;
   result: OpenResult | null;
   /** Quick open: skip the face-down stack and show the whole pack straight away. */
   instant?: boolean;
@@ -187,7 +191,7 @@ export function PackOpening({
                   className="reveal-slot absolute inset-0"
                   style={{ transform: `translate(${o.x}px, ${o.y}px) rotate(${o.r}deg)`, zIndex: 10 - depth }}
                 >
-                  <CardBack bonus={c.is_bonus} />
+                  <CardBack look={back} bonus={c.is_bonus} />
                 </div>
               );
             })}
@@ -195,7 +199,7 @@ export function PackOpening({
             {/* The first card waits face down at the front before the first tap. */}
             {turned === 0 && cards[0] && (
               <div className="reveal-slot absolute inset-0" style={{ zIndex: 20 }}>
-                <CardBack bonus={cards[0].is_bonus} className="gm-back-idle" />
+                <CardBack look={back} bonus={cards[0].is_bonus} className="gm-back-idle" />
               </div>
             )}
 
@@ -219,7 +223,7 @@ export function PackOpening({
                   {(front.tier >= 5 || fx) && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }} />}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
-                      <CardBack bonus={front.is_bonus} className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
+                      <CardBack look={back} bonus={front.is_bonus} className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
                     </div>
                     <div className="flip-face flip-back">
                       <PlayerCard card={front} />
