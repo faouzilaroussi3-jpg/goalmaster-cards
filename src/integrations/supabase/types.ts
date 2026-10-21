@@ -81,6 +81,57 @@ export type Database = {
           },
         ]
       }
+      announcement_reads: {
+        Row: {
+          seen_at: string
+          user_id: string
+        }
+        Insert: {
+          seen_at?: string
+          user_id: string
+        }
+        Update: {
+          seen_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      announcements: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          item_count: number
+          items: Json
+          kind: string
+          ref: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          items?: Json
+          kind: string
+          ref?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          items?: Json
+          kind?: string
+          ref?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       auction_bids: {
         Row: {
           amount: number
@@ -1807,6 +1858,7 @@ export type Database = {
       leave_match: { Args: { _match_id: string }; Returns: undefined }
       live_ping: { Args: { _match_id: string }; Returns: string }
       mark_messages_read: { Args: { _from: string }; Returns: undefined }
+      mark_news_seen: { Args: never; Returns: string }
       open_pack: { Args: { _pack_key: string }; Returns: Json }
       place_bid: {
         Args: { _amount: number; _auction_id: string }
