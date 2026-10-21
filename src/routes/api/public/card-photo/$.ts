@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/public/card-photo/$")({
         if (error || !data) return new Response("Not found", { status: 404 });
         return new Response(data, {
           headers: {
-            "Content-Type": file.endsWith(".webp") ? "image/webp" : "image/jpeg",
+            "Content-Type": file.endsWith(".webp") ? "image/webp" : file.endsWith(".png") ? "image/png" : "image/jpeg",
             "Cache-Control": "public, max-age=31536000, immutable",
             "X-Content-Type-Options": "nosniff",
           },

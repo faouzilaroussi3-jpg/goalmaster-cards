@@ -6,7 +6,8 @@ describe("card photo uploads", () => {
     expect(isCardPhotoFile("0b0e1f2a-3b4c-4d5e-8f60-718293a4b5c6.jpg")).toBe(true);
     expect(isCardPhotoFile("../secret.jpg")).toBe(false);
     expect(isCardPhotoFile("messi.jpg")).toBe(false);
-    expect(isCardPhotoFile("0b0e1f2a-3b4c-4d5e-8f60-718293a4b5c6.png")).toBe(false);
+    expect(isCardPhotoFile("0b0e1f2a-3b4c-4d5e-8f60-718293a4b5c6.png")).toBe(true);
+    expect(isCardPhotoFile("0b0e1f2a-3b4c-4d5e-8f60-718293a4b5c6.svg")).toBe(false);
   });
 
   it("shrinks big photos to fit 800x1200 without upscaling small ones", () => {

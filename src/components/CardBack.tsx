@@ -18,6 +18,7 @@ export function CardBack({ bonus, className, look }: { bonus?: boolean; classNam
         <span className="gm-back-corner gm-back-corner-bl" />
         <span className="gm-back-corner gm-back-corner-br" />
       </div>
+      {custom?.image_url && <span className="gm-back-image-word">GOALMASTER</span>}
       {!custom?.image_url && (
         <div className="gm-back-center">
           <div className="gm-back-medal">
