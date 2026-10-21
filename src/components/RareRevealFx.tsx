@@ -38,6 +38,29 @@ function sprite(c: Rgb) {
   return s;
 }
 
+/** Soft, lumpy smoke puff (several offset blobs with grain) in one colour. */
+function smokeSprite(c: Rgb) {
+  const N = 128, s = document.createElement("canvas");
+  s.width = s.height = N;
+  const g = s.getContext("2d")!;
+  for (let i = 0; i < 9; i++) {
+    const x = N / 2 + (Math.random() - 0.5) * N * 0.38, y = N / 2 + (Math.random() - 0.5) * N * 0.38, r = N * (0.18 + Math.random() * 0.22);
+    const grad = g.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.32)`);
+    grad.addColorStop(0.6, `rgba(${c[0]},${c[1]},${c[2]},0.12)`);
+    grad.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0)`);
+    g.fillStyle = grad;
+    g.fillRect(0, 0, N, N);
+  }
+  // Grain so the puff reads as smoke rather than a flat glow.
+  const img = g.getImageData(0, 0, N, N);
+  for (let i = 3; i < img.data.length; i += 4) img.data[i] = img.data[i]! * (0.7 + Math.random() * 0.3);
+  g.putImageData(img, 0, 0);
+  return s;
+}
+
+interface Puff { x: number; y: number; vx: number; vy: number; age: number; life: number; size: number; grow: number; rot: number; vr: number; color: number; alpha: number; drag: number; rise: number }
+
 function mix(a: Rgb, b: Rgb, t: number): Rgb {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 }
@@ -99,6 +122,13 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
     if (!ctx) return;
     const pal = tinted(palette(fx, canvas), fx, tint);
     const sprites = pal.colors.map(sprite);
+    // Smoke in the pulled rarity's colours: its own tone, a lighter wisp and a deeper shade.
+    const smokeCols: Rgb[] = fire
+      ? [pal.colors[6]!, pal.colors[9]!, pal.colors[4]!]
+      : rainbow ? pal.colors.slice(0, 6) : [pal.core, mix(pal.core, [255, 255, 255], 0.45), mix(pal.core, [0, 0, 0], 0.35)];
+    const smokes = smokeCols.map(smokeSprite);
+    const puffs: Puff[] = [];
+    let puffAcc = 0;
     const fire = fx === "secret_ultimate";
     const rainbow = fx === "alt";
 
