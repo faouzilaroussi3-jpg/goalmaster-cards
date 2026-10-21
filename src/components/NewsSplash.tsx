@@ -103,7 +103,7 @@ export function NewsSplash() {
           ))}
         </div>
         <div className="flex items-center justify-between px-4 pt-2">
-          <span className="font-display text-xl tracking-[0.3em] text-primary">GOALMASTER · NOUVEAUTÉS</span>
+          <span className="font-display text-base tracking-[0.2em] text-primary sm:text-xl sm:tracking-[0.3em]">GOALMASTER · NOUVEAUTÉS</span>
           <button type="button" onClick={close} aria-label="Fermer" className="rounded-full p-1.5 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"><X className="h-5 w-5" /></button>
         </div>
 
