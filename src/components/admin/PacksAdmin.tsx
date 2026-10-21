@@ -8,13 +8,17 @@ import { exactChances, PACK_ARTS, PACK_EFFECTS, packDraftError, packLookOf, type
 import { PackFx, packImageOf, packImgStyle } from "@/components/PackArt";
 import { PhotoField } from "@/components/admin/CardsAdmin";
 import { cn } from "@/lib/utils";
+import { CardBack } from "@/components/CardBack";
+import { BACK_EXCLUDED_EFFECTS, cardBackOf, type CardBackLook } from "@/lib/card-back";
+import { RARITY_EFFECTS } from "@/lib/rarity-admin";
+import { CARD_SHAPES, type RarityEffect } from "@/lib/rarity";
 
 const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 
 interface PackRow {
   id: string; key: string; name: string; description: string | null; slot_count: number; slot_rates: unknown; version_rates: unknown;
   regen_minutes: number; max_stock: number; initial_stock: number; price_coins: number; xp_reward: number; active: boolean;
-  sort_order: number; art: string; tint: string | null; effect: string; image_url: string | null; archived: boolean;
+  sort_order: number; art: string; tint: string | null; effect: string; image_url: string | null; archived: boolean; card_back: unknown;
 }
 
 /** Admin → Packs: create, rename, customise (art, colour, effect, own picture), choose rarities and exact rates, delete. */
@@ -61,6 +65,7 @@ function PackEditor({ p, onSaved }: { p: PackRow; onSaved: () => void }) {
   const [rates, setRates] = useState<Record<string, number>>({ ...(p.slot_rates as Record<string, number>) });
   const [versions, setVersions] = useState<Record<string, number>>({ alt: 0, shiny: 0, ...(p.version_rates as Record<string, number>) });
   const [cfg, setCfg] = useState({ regen_minutes: p.regen_minutes, max_stock: p.max_stock, price_coins: p.price_coins, xp_reward: p.xp_reward, active: p.active });
+  const [back, setBack] = useState<CardBackLook>(() => cardBackOf(p.card_back));
   const [confirmDel, setConfirmDel] = useState(false);
   const [busy, setBusy] = useState(false);
   const isActive = (k: string) => rarities.find((r) => r.key === k)?.active !== false;
@@ -75,6 +80,7 @@ function PackEditor({ p, onSaved }: { p: PackRow; onSaved: () => void }) {
     const { error: e } = await supabase.from("pack_types").update({
       ...cfg, name: d.name.trim(), description: d.description.trim() || null, slot_count: d.slot_count,
       art: d.art, tint: d.tint || null, effect: d.effect, image_url: d.image_url.trim() || null,
+      card_back: { color: back.color, effects: back.effects, shape: back.shape, image_url: back.image_url?.trim() || null },
       slot_rates: clean, version_rates: { alt: Number(versions["alt"]) || 0, shiny: Number(versions["shiny"]) || 0 },
     }).eq("id", p.id);
     setBusy(false);
@@ -130,6 +136,8 @@ function PackEditor({ p, onSaved }: { p: PackRow; onSaved: () => void }) {
         <div className="mt-2 grid"><PhotoField label="Image du pack (facultatif, remplace le visuel)" value={d.image_url} onChange={(v) => setD({ ...d, image_url: v })} /></div>
       </div>
 
+      <CardBackEditor back={back} onChange={setBack} />
+
       <div>
         <p className="mb-1 text-xs uppercase text-muted-foreground">Raretés dans le pack · coche celles que tu veux et règle leur taux</p>
         {rarities.map((r) => {
@@ -182,3 +190,49 @@ function PackEditor({ p, onSaved }: { p: PackRow; onSaved: () => void }) {
 }
 
 const fmt = (n: number) => (n >= 1 ? n.toFixed(1) : n >= 0.01 ? n.toFixed(3) : n.toPrecision(2)).replace(".", ",");
+
+const BACK_EFFECTS = RARITY_EFFECTS.filter((e) => !BACK_EXCLUDED_EFFECTS.includes(e.fx));
+
+/** Card back of this pack, shown face down while opening: colour, mixed effects, outline and an optional picture, with a live preview. */
+function CardBackEditor({ back, onChange }: { back: CardBackLook; onChange: (b: CardBackLook) => void }) {
+  const toggle = (fx: RarityEffect) =>
+    onChange({ ...back, effects: back.effects.includes(fx) ? back.effects.filter((e) => e !== fx) : [...back.effects, fx].slice(0, 6) });
+  return (
+    <div>
+      <p className="mb-1 text-xs uppercase text-muted-foreground">Dos des cartes (pendant l'ouverture)</p>
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="mx-auto w-28 shrink-0 sm:mx-0">
+          <div className="relative aspect-[5/7] w-full"><CardBack look={back} /></div>
+          <button type="button" onClick={() => onChange(cardBackOf({}))} className="mt-2 w-full text-center text-xs text-muted-foreground underline">dos d'origine</button>
+        </div>
+        <div className="min-w-0 flex-1 space-y-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <label className="flex items-center gap-1.5">Couleur
+              <input type="color" aria-label="Couleur du dos" value={back.color ?? "#ff3d9a"} onChange={(e) => onChange({ ...back, color: e.target.value })} className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent" />
+            </label>
+            {back.color && <button type="button" onClick={() => onChange({ ...back, color: null })} className="underline">rose d'origine</button>}
+          </div>
+          <div>
+            <p className="mb-1 text-[11px] text-muted-foreground">Forme</p>
+            <div className="flex flex-wrap gap-1.5">
+              {CARD_SHAPES.map((sh) => (
+                <button key={sh.key} type="button" title={sh.hint} onClick={() => onChange({ ...back, shape: sh.key })}
+                  className={cn("rounded-full px-3 py-1 text-xs font-bold", back.shape === sh.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}>{sh.label}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-1 text-[11px] text-muted-foreground">Effets (coche-en autant que tu veux, ils se mélangent){back.effects.length ? ` · ${back.effects.length} choisi${back.effects.length > 1 ? "s" : ""}` : ""}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {BACK_EFFECTS.map((fx) => (
+                <button key={fx.fx} type="button" title={fx.hint} onClick={() => toggle(fx.fx)} aria-pressed={back.effects.includes(fx.fx)}
+                  className={cn("rounded-full px-3 py-1 text-xs font-bold", back.effects.includes(fx.fx) ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}>{fx.label}</button>
+              ))}
+            </div>
+          </div>
+          <div className="grid"><PhotoField label="Image du dos (facultatif, remplace le logo GM)" value={back.image_url ?? ""} onChange={(v) => onChange({ ...back, image_url: v || null })} /></div>
+        </div>
+      </div>
+    </div>
+  );
+}

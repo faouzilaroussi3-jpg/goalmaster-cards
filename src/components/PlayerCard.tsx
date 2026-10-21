@@ -101,7 +101,7 @@ const EXTRA_TINT: Partial<Record<RarityEffect, string>> = {
 };
 
 /** One extra effect mixed over a rarity's main look: the effect's own layers (frame, light, particles), never its fonts or photo treatment. */
-function ExtraFx({ fx, color, mainTier, version }: { fx: RarityEffect; color: string | null; mainTier: number; version: string }) {
+export function ExtraFx({ fx, color, mainTier, version }: { fx: RarityEffect; color: string | null; mainTier: number; version: string }) {
   const style = effectStyle(fx);
   const tint = { "--rc": color ?? (style ? `var(--fx-${style})` : EXTRA_TINT[fx] ?? "var(--rc)") } as React.CSSProperties;
   if (style) return <div className="card-style-fx is-extra" data-fx={style} style={tint} aria-hidden="true"><i /></div>;

@@ -33,3 +33,4 @@
 - [x] Admin packs : renommer, créer, supprimer, personnaliser le visuel (comme les raretés) et choisir les raretés dedans
 - [x] Raretés : choisir la forme des cartes (Wanted arrachée réaliste papier ancien, ronde, etc.), mixable avec les effets, visible aussi à l'ouverture des packs
 - [x] Notifs aux joueurs quand un pack, des cartes ou une rareté arrivent + écran d'accueil façon pub (nouveautés, modes de jeu, cartes stars)
+- [x] Admin packs : dos des cartes personnalisable par pack (couleur, effets mélangés, forme, image) visible à l'ouverture

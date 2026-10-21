@@ -856,3 +856,32 @@
   .news-slide, .news-float, .news-splash::before { animation: none; }
   .news-progress { animation: none; width: 100%; }
 }
+
+/* ---------- Pack card backs: same outlines as the card shapes (data-shape on .gm-back, set per pack) ---------- */
+.gm-back-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.gm-back[data-image] .gm-back-pattern { opacity: .35; }
+.gm-back .card-style-fx, .gm-back .card-fx-group, .gm-back .card-extra-frame { z-index: 3; }
+.gm-back[data-shape] { box-shadow: none; }
+.gm-back[data-shape] .gm-back-frame { border-radius: inherit; }
+.gm-back[data-shape]:not([data-shape="rounded"]):not([data-shape="ticket"]) .gm-back-corner { display: none; }
+.gm-back[data-shape="rounded"] { border-radius: 18% / 13%; }
+.gm-back[data-shape="round"] { border-radius: 50%; }
+.gm-back[data-shape="round"] .gm-back-frame { inset: 6%; }
+.gm-back[data-shape="arch"] { border-radius: 50% 50% 8px 8px / 32% 32% 8px 8px; }
+.gm-back[data-shape="shield"] { clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%); border-radius: 0; }
+.gm-back[data-shape="hexagon"] { clip-path: polygon(50% 0, 100% 16%, 100% 84%, 50% 100%, 0 84%, 0 16%); border-radius: 0; }
+.gm-back[data-shape="diamond"] { clip-path: polygon(16% 0, 84% 0, 100% 11%, 100% 89%, 84% 100%, 16% 100%, 0 89%, 0 11%); border-radius: 0; }
+.gm-back[data-shape="ticket"] { border-radius: 6px; -webkit-mask: radial-gradient(9% 6.4% at 0 58%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(9% 6.4% at 100% 58%, #0000 98%, #000) right / 51% 100% no-repeat; mask: radial-gradient(9% 6.4% at 0 58%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(9% 6.4% at 100% 58%, #0000 98%, #000) right / 51% 100% no-repeat; }
+.gm-back[data-shape="ticket"] .gm-back-frame { inset: 5% 11%; border-style: dashed; }
+.gm-back[data-shape="stamp"] { border-radius: 0; border: 0;
+  -webkit-mask: radial-gradient(closest-side, #0000 82%, #000 90%) -2.91% -2.04% / 5.5% 3.93% repeat, linear-gradient(#000 0 0) center / 94.5% 96.1% no-repeat;
+  mask: radial-gradient(closest-side, #0000 82%, #000 90%) -2.91% -2.04% / 5.5% 3.93% repeat, linear-gradient(#000 0 0) center / 94.5% 96.1% no-repeat; }
+.gm-back[data-shape="stamp"] .gm-back-frame { inset: 7%; border-radius: 0; }
+.gm-back[data-shape="polaroid"] { border-radius: 3px; border-style: solid; border-width: 5cqw 5cqw 22cqw; border-color: oklch(0.95 0.012 85); }
+.gm-back[data-shape="torn"] { border: 0; border-radius: 0; clip-path: polygon(0.0% 2.4%,4.2% 0.2%,8.3% 2.2%,12.5% 1.2%,16.7% 1.7%,20.8% 1.1%,25.0% 2.6%,29.2% 1.5%,33.3% 2.5%,37.5% 1.0%,41.7% 2.1%,45.8% 1.9%,50.0% 2.5%,54.2% 0.8%,58.3% 1.0%,62.5% 0.7%,66.7% 0.9%,70.8% 0.8%,75.0% 2.4%,79.2% 1.8%,83.3% 1.4%,87.5% 4.4%,91.7% 0.1%,95.8% 2.1%,97.9% 0.0%,97.4% 4.2%,97.5% 8.3%,99.8% 12.5%,97.6% 16.7%,99.7% 20.8%,98.6% 25.0%,98.9% 29.2%,99.1% 33.3%,97.7% 37.5%,98.2% 41.7%,99.4% 45.8%,98.0% 50.0%,96.4% 54.2%,99.1% 58.3%,99.4% 62.5%,98.5% 66.7%,98.5% 70.8%,97.0% 75.0%,96.1% 79.2%,99.5% 83.3%,98.8% 87.5%,98.2% 91.7%,98.6% 95.8%,100.0% 99.2%,95.8% 97.7%,91.7% 98.0%,87.5% 99.2%,83.3% 99.2%,79.2% 99.0%,75.0% 98.8%,70.8% 98.4%,66.7% 99.3%,62.5% 99.7%,58.3% 98.5%,54.2% 99.3%,50.0% 97.4%,45.8% 97.9%,41.7% 99.6%,37.5% 98.1%,33.3% 97.4%,29.2% 96.3%,25.0% 97.0%,20.8% 96.8%,16.7% 98.8%,12.5% 98.0%,8.3% 98.5%,4.2% 99.8%,1.1% 100.0%,1.4% 95.8%,0.9% 91.7%,2.4% 87.5%,2.6% 83.3%,1.0% 79.2%,0.1% 75.0%,2.0% 70.8%,2.1% 66.7%,1.1% 62.5%,1.1% 58.3%,1.7% 54.2%,2.1% 50.0%,1.4% 45.8%,1.6% 41.7%,1.7% 37.5%,2.2% 33.3%,1.3% 29.2%,2.5% 25.0%,1.7% 20.8%,3.0% 16.7%,1.3% 12.5%,0.2% 8.3%,1.7% 4.2%); }
+.gm-back[data-shape="wanted"] { border: 0; border-radius: 0; clip-path: polygon(0.0% 0.5%,3.8% 0.1%,7.7% 0.1%,11.5% 1.3%,15.4% 0.7%,19.2% 0.4%,23.1% 0.9%,26.9% 0.1%,30.8% 1.1%,34.6% 1.3%,38.5% 1.0%,42.3% 0.8%,46.2% 1.1%,50.0% 0.9%,53.8% 1.3%,57.7% 0.9%,61.5% 1.2%,65.4% 0.2%,69.2% 0.2%,73.1% 1.1%,76.9% 1.4%,80.8% 1.0%,84.6% 1.3%,88.5% 2.3%,92.3% 1.0%,96.2% 0.5%,100.0% 0.0%,98.5% 3.8%,99.8% 7.7%,97.6% 11.5%,99.1% 15.4%,98.6% 19.2%,99.4% 23.1%,99.8% 26.9%,99.6% 30.8%,98.6% 34.6%,99.4% 38.5%,98.9% 42.3%,97.4% 46.2%,98.8% 50.0%,99.4% 53.8%,98.4% 57.7%,99.7% 61.5%,99.2% 65.4%,99.8% 69.2%,98.6% 73.1%,99.6% 76.9%,99.8% 80.8%,99.3% 84.6%,99.8% 88.5%,98.7% 92.3%,98.5% 96.2%,100.0% 98.1%,96.2% 98.4%,92.3% 99.6%,88.5% 98.8%,84.6% 99.5%,80.8% 98.4%,76.9% 98.7%,73.1% 99.2%,69.2% 100.0%,65.4% 98.9%,61.5% 98.5%,57.7% 99.4%,53.8% 99.7%,50.0% 98.6%,46.2% 99.0%,42.3% 98.9%,38.5% 98.8%,34.6% 98.7%,30.8% 98.4%,26.9% 98.5%,23.1% 99.8%,19.2% 97.3%,15.4% 98.4%,11.5% 98.6%,7.7% 98.4%,3.8% 98.5%,1.3% 100.0%,0.5% 96.2%,0.4% 92.3%,1.5% 88.5%,0.9% 84.6%,1.5% 80.8%,1.8% 76.9%,1.7% 73.1%,0.3% 69.2%,0.9% 65.4%,0.9% 61.5%,0.9% 57.7%,1.2% 53.8%,1.2% 50.0%,1.0% 46.2%,1.1% 42.3%,0.8% 38.5%,1.4% 34.6%,0.9% 30.8%,1.2% 26.9%,0.1% 23.1%,1.1% 19.2%,0.2% 15.4%,0.2% 11.5%,0.4% 7.7%,0.8% 3.8%);
+  background: radial-gradient(ellipse at 22% 78%, oklch(0.6 0.08 60 / .35), transparent 24%), radial-gradient(ellipse at 80% 18%, oklch(0.55 0.08 55 / .3), transparent 20%), linear-gradient(175deg, oklch(0.86 0.055 82), oklch(0.78 0.07 70) 60%, oklch(0.72 0.075 62));
+  box-shadow: inset 0 0 6cqw oklch(0.35 0.07 50 / .75); }
+.gm-back[data-shape="wanted"] .gm-back-pattern { opacity: .25; }
+.gm-back[data-shape="wanted"] .gm-back-frame { border-radius: 0; border-color: oklch(0.3 0.05 55 / .6); }
+.gm-back[data-shape="wanted"] .gm-back-word { color: oklch(0.27 0.045 55); font-family: "Rye", var(--font-display); }
