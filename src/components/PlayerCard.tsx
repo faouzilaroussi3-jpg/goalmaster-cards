@@ -38,10 +38,12 @@ export function PlayerCard({
       data-rarity-key={card.rarity === r.fx ? undefined : card.rarity}
       style={r.color ? ({ "--rc": r.color } as React.CSSProperties) : undefined}
       data-version={version}
+      data-shape={r.shape && r.shape !== "standard" ? r.shape : undefined}
       data-reused-art={reusedArt || undefined}
     >
       {shiny && <NeonInvertFilter id={neonId} />}
       <div className="card-pattern" aria-hidden="true" />
+      {r.shape === "wanted" && <WantedPaper />}
       <div className="card-crest" aria-hidden="true"><Emblem /></div>
       {image && failedImage !== image ? (
         <img src={image} alt={card.name} loading="lazy" className="card-portrait" style={shiny ? { filter: `url(#${neonId})` } : undefined} onError={() => setFailedImage(image)} />
@@ -65,6 +67,7 @@ export function PlayerCard({
           x{count}
         </span>
       ) : null}
+      {r.shape === "wanted" && <div className="card-wanted-reward font-display" aria-hidden="true">Récompense · {(card.rating * 1000).toLocaleString("fr-FR")} $</div>}
       <div className="card-details">
         <div className="card-name font-display">{card.name}</div>
         <div className="card-club">{card.club}</div>
@@ -140,3 +143,14 @@ const SL_GEMS: [number, number][] = [
   ...[20, 35, 50, 65, 80].flatMap((x) => [[x, 1.6], [x, 98.4]] as [number, number][]),
   ...[15, 28, 41, 54, 67, 80].flatMap((y) => [[2.2, y], [97.8, y]] as [number, number][]),
 ];
+
+/** Aged poster layers for the Wanted shape: paper texture, stains, header and the pin holding it. */
+function WantedPaper() {
+  return (
+    <>
+      <div className="card-wanted-paper" aria-hidden="true" />
+      <div className="card-wanted-head" aria-hidden="true"><span>WANTED</span><small>Mort ou vif · sur le terrain</small></div>
+      <i className="card-wanted-pin" aria-hidden="true" />
+    </>
+  );
+}

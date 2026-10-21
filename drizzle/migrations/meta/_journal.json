@@ -176,6 +176,34 @@
       "when": 1792492428627,
       "tag": "0024_manager_matches_11v11",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792593882702,
+      "tag": "0025_live_matches_controlled",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792595101911,
+      "tag": "0026_exact_pack_drop_rates",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792596701527,
+      "tag": "0027_custom_pack_types",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1792597992744,
+      "tag": "0028_rarity_card_shapes",
+      "breakpoints": true
     }
   ]
 }

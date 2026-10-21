@@ -5,7 +5,7 @@ import { Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { isMuted, setMuted, sfx, subscribeMuted } from "@/lib/sfx";
-import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyMatches, useMyPacks, useMyPeriodicChallenges, useProfile } from "@/lib/auth";
+import { useAuth, useFriends, useMyChallenges, useMyDuels, useMyLiveMatches, useMyMatches, useMyPacks, useMyPeriodicChallenges, useProfile } from "@/lib/auth";
 import { splitFriends, unreadTotal } from "@/lib/friends";
 import { claimableSummary } from "@/lib/challenges";
 import { periodicSummary } from "@/lib/periodic-challenges";
@@ -27,7 +27,8 @@ export function AppHeader() {
   const { data: duels } = useMyDuels();
   const duelTodo = (duels ?? []).filter((d) => d.my_turn || d.incoming).length;
   const { data: matches } = useMyMatches();
-  const matchTodo = (matches ?? []).filter((m) => m.needs_me).length;
+  const { data: liveMatches } = useMyLiveMatches();
+  const matchTodo = (matches ?? []).filter((m) => m.needs_me).length + (liveMatches ?? []).filter((m) => m.incoming).length;
   const uid = session?.user.id;
   const { data: friendList } = useFriends();
   const friendTodo = splitFriends(friendList ?? []).incoming.length;
@@ -108,9 +109,19 @@ export function AppHeader() {
         qc.invalidateQueries({ queryKey: ["matches"] });
         qc.invalidateQueries({ queryKey: ["match"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "live_matches" }, (p) => {
+        qc.invalidateQueries({ queryKey: ["live-matches"] });
+        qc.invalidateQueries({ queryKey: ["live-match"] });
+        const row = p.new as { id?: string; away_id?: string; mode?: string } | null;
+        if (p.eventType === "INSERT" && row?.mode === "live" && row.away_id === uid && row.id) {
+          const id = row.id;
+          sfx.friendRequest();
+          toast("Un ami te défie en direct !", { duration: 15000, action: { label: "Jouer", onClick: () => navigate({ to: "/matchs/direct/$matchId", params: { matchId: id } }) } });
+        }
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [uid, qc]);
+  }, [uid, qc, navigate]);
 
   const duelLink = (
     <Link to="/duels" className={linkCls} activeProps={activeCls}>

@@ -337,7 +337,7 @@ async function uploadCardPhoto(file: File): Promise<string> {
   return cardPhotoUrl(name);
 }
 
-function PhotoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+export function PhotoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   async function pick(file?: File) {

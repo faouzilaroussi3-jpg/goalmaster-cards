@@ -5,14 +5,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PlayerCard } from "@/components/PlayerCard";
 import { RARITIES_QUERY_KEY } from "@/components/RarityRegistry";
-import { cleanExtras, effectBase, effectStyle, rarityMeta, useRarities, type CardData, type RarityEffect, type RarityInfo } from "@/lib/rarity";
+import { CARD_SHAPES, cleanExtras, effectBase, effectStyle, rarityMeta, useRarities, type CardData, type CardShape, type RarityEffect, type RarityInfo } from "@/lib/rarity";
 import { canDeleteRarity, LABEL_MAX, makeMainEffect, RARITY_EFFECTS, rarityDraftError, SHORT_MAX, toggleEffect } from "@/lib/rarity-admin";
 
 const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 const DEFAULT_TINT = "#ff3d8b";
 
 /** effects: ticked looks in order, the first one is the main effect. */
-interface Fields { label: string; short: string; effects: RarityEffect[]; tint: boolean; color: string; duplicateCoins: number }
+interface Fields { label: string; short: string; effects: RarityEffect[]; tint: boolean; color: string; duplicateCoins: number; shape: CardShape }
 
 const toDraft = (f: Fields) => ({ label: f.label, short: f.short, effect: f.effects[0] ?? "common", extras: f.effects.slice(1), color: f.tint ? f.color : "", duplicateCoins: f.duplicateCoins });
 const effectsLabel = (list: string[]) => list.map((fx) => RARITY_EFFECTS.find((e) => e.fx === fx)?.label ?? fx).join(" + ");
@@ -23,7 +23,7 @@ function previewInfo(f: Fields, base?: RarityInfo): RarityInfo {
   return {
     key: "preview", label: f.label.trim() || "Nouvelle rareté", short: f.short.trim().toUpperCase() || "?",
     tier: base?.builtin ? base.tier : rarityMeta(fx).tier, rank: 0, fx, play: base?.builtin ? base.play : fx, style: effectStyle(main), extras: cleanExtras(main, f.effects.slice(1)),
-    color: f.tint ? f.color : null, builtin: base?.builtin ?? false, active: true,
+    color: f.tint ? f.color : null, builtin: base?.builtin ?? false, active: true, shape: f.shape,
   };
 }
 
@@ -46,7 +46,7 @@ export function RaritiesAdmin() {
     return c ? { ...c, version: "normal" } : { name: "Joueur exemple", club: "Goalmaster FC", nationality: "France", pos: "BU", rating: 88, rarity: "common", image_url: null };
   };
 
-  const [f, setF] = useState<Fields>({ label: "", short: "", effects: ["legendary"], tint: false, color: DEFAULT_TINT, duplicateCoins: 200 });
+  const [f, setF] = useState<Fields>({ label: "", short: "", effects: ["legendary"], tint: false, color: DEFAULT_TINT, duplicateCoins: 200, shape: "standard" });
   const [after, setAfter] = useState("legendary");
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -65,9 +65,13 @@ export function RaritiesAdmin() {
     e.preventDefault();
     if (problem) { toast.error(problem); return; }
     setBusy(true);
-    const { error } = await supabase.rpc("admin_create_rarity", {
+    const { data: newKey, error } = await supabase.rpc("admin_create_rarity", {
       _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _extra_effects: draft.extras, _color: draft.color, _after_key: after, _duplicate_coins: draft.duplicateCoins,
     });
+    if (!error && newKey && f.shape !== "standard") {
+      const { error: e2 } = await supabase.rpc("admin_set_rarity_shape", { _key: newKey as string, _shape: f.shape });
+      if (e2) toast.error(e2.message);
+    }
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success(`Rareté « ${draft.label.trim()} » créée. Donne-lui des chances de tirage dans Packs & taux.`);
@@ -132,6 +136,17 @@ function RarityFields({ f, setF }: { f: Fields; setF: (f: Fields) => void }) {
         </label>
       </div>
       <fieldset>
+        <legend className="mb-1 text-xs text-muted-foreground">Forme des cartes (se mélange avec les effets, visible aussi à l'ouverture des packs)</legend>
+        <div className="flex flex-wrap gap-1.5">
+          {CARD_SHAPES.map((sh) => (
+            <button key={sh.key} type="button" title={sh.hint} onClick={() => setF({ ...f, shape: sh.key })}
+              className={`rounded-full px-3 py-1 text-xs font-bold ${f.shape === sh.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+              {sh.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
         <legend className="mb-1 text-xs text-muted-foreground">Effets visuels appliqués à toutes ses cartes</legend>
         <p className="mb-2 text-xs text-muted-foreground">Coche autant d'effets que tu veux pour les mélanger. Le n°1 est l'effet principal : il donne le cadre et l'écriture, les autres s'ajoutent par-dessus. « Simple » ne se mélange pas.</p>
         <p className="mb-2 text-xs text-foreground">Sélection : <b>{effectsLabel(f.effects)}</b></p>
@@ -181,7 +196,7 @@ function RarityRowItem({ r, count, duplicateCoins, effects, sample, others, edit
   const [moveTo, setMoveTo] = useState<string>(others.find((o) => o.rank < r.rank && o.builtin)?.key ?? others[0]?.key ?? "");
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
-  const current: Fields = { label: r.label, short: r.short, effects, tint: !!r.color, color: r.color ?? DEFAULT_TINT, duplicateCoins };
+  const current: Fields = { label: r.label, short: r.short, effects, tint: !!r.color, color: r.color ?? DEFAULT_TINT, duplicateCoins, shape: r.shape };
   const [f, setF] = useState<Fields>(current);
   const effectLabel = effectsLabel(effects);
   const draft = toDraft(f);
@@ -197,6 +212,10 @@ function RarityRowItem({ r, count, duplicateCoins, effects, sample, others, edit
     const { error } = await supabase.rpc("admin_update_rarity", {
       _key: r.key, _label: draft.label.trim(), _short: draft.short.trim(), _effect: draft.effect, _extra_effects: draft.extras, _color: draft.color, _duplicate_coins: draft.duplicateCoins,
     });
+    if (!error && f.shape !== r.shape) {
+      const { error: e2 } = await supabase.rpc("admin_set_rarity_shape", { _key: r.key, _shape: f.shape });
+      if (e2) toast.error(e2.message);
+    }
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success(`Rareté « ${draft.label.trim()} » mise à jour sur ${count} carte${count > 1 ? "s" : ""}.`);

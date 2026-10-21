@@ -4,10 +4,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/auth";
-import { useRarities } from "@/lib/rarity";
 import { CardsAdmin } from "@/components/admin/CardsAdmin";
 import { GiftsAdmin } from "@/components/admin/GiftsAdmin";
 import { RaritiesAdmin } from "@/components/admin/RaritiesAdmin";
+import { PacksAdmin } from "@/components/admin/PacksAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -30,7 +30,7 @@ function AdminPage() {
   const [tab, setTab] = useState<"cards" | "rarities" | "gifts" | "packs" | "events">("cards");
   if (isLoading) return null;
   if (!profile?.isAdmin) return <p className="p-8 text-center text-muted-foreground">Accès réservé aux administrateurs.</p>;
-  const label = { cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs & taux", events: "Événements" } as const;
+  const label = { cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs", events: "Événements" } as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-5xl text-gold">Administration</h1>
@@ -50,75 +50,15 @@ function AdminPage() {
   );
 }
 
-function PacksAdmin() {
-  const qc = useQueryClient();
-  const { data: packs = [] } = useQuery({
-    queryKey: ["admin-packs"],
-    queryFn: async () => (await supabase.from("pack_types").select("*").order("sort_order")).data ?? [],
-  });
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {packs.map((p) => <PackEditor key={p.id} p={p} onSaved={() => qc.invalidateQueries()} />)}
-    </div>
-  );
-}
-
-type Pack = { id: string; name: string; slot_rates: unknown; version_rates: unknown; regen_minutes: number; max_stock: number; price_coins: number; xp_reward: number; active: boolean };
-
-function PackEditor({ p, onSaved }: { p: Pack; onSaved: () => void }) {
-  const rarities = useRarities();
-  const [slot, setSlot] = useState<Record<string, number>>(p.slot_rates as Record<string, number>);
-  const [versions, setVersions] = useState<Record<string, number>>({ alt: 0, shiny: 0, ...(p.version_rates as Record<string, number>) });
-  const [cfg, setCfg] = useState({ regen_minutes: p.regen_minutes, max_stock: p.max_stock, price_coins: p.price_coins, xp_reward: p.xp_reward, active: p.active });
-  const sum = (o: Record<string, number>) => Object.values(o).reduce((a, b) => a + (Number(b) || 0), 0);
-
-  async function save() {
-    const clean = (o: Record<string, number>) => Object.fromEntries(Object.entries(o).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)]));
-    const { error } = await supabase.from("pack_types").update({ ...cfg, slot_rates: clean(slot), version_rates: { alt: Number(versions["alt"]) || 0, shiny: Number(versions["shiny"]) || 0 } }).eq("id", p.id);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Pack enregistré");
-    onSaved();
-  }
-
-  return (
-    <div className="panel space-y-3 p-4">
-      <h3 className="text-2xl">{p.name}</h3>
-      <div>
-        <p className="mb-1 text-xs uppercase text-muted-foreground">Taux par carte (total {sum(slot).toFixed(1)}%)</p>
-        {rarities.map((r) => (
-          <label key={r.key} className={`flex items-center justify-between gap-2 py-0.5 text-sm ${r.active ? "" : "opacity-50"}`}>
-            <span>{r.label}{!r.active && <span className="ml-1 text-xs text-muted-foreground">(désactivée, ne sort pas)</span>}</span>
-            <input className={`${inp} w-24`} type="number" step="0.1" min={0} value={slot[r.key] ?? 0} onChange={(e) => setSlot({ ...slot, [r.key]: +e.target.value })} />
-          </label>
-        ))}
-      </div>
-      <div>
-        <p className="mb-1 text-xs uppercase text-muted-foreground">Versions spéciales</p>
-        <p className="mb-1 text-xs text-muted-foreground">Chance (en %) qu'une carte tirée sorte dans sa version spéciale, si le joueur en a une.</p>
-        {([["alt", "Légendaire → ALT"], ["shiny", "Secrète Légendaire → Shiny"]] as const).map(([k, l]) => (
-          <label key={k} className="flex items-center justify-between gap-2 py-0.5 text-sm">
-            {l}
-            <input className={`${inp} w-24`} type="number" step="0.1" min={0} max={100} value={versions[k] ?? 0} onChange={(e) => setVersions({ ...versions, [k]: Math.min(100, Math.max(0, +e.target.value)) })} />
-          </label>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <label>Recharge (min, 0 = aucune)<input className={`${inp} w-full`} type="number" value={cfg.regen_minutes} onChange={(e) => setCfg({ ...cfg, regen_minutes: +e.target.value })} /></label>
-        <label>Stock max<input className={`${inp} w-full`} type="number" value={cfg.max_stock} onChange={(e) => setCfg({ ...cfg, max_stock: +e.target.value })} /></label>
-        <label>Prix en pièces (0 = non achetable)<input className={`${inp} w-full`} type="number" value={cfg.price_coins} onChange={(e) => setCfg({ ...cfg, price_coins: +e.target.value })} /></label>
-        <label>XP par ouverture<input className={`${inp} w-full`} type="number" value={cfg.xp_reward} onChange={(e) => setCfg({ ...cfg, xp_reward: +e.target.value })} /></label>
-      </div>
-      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={cfg.active} onChange={(e) => setCfg({ ...cfg, active: e.target.checked })} /> Pack actif</label>
-      <button onClick={save} className="w-full rounded-lg bg-gold py-2 font-bold text-primary-foreground">Enregistrer</button>
-    </div>
-  );
-}
-
 function EventsAdmin() {
   const qc = useQueryClient();
   const { data: events = [] } = useQuery({
     queryKey: ["admin-events"],
     queryFn: async () => (await supabase.from("events").select("*").order("created_at", { ascending: false })).data ?? [],
+  });
+  const { data: packs = [] } = useQuery({
+    queryKey: ["admin-gift-packs"],
+    queryFn: async () => (await supabase.from("pack_types").select("key, name").eq("archived", false).order("sort_order")).data ?? [],
   });
   const [f, setF] = useState({ title: "", description: "", pack_key: "", ends_at: "" });
   async function add(e: React.FormEvent) {
@@ -140,8 +80,7 @@ function EventsAdmin() {
         <input className={inp} placeholder="Titre" required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
         <select className={inp} value={f.pack_key} onChange={(e) => setF({ ...f, pack_key: e.target.value })}>
           <option value="">Aucun pack lié</option>
-          <option value="classic">Classique</option>
-          <option value="premium">Premium</option>
+          {packs.map((p) => <option key={p.key} value={p.key}>{p.name}</option>)}
         </select>
         <textarea className={`${inp} sm:col-span-2`} placeholder="Description" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
         <input className={inp} type="datetime-local" value={f.ends_at} onChange={(e) => setF({ ...f, ends_at: e.target.value })} />

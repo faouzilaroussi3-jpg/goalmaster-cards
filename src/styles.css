@@ -731,3 +731,103 @@
 .mm-builder-pitch::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid color-mix(in oklab, var(--foreground) 35%, transparent); }
 .mm-builder-pitch::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 9999px; border: 2px solid color-mix(in oklab, var(--foreground) 35%, transparent); }
 @media (prefers-reduced-motion: reduce) { .mm-goal-flash { animation: none; } }
+
+/* ---------- Steered 11 v 11 (live matches) ---------- */
+.lm-ctrl { fill: color-mix(in oklab, var(--primary) 18%, transparent); stroke: var(--primary); stroke-width: 0.4; stroke-dasharray: 1.2 0.6; animation: lm-spin 3s linear infinite; transform-box: fill-box; transform-origin: center; }
+.lm-ctrl-opp { fill: none; stroke: var(--foreground); stroke-width: 0.25; stroke-dasharray: 0.6 0.5; opacity: 0.7; }
+.lm-arrow { fill: var(--primary); filter: drop-shadow(0 0 0.5px var(--primary-glow)); }
+.lm-facing { stroke: color-mix(in oklab, var(--background) 55%, transparent); stroke-width: 0.35; stroke-linecap: round; }
+.lm-power { background: linear-gradient(90deg, var(--primary), var(--primary-glow), var(--foreground)); box-shadow: 0 0 8px var(--primary-glow); }
+.lm-stick-zone { background: color-mix(in oklab, var(--foreground) 4%, transparent); }
+.lm-stick-base { background: color-mix(in oklab, var(--background) 45%, transparent); border: 2px solid color-mix(in oklab, var(--foreground) 35%, transparent); }
+.lm-stick-knob { background: color-mix(in oklab, var(--primary) 75%, transparent); box-shadow: 0 0 14px var(--primary-glow); }
+.lm-tbtn { display: flex; align-items: center; justify-content: center; background: color-mix(in oklab, var(--background) 55%, transparent); border: 2px solid color-mix(in oklab, var(--foreground) 40%, transparent); color: var(--foreground); -webkit-tap-highlight-color: transparent; }
+.lm-tbtn-accent { border-color: var(--primary); color: var(--primary); }
+.lm-tbtn-on { background: color-mix(in oklab, var(--primary) 70%, transparent); color: var(--primary-foreground); transform: scale(0.94); }
+@keyframes lm-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .lm-ctrl { animation: none; } }
+
+/* ---------- Admin-customised pack effects (PackArt.tsx) ---------- */
+.pack-fx[data-fx="glow"] { animation: pack-glow 2.6s ease-in-out infinite; }
+.pack-fx[data-fx="neon"] { animation: pack-neon 3.2s steps(1) infinite; }
+.pack-fx[data-fx="holo"] { animation: pack-holo 5s linear infinite; }
+.pack-fx[data-fx="frost"] { filter: drop-shadow(0 0 14px color-mix(in oklab, var(--foreground) 70%, oklch(0.8 0.12 230))) drop-shadow(0 0 32px oklch(0.75 0.14 230 / 0.6)); }
+.pack-sparkles i { position: absolute; width: 10px; height: 10px; background: var(--pack-tint); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); filter: drop-shadow(0 0 4px var(--pack-tint)); animation: pack-twinkle 2.4s ease-in-out infinite; opacity: 0; }
+.pack-smoke { background: radial-gradient(closest-side, color-mix(in oklab, var(--background) 92%, transparent), transparent 75%); filter: blur(10px); animation: pack-smoke 4s ease-in-out infinite; }
+@keyframes pack-glow { 0%, 100% { filter: drop-shadow(0 0 8px var(--pack-tint)); } 50% { filter: drop-shadow(0 0 26px var(--pack-tint)) drop-shadow(0 0 50px color-mix(in oklab, var(--pack-tint) 50%, transparent)); } }
+@keyframes pack-neon { 0%, 22%, 26%, 60%, 100% { filter: drop-shadow(0 0 3px var(--pack-tint)) drop-shadow(0 0 12px var(--pack-tint)); } 24%, 62% { filter: drop-shadow(0 0 1px var(--pack-tint)); } }
+@keyframes pack-holo { from { filter: hue-rotate(0deg) saturate(1.3) drop-shadow(0 0 10px var(--pack-tint)); } to { filter: hue-rotate(360deg) saturate(1.3) drop-shadow(0 0 10px var(--pack-tint)); } }
+@keyframes pack-twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(45deg); } }
+@keyframes pack-smoke { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .pack-fx, .pack-sparkles i, .pack-smoke { animation: none; } .pack-sparkles i { opacity: 0.8; } }
+
+/* ---------- Card shapes per rarity (data-shape on .fm-card, set by the admin; looks only) ---------- */
+.fm-card[data-shape] { box-shadow: none; }
+.fm-card[data-shape="rounded"] { border-radius: 18% / 13%; }
+.fm-card[data-shape="rounded"]::after { border-radius: 16% / 11.5%; }
+.fm-card[data-shape="round"] { border-radius: 50%; }
+.fm-card[data-shape="round"]::after { border-radius: 50%; inset: 5px; }
+.fm-card[data-shape="round"] .card-rating { left: 14%; top: 13%; }
+.fm-card[data-shape="round"] .card-badges { right: 14%; top: 13%; }
+.fm-card[data-shape="round"] .card-details { padding: 10% 16% 14%; }
+.fm-card[data-shape="arch"] { border-radius: 50% 50% 8px 8px / 32% 32% 8px 8px; }
+.fm-card[data-shape="arch"]::after { border-radius: 50% 50% 5px 5px / 31% 31% 5px 5px; }
+.fm-card[data-shape="arch"] .card-rating { left: 9%; top: 15%; }
+.fm-card[data-shape="arch"] .card-badges { right: 9%; top: 15%; }
+.fm-card[data-shape="shield"] { clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%); border-radius: 0; }
+.fm-card[data-shape="shield"]::after { display: none; }
+.fm-card[data-shape="shield"] .card-details { padding: 6% 14% 22%; }
+.fm-card[data-shape="hexagon"] { clip-path: polygon(50% 0, 100% 16%, 100% 84%, 50% 100%, 0 84%, 0 16%); border-radius: 0; }
+.fm-card[data-shape="hexagon"]::after { display: none; }
+.fm-card[data-shape="hexagon"] .card-rating { left: 10%; top: 15%; }
+.fm-card[data-shape="hexagon"] .card-badges { right: 10%; top: 15%; }
+.fm-card[data-shape="hexagon"] .card-details { padding: 8% 10% 16%; }
+.fm-card[data-shape="diamond"] { clip-path: polygon(16% 0, 84% 0, 100% 11%, 100% 89%, 84% 100%, 16% 100%, 0 89%, 0 11%); border-radius: 0; }
+.fm-card[data-shape="diamond"]::after { display: none; }
+.fm-card[data-shape="diamond"] .card-rating { left: 9%; top: 9%; }
+.fm-card[data-shape="diamond"] .card-badges { right: 9%; top: 9%; }
+.fm-card[data-shape="ticket"] { border-radius: 6px; -webkit-mask: radial-gradient(9% 6.4% at 0 58%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(9% 6.4% at 100% 58%, #0000 98%, #000) right / 51% 100% no-repeat; mask: radial-gradient(9% 6.4% at 0 58%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(9% 6.4% at 100% 58%, #0000 98%, #000) right / 51% 100% no-repeat; }
+.fm-card[data-shape="ticket"]::after { inset: 4px 11%; border-style: dashed; }
+.fm-card[data-shape="stamp"] { border-radius: 0; border: 0;
+  -webkit-mask: radial-gradient(closest-side, #0000 82%, #000 90%) -2.91% -2.04% / 5.5% 3.93% repeat, linear-gradient(#000 0 0) center / 94.5% 96.1% no-repeat;
+  mask: radial-gradient(closest-side, #0000 82%, #000 90%) -2.91% -2.04% / 5.5% 3.93% repeat, linear-gradient(#000 0 0) center / 94.5% 96.1% no-repeat; }
+.fm-card[data-shape="stamp"]::after { inset: 6%; border: 2px solid color-mix(in oklab, var(--card-light) 80%, var(--rc)); border-radius: 0; }
+.fm-card[data-shape="polaroid"] { border-radius: 3px; border: 0; background: linear-gradient(170deg, oklch(0.97 0.01 90), oklch(0.9 0.015 80)); color: oklch(0.25 0.02 60); }
+.fm-card[data-shape="polaroid"]::after { inset: 5% 5% 27% 5%; border-radius: 1px; border-color: oklch(0.3 0.02 60 / 0.35); }
+.fm-card[data-shape="polaroid"] .card-portrait { inset: 5% 5% 27% 5%; width: 90%; height: 68%; }
+.fm-card[data-shape="polaroid"] .card-pattern, .fm-card[data-shape="polaroid"] .card-crest { display: none; }
+.fm-card[data-shape="polaroid"] .card-rating { left: 8%; top: 7%; }
+.fm-card[data-shape="polaroid"] .card-badges { right: 8%; top: 7%; }
+.fm-card[data-shape="polaroid"] .card-details { background: none; padding: 0 7% 4%; }
+.fm-card[data-shape="polaroid"] .card-name { font-family: "Special Elite", var(--font-card-sport); color: oklch(0.22 0.02 60); -webkit-text-fill-color: oklch(0.22 0.02 60); filter: none; text-shadow: none; transform: none; }
+.fm-card[data-shape="polaroid"] :is(.card-club, .card-country) { color: oklch(0.35 0.02 60); }
+
+/* Torn paper and Wanted poster: hand-torn outline, aged paper, stains, burnt edges, sepia photo, pin. */
+.fm-card[data-shape="torn"] { border: 0; border-radius: 0; clip-path: polygon(0.0% 2.4%,4.2% 0.2%,8.3% 2.2%,12.5% 1.2%,16.7% 1.7%,20.8% 1.1%,25.0% 2.6%,29.2% 1.5%,33.3% 2.5%,37.5% 1.0%,41.7% 2.1%,45.8% 1.9%,50.0% 2.5%,54.2% 0.8%,58.3% 1.0%,62.5% 0.7%,66.7% 0.9%,70.8% 0.8%,75.0% 2.4%,79.2% 1.8%,83.3% 1.4%,87.5% 4.4%,91.7% 0.1%,95.8% 2.1%,97.9% 0.0%,97.4% 4.2%,97.5% 8.3%,99.8% 12.5%,97.6% 16.7%,99.7% 20.8%,98.6% 25.0%,98.9% 29.2%,99.1% 33.3%,97.7% 37.5%,98.2% 41.7%,99.4% 45.8%,98.0% 50.0%,96.4% 54.2%,99.1% 58.3%,99.4% 62.5%,98.5% 66.7%,98.5% 70.8%,97.0% 75.0%,96.1% 79.2%,99.5% 83.3%,98.8% 87.5%,98.2% 91.7%,98.6% 95.8%,100.0% 99.2%,95.8% 97.7%,91.7% 98.0%,87.5% 99.2%,83.3% 99.2%,79.2% 99.0%,75.0% 98.8%,70.8% 98.4%,66.7% 99.3%,62.5% 99.7%,58.3% 98.5%,54.2% 99.3%,50.0% 97.4%,45.8% 97.9%,41.7% 99.6%,37.5% 98.1%,33.3% 97.4%,29.2% 96.3%,25.0% 97.0%,20.8% 96.8%,16.7% 98.8%,12.5% 98.0%,8.3% 98.5%,4.2% 99.8%,1.1% 100.0%,1.4% 95.8%,0.9% 91.7%,2.4% 87.5%,2.6% 83.3%,1.0% 79.2%,0.1% 75.0%,2.0% 70.8%,2.1% 66.7%,1.1% 62.5%,1.1% 58.3%,1.7% 54.2%,2.1% 50.0%,1.4% 45.8%,1.6% 41.7%,1.7% 37.5%,2.2% 33.3%,1.3% 29.2%,2.5% 25.0%,1.7% 20.8%,3.0% 16.7%,1.3% 12.5%,0.2% 8.3%,1.7% 4.2%); }
+.fm-card[data-shape="torn"]::after { inset: 3.5%; border-radius: 0; border-style: solid; opacity: .6; }
+.fm-card[data-shape="wanted"] { --ink: oklch(0.27 0.045 55); border: 0; border-radius: 0; color: var(--ink); clip-path: polygon(0.0% 0.5%,3.8% 0.1%,7.7% 0.1%,11.5% 1.3%,15.4% 0.7%,19.2% 0.4%,23.1% 0.9%,26.9% 0.1%,30.8% 1.1%,34.6% 1.3%,38.5% 1.0%,42.3% 0.8%,46.2% 1.1%,50.0% 0.9%,53.8% 1.3%,57.7% 0.9%,61.5% 1.2%,65.4% 0.2%,69.2% 0.2%,73.1% 1.1%,76.9% 1.4%,80.8% 1.0%,84.6% 1.3%,88.5% 2.3%,92.3% 1.0%,96.2% 0.5%,100.0% 0.0%,98.5% 3.8%,99.8% 7.7%,97.6% 11.5%,99.1% 15.4%,98.6% 19.2%,99.4% 23.1%,99.8% 26.9%,99.6% 30.8%,98.6% 34.6%,99.4% 38.5%,98.9% 42.3%,97.4% 46.2%,98.8% 50.0%,99.4% 53.8%,98.4% 57.7%,99.7% 61.5%,99.2% 65.4%,99.8% 69.2%,98.6% 73.1%,99.6% 76.9%,99.8% 80.8%,99.3% 84.6%,99.8% 88.5%,98.7% 92.3%,98.5% 96.2%,100.0% 98.1%,96.2% 98.4%,92.3% 99.6%,88.5% 98.8%,84.6% 99.5%,80.8% 98.4%,76.9% 98.7%,73.1% 99.2%,69.2% 100.0%,65.4% 98.9%,61.5% 98.5%,57.7% 99.4%,53.8% 99.7%,50.0% 98.6%,46.2% 99.0%,42.3% 98.9%,38.5% 98.8%,34.6% 98.7%,30.8% 98.4%,26.9% 98.5%,23.1% 99.8%,19.2% 97.3%,15.4% 98.4%,11.5% 98.6%,7.7% 98.4%,3.8% 98.5%,1.3% 100.0%,0.5% 96.2%,0.4% 92.3%,1.5% 88.5%,0.9% 84.6%,1.5% 80.8%,1.8% 76.9%,1.7% 73.1%,0.3% 69.2%,0.9% 65.4%,0.9% 61.5%,0.9% 57.7%,1.2% 53.8%,1.2% 50.0%,1.0% 46.2%,1.1% 42.3%,0.8% 38.5%,1.4% 34.6%,0.9% 30.8%,1.2% 26.9%,0.1% 23.1%,1.1% 19.2%,0.2% 15.4%,0.2% 11.5%,0.4% 7.7%,0.8% 3.8%);
+  background: oklch(0.83 0.06 78); }
+.fm-card[data-shape="wanted"]::after { display: none; }
+.card-wanted-paper { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 22% 78%, oklch(0.6 0.08 60 / .35), transparent 22%),
+    radial-gradient(ellipse at 80% 18%, oklch(0.55 0.08 55 / .3), transparent 18%),
+    radial-gradient(circle at 70% 85%, oklch(0.62 0.07 60 / .25), transparent 12%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .12 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(175deg, oklch(0.88 0.055 82), oklch(0.8 0.07 72) 60%, oklch(0.74 0.075 65));
+  box-shadow: inset 0 0 6cqw oklch(0.35 0.07 50 / .75), inset 0 0 1.5cqw oklch(0.25 0.06 45 / .8); }
+.fm-card[data-shape="wanted"] .card-pattern, .fm-card[data-shape="wanted"] .card-crest { display: none; }
+.fm-card[data-shape="wanted"] .card-portrait { inset: 24% 13% 38% 13%; width: 74%; height: 38%; filter: sepia(.85) contrast(1.08) brightness(.95) saturate(.8); border: 1.2cqw solid var(--ink); box-shadow: 0 0 0 .5cqw oklch(0.83 0.06 78), 0 0 0 1cqw var(--ink); z-index: 1; }
+.card-wanted-head { position: absolute; inset: 4% 4% auto; z-index: 2; text-align: center; font-family: "Rye", var(--font-card-engraved); color: var(--ink); line-height: .9; text-shadow: 0 .3cqw 0 oklch(0.83 0.06 78 / .6); }
+.card-wanted-head span { display: block; font-size: 18cqw; letter-spacing: .02em; }
+.card-wanted-head small { display: block; font-family: "Special Elite", monospace; font-size: 4.2cqw; letter-spacing: .12em; text-transform: uppercase; margin-top: 1cqw; }
+.card-wanted-reward { position: absolute; left: 0; right: 0; top: 64.5%; z-index: 2; text-align: center; font-family: "Rye", var(--font-display); font-size: 6.4cqw; color: oklch(0.42 0.13 30); letter-spacing: .04em; }
+.fm-card[data-shape="wanted"] .card-details { background: none; padding: 0 8% 7%; }
+.fm-card[data-shape="wanted"] .card-country { display: none; }
+.fm-card[data-shape="wanted"] .card-name { font-family: "Rye", var(--font-card-engraved); color: var(--ink); -webkit-text-fill-color: var(--ink); background: none; filter: none; text-shadow: none; transform: none; font-size: clamp(10px, 9cqw, 24px); text-transform: uppercase; }
+.fm-card[data-shape="wanted"] :is(.card-club, .card-country) { font-family: "Special Elite", monospace; color: var(--ink); opacity: .9; }
+.fm-card[data-shape="wanted"] .card-rarity-label { color: var(--ink); border-top-color: oklch(0.27 0.045 55 / .45); font-family: "Special Elite", monospace; }
+.fm-card[data-shape="wanted"] .card-rating { top: 26%; left: 15%; background: oklch(0.27 0.045 55 / .85); color: oklch(0.9 0.05 80); font-size: clamp(14px, 11cqw, 30px); z-index: 3; }
+.fm-card[data-shape="wanted"] .card-badges { top: 26%; right: 15%; z-index: 3; }
+.card-wanted-pin { position: absolute; left: 50%; top: 1.6%; z-index: 4; width: 5cqw; height: 5cqw; margin-left: -2.5cqw; border-radius: 50%; background: radial-gradient(circle at 35% 35%, oklch(0.85 0.03 60), oklch(0.45 0.03 50) 55%, oklch(0.25 0.02 40)); box-shadow: .6cqw 1cqw 1.2cqw oklch(0.2 0.03 40 / .6); }
+.fm-card[data-shape="wanted"] :is(.holo, .sheen) { mix-blend-mode: soft-light; opacity: .45; }

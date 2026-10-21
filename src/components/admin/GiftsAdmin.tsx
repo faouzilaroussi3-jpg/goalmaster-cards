@@ -38,7 +38,7 @@ export function GiftsAdmin() {
   });
   const { data: packTypes = [] } = useQuery({
     queryKey: ["admin-gift-packs"],
-    queryFn: async () => (await supabase.from("pack_types").select("key, name").order("sort_order")).data ?? [],
+    queryFn: async () => (await supabase.from("pack_types").select("key, name").eq("archived", false).order("sort_order")).data ?? [],
   });
   const { data: cards = [] } = useQuery({
     queryKey: ["admin-gift-cards", cardQ.trim()],

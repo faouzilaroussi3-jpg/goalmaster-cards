@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } fr
 import { createPortal } from "react-dom";
 import { ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GoldenFlames } from "@/components/GoldenFlames";
+import { PackFx, packImgStyle } from "@/components/PackArt";
+import type { PackLook } from "@/lib/pack-look";
 import { TearSparkles } from "@/components/TearSparkles";
 import { shouldTear, tearProgress } from "@/lib/pack-swipe";
 import { sfx } from "@/lib/sfx";
@@ -26,13 +27,13 @@ function zigzag(from: number, to: number): string[] {
 export function SwipePack({
   image,
   name,
-  premium,
+  look,
   disabled,
   onOpen,
 }: {
   image: string;
   name: string;
-  premium: boolean;
+  look: PackLook;
   disabled: boolean;
   onOpen: () => void;
 }) {
@@ -124,18 +125,37 @@ export function SwipePack({
           disabled && "opacity-40",
         )}
       >
-        {premium && !torn && (
-          <GoldenFlames className="pointer-events-none absolute -left-[50%] -top-[25%] h-[120%] w-[200%]" />
-        )}
-        <img
-          src={image}
-          alt={name}
-          draggable={false}
-          width={768}
-          height={1152}
-          className={cn("pointer-events-none relative block w-full", torn && "tear-pack-flash")}
-          style={{ clipPath: bodyClip, transition: ease }}
-        />
+        <PackFx look={look} active={!torn}>
+          <div className="relative" style={packImgStyle(look)}>
+            <img
+              src={image}
+              alt={name}
+              draggable={false}
+              width={768}
+              height={1152}
+              className={cn("pointer-events-none relative block w-full", torn && "tear-pack-flash")}
+              style={{ clipPath: bodyClip, transition: ease }}
+            />
+            {/* The torn strip peels up from its tear point, then flies away. */}
+            <img
+              src={image}
+              alt=""
+              aria-hidden
+              draggable={false}
+              className="pointer-events-none absolute inset-0 block w-full"
+              style={{
+                clipPath: flapClip,
+                transformOrigin: `${P}% ${TEAR_Y}%`,
+                transform: torn
+                  ? "translate(45%, -70%) rotate(-35deg)"
+                  : `translateY(${-progress * 8}px) rotate(${-progress * 14}deg)`,
+                opacity: torn ? 0 : 1,
+                transition: torn ? "transform 600ms cubic-bezier(.3,.6,.4,1), opacity 600ms ease-in" : ease,
+              }}
+            />
+
+          </div>
+        </PackFx>
         {/* Soft white light leaks out of the cut as it opens. */}
         <div
           className="tear-leak pointer-events-none absolute left-[6%]"
@@ -154,24 +174,6 @@ export function SwipePack({
           className="pointer-events-none absolute -left-1/2 -top-1/2 z-20 h-[200%] w-[200%]"
         />
         {torn && typeof document !== "undefined" && createPortal(<div className="tear-whiteout pointer-events-none fixed inset-0 z-40" aria-hidden />, document.body)}
-        {/* The torn strip peels up from its tear point, then flies away. */}
-        <img
-          src={image}
-          alt=""
-          aria-hidden
-          draggable={false}
-          className="pointer-events-none absolute inset-0 block w-full"
-          style={{
-            clipPath: flapClip,
-            transformOrigin: `${P}% ${TEAR_Y}%`,
-            transform: torn
-              ? "translate(45%, -70%) rotate(-35deg)"
-              : `translateY(${-progress * 8}px) rotate(${-progress * 14}deg)`,
-            opacity: torn ? 0 : 1,
-            transition: torn ? "transform 600ms cubic-bezier(.3,.6,.4,1), opacity 600ms ease-in" : ease,
-          }}
-        />
-
         {!disabled && !torn && (
           <>
             <div
