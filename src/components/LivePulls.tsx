@@ -8,7 +8,7 @@ import { sfx } from "@/lib/sfx";
 
 interface BigPull {
   id: string; username: string | null; card_id: string; name: string; club: string; nationality: string; pos: string;
-  rating: number; rarity: string; version: string; image_url: string | null; pack_key: string | null; pulled_at: string;
+  rating: number; rarity: string; version: string; image_url: string | null; pack_key: string | null; pack_name: string | null; pulled_at: string;
 }
 
 const PACK_NAME: Record<string, string> = { classic: "Classique", premium: "Premium" };
@@ -23,7 +23,8 @@ function timeAgo(iso: string, now: number) {
 }
 
 /** Live strip of the biggest pulls (Légendaire and above), updated in real time. */
-export function LivePulls({ limit = 20 }: { limit?: number }) {
+export function LivePulls({ limit = 200 }: { limit?: number }) {
+  const [all, setAll] = useState(false);
   const qc = useQueryClient();
   const { data: pulls = [] } = useQuery({
     queryKey: ["big-pulls", limit],
@@ -67,25 +68,30 @@ export function LivePulls({ limit = 20 }: { limit?: number }) {
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
         </span>
         <h2 className="font-display text-2xl tracking-wide">Gros tirages en direct</h2>
-        <span className="ml-auto text-xs text-muted-foreground">Légendaire et plus</span>
+        <span className="ml-auto text-xs text-muted-foreground">Légendaire et plus · {pulls.length} derniers</span>
+        {pulls.length > 6 && (
+          <button type="button" onClick={() => setAll(!all)} className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-foreground hover:bg-secondary/80">
+            {all ? "Réduire" : "Tout voir"}
+          </button>
+        )}
       </div>
       {!pulls.length ? (
         <p className="text-sm text-muted-foreground">Aucun gros tirage pour l'instant. Le prochain sera peut-être le tien !</p>
       ) : (
-        <ol className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 pt-1">
+        <ol className={all ? "grid max-h-[70dvh] grid-cols-3 gap-3 overflow-y-auto pr-1 pt-2 sm:grid-cols-5 lg:grid-cols-7" : "-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 pt-1"}>
           {pulls.map((p) => {
             const meta = rarityMeta(p.rarity);
             const special = p.version !== "normal";
             return (
               <li
                 key={p.id}
-                className={cn("w-28 shrink-0 snap-start sm:w-32", fresh.has(p.id) && "animate-in zoom-in-50 fade-in duration-700")}
+                className={cn(all ? "min-w-0" : "w-28 shrink-0 snap-start sm:w-32", fresh.has(p.id) && "animate-in zoom-in-50 fade-in duration-700")}
               >
                 <PlayerCard card={{ ...p, id: p.card_id, alt_image_url: p.version === "alt" ? p.image_url : null }} />
                 <p className="mt-1.5 truncate text-center text-xs font-semibold">{p.username ?? "Un joueur"}</p>
                 <p className="truncate text-center text-[10px] text-muted-foreground">
                   {meta.short}{special ? ` ${VERSION_LABEL[p.version] ?? p.version}` : ""}
-                  {p.pack_key ? ` · ${PACK_NAME[p.pack_key] ?? p.pack_key}` : ""} · {timeAgo(p.pulled_at, now)}
+                  {p.pack_name || p.pack_key ? ` · ${p.pack_name ?? PACK_NAME[p.pack_key!] ?? p.pack_key}` : ""} · {timeAgo(p.pulled_at, now)}
                 </p>
               </li>
             );

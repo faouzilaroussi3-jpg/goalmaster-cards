@@ -2,12 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Clock, Coins, Gavel, Plus, Search, Tag, X } from "lucide-react";
+import { Clock, Coins, Gavel, History, Plus, Search, Tag, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, useRarities, VERSION_LABEL } from "@/lib/rarity";
-import { AUCTION_DURATIONS, bidCost, formatTimeLeft, MIN_START_PRICE, minBid, sellerPayout, TRANSFER_TAX } from "@/lib/transfer-market";
+import { AUCTION_DURATIONS, bidCost, bidSteps, type BidRow, formatTimeLeft, MIN_START_PRICE, minBid, sellerPayout, TRANSFER_TAX } from "@/lib/transfer-market";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -193,6 +193,7 @@ function AuctionTile({ a, onBid }: { a: Auction; onBid: (a: Auction) => void }) 
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [history, setHistory] = useState(false);
   return (
     <div className="panel flex flex-col gap-2 p-2">
       <div className="relative">
@@ -227,6 +228,20 @@ function AuctionTile({ a, onBid }: { a: Auction; onBid: (a: Auction) => void }) 
           <Gavel className="h-4 w-4" /> {a.i_lead ? "Monter mon enchère" : a.i_bid ? "Relancer" : "Enchérir"}
         </Button>
       )}
+      {a.bid_count > 0 && (
+        <Button size="sm" variant="ghost" onClick={() => setHistory(true)}>
+          <History className="h-4 w-4" /> Historique ({a.bid_count})
+        </Button>
+      )}
+      <Dialog open={history} onOpenChange={setHistory}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-3xl tracking-wider">Historique des enchères</DialogTitle>
+            <DialogDescription>{a.name} · départ à {a.start_price} pièces</DialogDescription>
+          </DialogHeader>
+          {history && <BidHistory auctionId={a.auction_id} startPrice={a.start_price} />}
+        </DialogContent>
+      </Dialog>
       {!ended && a.is_mine && a.bid_count === 0 && (
         <Button size="sm" variant="secondary" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
           <X className="h-4 w-4" /> Annuler la vente
@@ -261,6 +276,7 @@ function BidDialog({ auction, onClose }: { auction: Auction | null; onClose: () 
     onSuccess: () => {
       sfx.gavel();
       toast.success(`Enchère de ${value} pièces placée !`);
+      qc.invalidateQueries({ queryKey: ["auction-bids"] });
       qc.invalidateQueries({ queryKey: ["auctions"] });
       qc.invalidateQueries({ queryKey: ["profile"] });
       onClose();
@@ -288,6 +304,12 @@ function BidDialog({ auction, onClose }: { auction: Auction | null; onClose: () 
                 <Row label="Tes pièces" value={`${coins}`} />
               </div>
             </div>
+            {a.bid_count > 0 && (
+              <div>
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Historique des enchères</p>
+                <BidHistory auctionId={a.auction_id} startPrice={a.start_price} compact />
+              </div>
+            )}
             <form className="mt-2 flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); if (!invalid && !broke) bid.mutate(); }}>
               <label className="text-sm font-semibold" htmlFor="bid-amount">Ton enchère</label>
               <Input id="bid-amount" type="number" inputMode="numeric" min={min} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} />
@@ -457,5 +479,38 @@ function SellDialog({ open, onClose, onListed }: { open: boolean; onClose: () =>
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+const timeFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+/** Who bid before, how many coins, and by how much they raised the previous bid. */
+function BidHistory({ auctionId, startPrice, compact }: { auctionId: string; startPrice: number; compact?: boolean }) {
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["auction-bids", auctionId],
+    refetchInterval: 10_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_auction_bids", { _auction_id: auctionId });
+      if (error) throw error;
+      return (data ?? []) as BidRow[];
+    },
+  });
+  if (isLoading) return <p className="text-sm text-muted-foreground">Chargement…</p>;
+  if (!data.length) return <p className="text-sm text-muted-foreground">Aucune enchère pour l'instant.</p>;
+  const steps = bidSteps(data, startPrice);
+  return (
+    <ol className={cn("space-y-1 overflow-y-auto pr-1", compact ? "max-h-36" : "max-h-[50dvh]")}>
+      {steps.map((b, i) => (
+        <li key={b.bid_id} className={cn("flex items-center gap-2 rounded-md px-2 py-1.5 text-sm", i === 0 ? "bg-primary/15 ring-1 ring-primary/50" : "bg-secondary/50")}>
+          <span className="min-w-0 flex-1 truncate">
+            <b>{b.is_me ? "Toi" : b.username ?? "Un joueur"}</b>
+            {i === 0 && <span className="ml-1 rounded bg-primary px-1 text-[10px] font-bold text-primary-foreground">EN TÊTE</span>}
+            <span className="block text-[11px] text-muted-foreground">{timeFmt.format(new Date(b.created_at))}</span>
+          </span>
+          <span className="text-xs font-semibold text-r-uncommon">+{b.raise}</span>
+          <span className="flex w-20 items-center justify-end gap-1 font-display text-lg text-primary"><Coins className="h-3.5 w-3.5" />{b.amount}</span>
+        </li>
+      ))}
+    </ol>
   );
 }

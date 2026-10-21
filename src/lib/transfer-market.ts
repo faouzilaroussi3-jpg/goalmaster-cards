@@ -40,3 +40,11 @@ export function formatTimeLeft(ms: number): string {
   if (h > 0) return `${h} h ${String(m).padStart(2, "0")} min`;
   return `${m} min ${String(sec).padStart(2, "0")} s`;
 }
+
+export interface BidRow { bid_id: string; username: string | null; amount: number; created_at: string; is_me: boolean }
+
+/** Bid history, newest first, with how much each bid raised the previous one (the first bid raises the start price). */
+export function bidSteps(bids: BidRow[], startPrice: number): (BidRow & { raise: number })[] {
+  const chrono = [...bids].sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at) || a.amount - b.amount);
+  return chrono.map((b, i) => ({ ...b, raise: b.amount - (i === 0 ? startPrice : chrono[i - 1]!.amount) })).reverse();
+}
