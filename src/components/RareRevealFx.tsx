@@ -342,7 +342,7 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
     }
     raf = requestAnimationFrame(frame);
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
-  }, [fx, boomAt, total, anchor]);
+  }, [fx, tint, boomAt, total, anchor]);
 
   return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 z-0 h-full w-full" />;
 }
