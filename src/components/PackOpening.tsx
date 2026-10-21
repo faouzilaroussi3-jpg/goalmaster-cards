@@ -239,7 +239,7 @@ export function PackOpening({
                   )}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
-                      <CardBack look={back} bonus={front.is_bonus} className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
+                      <CardBack look={back} bonus={front.is_bonus} still className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
                     </div>
                     <div className="flip-face flip-back">
                       <PlayerCard card={front} />
