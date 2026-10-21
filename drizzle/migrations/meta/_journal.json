@@ -204,6 +204,13 @@
       "when": 1792597992744,
       "tag": "0028_rarity_card_shapes",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1792600666688,
+      "tag": "0029_news_announcements",
+      "breakpoints": true
     }
   ]
 }

@@ -831,3 +831,28 @@
 .fm-card[data-shape="wanted"] .card-badges { top: 26%; right: 15%; z-index: 3; }
 .card-wanted-pin { position: absolute; left: 50%; top: 1.6%; z-index: 4; width: 5cqw; height: 5cqw; margin-left: -2.5cqw; border-radius: 50%; background: radial-gradient(circle at 35% 35%, oklch(0.85 0.03 60), oklch(0.45 0.03 50) 55%, oklch(0.25 0.02 40)); box-shadow: .6cqw 1cqw 1.2cqw oklch(0.2 0.03 40 / .6); }
 .fm-card[data-shape="wanted"] :is(.holo, .sheen) { mix-blend-mode: soft-light; opacity: .45; }
+
+/* Nouveautés welcome screen (game-ad style) */
+.news-splash {
+  background:
+    radial-gradient(120% 80% at 85% 20%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 65%),
+    var(--card);
+  box-shadow: 0 0 80px -20px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+.news-splash::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, color-mix(in oklab, var(--foreground) 10%, transparent) 50%, transparent 65%);
+  background-size: 250% 100%; animation: news-shine 5s ease-in-out infinite;
+}
+.news-slide { animation: news-in 0.45s cubic-bezier(.2,.8,.2,1); }
+.news-float { animation: news-float 4s ease-in-out infinite; }
+.news-progress { width: 0; animation: news-progress linear forwards; }
+@keyframes news-in { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes news-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+@keyframes news-shine { 0% { background-position: 120% 0; } 60%, 100% { background-position: -120% 0; } }
+@keyframes news-progress { from { width: 0; } to { width: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .news-slide, .news-float, .news-splash::before { animation: none; }
+  .news-progress { animation: none; width: 100%; }
+}
