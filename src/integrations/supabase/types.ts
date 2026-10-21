@@ -1403,6 +1403,7 @@ export type Database = {
         Args: { _forfeit: boolean; _id: string; _winner: string }
         Returns: undefined
       }
+      _is_big_pull: { Args: { _rarity: string }; Returns: boolean }
       _lm_bot_team: { Args: { _level: string }; Returns: Json }
       _lm_finish: {
         Args: {
@@ -1575,6 +1576,16 @@ export type Database = {
       }
       create_live_match: { Args: { _opponent: string }; Returns: string }
       create_match: { Args: { _opponent: string }; Returns: string }
+      get_auction_bids: {
+        Args: { _auction_id: string }
+        Returns: {
+          amount: number
+          bid_id: string
+          created_at: string
+          is_me: boolean
+          username: string
+        }[]
+      }
       get_auctions: {
         Args: { _scope?: string }
         Returns: {
@@ -1614,6 +1625,7 @@ export type Database = {
           name: string
           nationality: string
           pack_key: string
+          pack_name: string
           pos: string
           pulled_at: string
           rarity: string
