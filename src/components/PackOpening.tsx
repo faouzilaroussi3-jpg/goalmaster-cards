@@ -35,6 +35,11 @@ export interface OpenResult {
 
 type Phase = "intro" | "reveal" | "done";
 
+// Smoke puffs behind a Légendaire-or-better card: [left %, top %, delay s, sideways drift %].
+const SMOKE_PUFFS: [number, number, number, number][] = [
+  [30, 62, 0, -18], [62, 66, 0.6, 16], [46, 74, 1.2, -6], [22, 46, 1.8, -24], [74, 48, 2.4, 22], [50, 56, 3, 8], [36, 80, 3.6, -12], [66, 82, 4.2, 12],
+];
+
 /** Offset of a face-down card sitting `depth` places behind the front of the stack. */
 function stackOffset(depth: number) {
   return { x: depth * 9, y: depth * -7, r: depth * 3 };
@@ -55,6 +60,13 @@ export function PackOpening({
   instant?: boolean;
   onClose: () => void;
 }) {
+  // Decode the pack's own back picture up front so the stack never flashes or stutters while cards flip.
+  useEffect(() => {
+    if (!back?.image_url) return;
+    const img = new Image();
+    img.src = back.image_url;
+    img.decode?.().catch(() => {});
+  }, [back?.image_url]);
   const [phase, setPhase] = useState<Phase>(() => (result ? (instant ? "done" : "reveal") : "intro"));
   // Number of cards turned over so far; the last turned card sits face up at the front of the stack.
   const [turned, setTurned] = useState(0);
@@ -191,7 +203,7 @@ export function PackOpening({
                   className="reveal-slot absolute inset-0"
                   style={{ transform: `translate(${o.x}px, ${o.y}px) rotate(${o.r}deg)`, zIndex: 10 - depth }}
                 >
-                  <CardBack look={back} bonus={c.is_bonus} />
+                  <CardBack look={back} bonus={c.is_bonus} still />
                 </div>
               );
             })}
@@ -220,7 +232,11 @@ export function PackOpening({
                     ["--charge" as string]: `${charge}ms`,
                   }}
                 >
-                  {(front.tier >= 5 || fx) && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }} />}
+                  {(front.tier >= 5 || fx) && !busy && (
+                    <div className="rarity-smoke -z-10" aria-hidden style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }}>
+                      {SMOKE_PUFFS.map((p, i) => <i key={i} style={{ left: `${p[0]}%`, top: `${p[1]}%`, animationDelay: `${p[2]}s`, ["--drift" as string]: `${p[3]}%` }} />)}
+                    </div>
+                  )}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
                       <CardBack look={back} bonus={front.is_bonus} className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
