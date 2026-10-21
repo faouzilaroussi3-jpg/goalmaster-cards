@@ -196,7 +196,7 @@ function TeamBuilderPage() {
                   className={cn("absolute z-10 flex w-[17%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg transition", on && "z-20 scale-105")}
                   style={{ left: `${sl.y}%`, top: `${87 - (sl.x - 5) * 1.74}%` }}
                   aria-label={`${POSITION_LABEL[sl.role]}${p ? ` : ${p.name}` : " : vide"}`}>
-                  <PitchCard card={p} role={sl.role} on={on} />
+                  <PitchCard card={p ?? null} role={sl.role} on={on} />
                   {p && (
                     <span className="flex items-center gap-1 rounded-full bg-background/85 px-1.5 py-px leading-none">
                       <span className={cn("text-[9px] font-bold", fitTone(p.fit))}>{sl.role}</span>
