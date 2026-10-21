@@ -26,9 +26,9 @@
 - [x] Admin : créer / supprimer des raretés, avec un effet visuel choisi appliqué à toutes les cartes de cette rareté
 - [x] Défis quotidiens et hebdomadaires qui donnent des packs et des pièces
 - [x] Admin : modifier à volonté le visuel des raretés (nom, sigle, effet, couleur)
-- [ ] Mode Matchs 11 contre 11 : équipe de 11 + 5 remplaçants, formation/tactique, collectif (postes, club, nationalité, rareté), match simulé contre l'équipe d'un autre joueur, 2 mi-temps de 1 min 20 sur un terrain avec pions et prénoms, changements à la mi-temps, pièces + classement
+- [x] Mode Matchs 11 contre 11 : équipe de 11 + 5 remplaçants, formation/tactique, collectif (postes, club, nationalité, rareté), match simulé contre l'équipe d'un autre joueur, 2 mi-temps de 1 min 20 sur un terrain avec pions et prénoms, changements à la mi-temps, pièces + classement
 - [x] Matchs joués à la main : diriger ses pions (clavier, tactile, manette), passe / profondeur / tir / centre, récupération en passant sur le porteur ou tir maintenu tout près ; contre l'ordi (Commune, Légendaire, Royal) ou un ami en direct ; pièces gagnant / perdant / nul partagé
-- [ ] Ajouter 2 500 cartes (Commune à Rare) avec illustrations, comptées dans le total de cartes de la collection
-- [ ] Taux de drop réglés par l'admin respectés exactement (raretés au-dessus de Légendaire très dures à obtenir)
-- [ ] Admin packs : renommer, créer, supprimer, personnaliser le visuel (comme les raretés) et choisir les raretés dedans
-- [ ] Raretés : choisir la forme des cartes (Wanted arrachée réaliste papier ancien, ronde, etc.), mixable avec les effets, visible aussi à l'ouverture des packs
+- [x] Ajouter 2 500 cartes (Commune à Rare) avec illustrations, comptées dans le total de cartes de la collection
+- [x] Taux de drop réglés par l'admin respectés exactement (raretés au-dessus de Légendaire très dures à obtenir)
+- [x] Admin packs : renommer, créer, supprimer, personnaliser le visuel (comme les raretés) et choisir les raretés dedans
+- [x] Raretés : choisir la forme des cartes (Wanted arrachée réaliste papier ancien, ronde, etc.), mixable avec les effets, visible aussi à l'ouverture des packs
