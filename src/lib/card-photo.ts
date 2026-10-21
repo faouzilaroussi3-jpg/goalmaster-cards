@@ -7,7 +7,7 @@ export const CARD_PHOTO_ROUTE = "/api/public/card-photo/";
 /** Max size of the stored portrait (cards are 2:3, shown full-frame). */
 export const CARD_PHOTO_MAX = { width: 800, height: 1200 };
 
-const FILE_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|webp)$/;
+const FILE_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|webp|png)$/;
 
 /** Only random-UUID file names written by the admin uploader can be served. */
 export function isCardPhotoFile(name: string): boolean {
