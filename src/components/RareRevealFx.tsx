@@ -42,6 +42,14 @@ function mix(a: Rgb, b: Rgb, t: number): Rgb {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 }
 
+/** A rarity's own tint (chosen by the admin) leads the burst; fire keeps its flame colours. */
+function tinted(pal: Palette, fx: RareFx, tint: string | null | undefined): Palette {
+  if (!tint || fx === "secret_ultimate") return pal;
+  const c = toRgb(tint, pal.core);
+  const light = mix(c, [255, 255, 255], 0.55);
+  return { ...pal, core: c, colors: [c, light, c, ...pal.colors.slice(0, 2)] };
+}
+
 /** Colours come from the theme tokens so each burst matches its card frame. */
 function palette(fx: RareFx, el: HTMLElement): Palette {
   const css = getComputedStyle(el);
@@ -81,7 +89,7 @@ const rand = (a: number, b: number) => a + Math.random() * (b - a);
  * explodes when its face appears, then lingers. Gold for Légendaire, rainbow for ALT, diamond shards
  * for Secrète Légendaire, navy/white neon for Shiny, fire for Secrète Ultime. Skipped for reduced motion.
  */
-export function RareRevealFx({ fx, boomAt, total, anchor }: { fx: RareFx; boomAt: number; total: number; anchor: RefObject<HTMLElement | null> }) {
+export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; tint?: string | null; boomAt: number; total: number; anchor: RefObject<HTMLElement | null> }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -89,7 +97,7 @@ export function RareRevealFx({ fx, boomAt, total, anchor }: { fx: RareFx; boomAt
     if (!canvas || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const pal = palette(fx, canvas);
+    const pal = tinted(palette(fx, canvas), fx, tint);
     const sprites = pal.colors.map(sprite);
     const fire = fx === "secret_ultimate";
     const rainbow = fx === "alt";
