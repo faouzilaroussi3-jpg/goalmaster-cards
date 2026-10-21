@@ -4,7 +4,7 @@ import { isCustomBack, type CardBackLook } from "@/lib/card-back";
 import { ExtraFx } from "@/components/PlayerCard";
 
 /** Goalmaster card back: black foil, pink lattice, white frame and a GM medallion; a pack can recolour it, reshape it, add effects or its own picture. */
-export function CardBack({ bonus, className, look }: { bonus?: boolean; className?: string; look?: CardBackLook | null }) {
+export function CardBack({ bonus, className, look }: { bonus?: boolean; className?: string; look?: CardBackLook | null | undefined }) {
   const custom = look && isCustomBack(look) ? look : null;
   const style = custom?.color ? ({ "--primary": custom.color, "--rc": custom.color } as CSSProperties) : ({ "--rc": "var(--primary)" } as CSSProperties);
   return (
