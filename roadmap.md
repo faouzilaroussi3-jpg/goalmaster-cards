@@ -34,3 +34,5 @@
 - [x] Raretés : choisir la forme des cartes (Wanted arrachée réaliste papier ancien, ronde, etc.), mixable avec les effets, visible aussi à l'ouverture des packs
 - [x] Notifs aux joueurs quand un pack, des cartes ou une rareté arrivent + écran d'accueil façon pub (nouveautés, modes de jeu, cartes stars)
 - [x] Admin packs : dos des cartes personnalisable par pack (couleur, effets mélangés, forme, image) visible à l'ouverture
+- [x] Tirages Légendaire+ : remplacer l'effet qui tourne par de la fumée couleur rareté
+- [ ] Retournement des cartes fluide et sans bug quel que soit le dos personnalisé du pack
