@@ -4,11 +4,11 @@ import { isCustomBack, type CardBackLook } from "@/lib/card-back";
 import { ExtraFx } from "@/components/PlayerCard";
 
 /** Goalmaster card back: black foil, pink lattice, white frame and a GM medallion; a pack can recolour it, reshape it, add effects or its own picture. */
-export function CardBack({ bonus, className, look }: { bonus?: boolean; className?: string; look?: CardBackLook | null | undefined }) {
+export function CardBack({ bonus, className, look, still }: { bonus?: boolean; className?: string; look?: CardBackLook | null | undefined; /** Cards waiting in the stack: same look, animations paused to keep flips smooth. */ still?: boolean }) {
   const custom = look && isCustomBack(look) ? look : null;
   const style = custom?.color ? ({ "--primary": custom.color, "--rc": custom.color } as CSSProperties) : ({ "--rc": "var(--primary)" } as CSSProperties);
   return (
-    <div className={cn("gm-back", bonus && "gm-back-is-bonus", className)} aria-hidden
+    <div className={cn("gm-back", bonus && "gm-back-is-bonus", still && "gm-back-still", className)} aria-hidden
       data-shape={custom && custom.shape !== "standard" ? custom.shape : undefined} data-image={custom?.image_url ? "" : undefined} style={style}>
       {custom?.image_url && <img src={custom.image_url} alt="" className="gm-back-image" draggable={false} />}
       <div className="gm-back-pattern" />
