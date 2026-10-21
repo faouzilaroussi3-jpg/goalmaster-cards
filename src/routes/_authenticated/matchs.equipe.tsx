@@ -194,7 +194,7 @@ function TeamBuilderPage() {
               return (
                 <button key={i} type="button" data-sfx="none" onClick={() => { sfx.select(); setSel({ kind: "xi", i }); }}
                   className={cn("absolute z-10 flex w-[17%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg transition", on && "z-20 scale-105")}
-                  style={{ left: `${sl.y}%`, top: `${90 - (sl.x - 5) * 1.78}%` }}
+                  style={{ left: `${sl.y}%`, top: `${87 - (sl.x - 5) * 1.74}%` }}
                   aria-label={`${POSITION_LABEL[sl.role]}${p ? ` : ${p.name}` : " : vide"}`}>
                   <PitchCard card={p} role={sl.role} on={on} />
                   {p && (
