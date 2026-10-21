@@ -109,7 +109,7 @@ const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 /**
  * Full-screen glow and explosion for Légendaire-or-better reveals: light gathers into the card,
- * explodes when its face appears, then lingers. Gold for Légendaire, rainbow for ALT, diamond shards
+ * explodes in a cloud of smoke in the rarity's colours when its face appears, then lingers. Gold for Légendaire, rainbow for ALT, diamond shards
  * for Secrète Légendaire, navy/white neon for Shiny, fire for Secrète Ultime. Skipped for reduced motion.
  */
 export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; tint?: string | null; boomAt: number; total: number; anchor: RefObject<HTMLElement | null> }) {
@@ -122,6 +122,8 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
     if (!ctx) return;
     const pal = tinted(palette(fx, canvas), fx, tint);
     const sprites = pal.colors.map(sprite);
+    const fire = fx === "secret_ultimate";
+    const rainbow = fx === "alt";
     // Smoke in the pulled rarity's colours: its own tone, a lighter wisp and a deeper shade.
     const smokeCols: Rgb[] = fire
       ? [pal.colors[6]!, pal.colors[9]!, pal.colors[4]!]
@@ -129,8 +131,6 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
     const smokes = smokeCols.map(smokeSprite);
     const puffs: Puff[] = [];
     let puffAcc = 0;
-    const fire = fx === "secret_ultimate";
-    const rainbow = fx === "alt";
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     let W = 0, H = 0;
@@ -273,6 +273,59 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
       ctx!.stroke();
     }
 
+    function addPuff(p: Omit<Puff, "age" | "rot" | "vr" | "color">) {
+      puffs.push({ ...p, age: 0, rot: Math.random() * Math.PI * 2, vr: rand(-0.35, 0.35), color: (Math.random() * smokes.length) | 0 });
+    }
+
+    function smokeBurst(cx: number, cy: number, c: ReturnType<typeof center>) {
+      const big = Math.max(c.w, c.h);
+      for (let i = 0; i < 46; i++) {
+        const a = Math.random() * Math.PI * 2, sp = rand(160, 620);
+        addPuff({ x: cx + Math.cos(a) * big * 0.15, y: cy + Math.sin(a) * big * 0.15, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+          life: rand(1.8, 3.2), size: big * rand(0.45, 0.9), grow: rand(1.4, 2.4), alpha: rand(0.55, 0.85), drag: 1.9, rise: fire ? -70 : -35 });
+      }
+    }
+
+    function smoke(dt: number, t: number, c: ReturnType<typeof center>, fade: number) {
+      const big = Math.max(c.w, c.h);
+      const building = t < boomAt;
+      const after = (t - boomAt) / Math.max(1, total - boomAt);
+      const rate = t > total - 600 ? 0 : building ? 10 + 26 * (t / boomAt) : Math.max(4, 22 * (1 - after));
+      puffAcc += rate * dt;
+      while (puffAcc >= 1) {
+        puffAcc -= 1;
+        if (building) {
+          // Drifts in slowly from all around and thickens behind the card.
+          const a = Math.random() * Math.PI * 2, d = big * rand(0.7, 1.5);
+          addPuff({ x: c.x + Math.cos(a) * d, y: c.y + Math.sin(a) * d, vx: -Math.cos(a) * rand(30, 70), vy: -Math.sin(a) * rand(30, 70),
+            life: rand(1.4, 2.4), size: big * rand(0.35, 0.6), grow: rand(0.8, 1.3), alpha: rand(0.35, 0.6), drag: 0.4, rise: -10 });
+        } else {
+          // Billows rising from behind the card's sides and base.
+          const side = Math.random();
+          const x = c.x + (side < 0.6 ? rand(-0.55, 0.55) * c.w : (side < 0.8 ? -0.6 : 0.6) * c.w);
+          addPuff({ x, y: c.y + c.h * rand(0.05, 0.5), vx: rand(-40, 40), vy: rand(-90, -40),
+            life: rand(2, 3.4), size: big * rand(0.4, 0.75), grow: rand(1.2, 2), alpha: rand(0.35, 0.6), drag: 0.3, rise: fire ? -60 : -25 });
+        }
+      }
+      for (let i = puffs.length - 1; i >= 0; i--) {
+        const p = puffs[i]!;
+        p.age += dt;
+        if (p.age >= p.life) { puffs.splice(i, 1); continue; }
+        const d = Math.exp(-p.drag * dt);
+        p.vx *= d; p.vy = p.vy * d + p.rise * dt;
+        p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+        const k = p.age / p.life;
+        const env = Math.min(1, k / 0.2) * (1 - k) * (1 - k);
+        const sz = p.size * (1 + (p.grow - 1) * k);
+        ctx!.save();
+        ctx!.translate(p.x, p.y);
+        ctx!.rotate(p.rot);
+        ctx!.globalAlpha = p.alpha * env * fade;
+        ctx!.drawImage(smokes[p.color]!, -sz / 2, -sz / 2, sz, sz);
+        ctx!.restore();
+      }
+    }
+
     function frame(now: number) {
       const t = now - start;
       const dt = Math.min(0.05, (now - last) / 1000);
@@ -311,27 +364,12 @@ export function RareRevealFx({ fx, tint, boomAt, total, anchor }: { fx: RareFx; 
       ctx!.fillStyle = cg;
       ctx!.fillRect(c.x - coreR, c.y - coreR, coreR * 2, coreR * 2);
 
-      // God rays turning around the card (flickering flame tongues for Secrète Ultime).
-      const nRays = fire ? 16 : pal.rays;
-      const rayA = (since < 0 ? build * 0.22 : Math.max(0.12, 0.45 - since * 0.15)) * fade;
-      const reach = Math.max(W, H) * (since < 0 ? 0.35 + build * 0.3 : 0.8);
-      for (let i = 0; i < nRays; i++) {
-        const a = (i / nRays) * Math.PI * 2 + t / (fx === "secret_legendary" ? 1600 : 2600);
-        const spread = fire ? 0.07 + 0.04 * Math.sin(t / 70 + i * 2) : fx === "secret_legendary" ? 0.025 : 0.06;
-        const len = reach * (fire ? 0.6 + 0.4 * Math.abs(Math.sin(t / 120 + i)) : 1);
-        const rc = rainbow ? pal.colors[i % pal.colors.length]! : fire ? pal.colors[2 + (i % 4)]! : pal.colors[i % 2]!;
-        const rg = ctx!.createRadialGradient(c.x, c.y, 0, c.x, c.y, len);
-        rg.addColorStop(0, `rgba(${rc[0]},${rc[1]},${rc[2]},${rayA})`);
-        rg.addColorStop(1, `rgba(${rc[0]},${rc[1]},${rc[2]},0)`);
-        ctx!.fillStyle = rg;
-        ctx!.beginPath();
-        ctx!.moveTo(c.x, c.y);
-        ctx!.arc(c.x, c.y, len, a - spread, a + spread);
-        ctx!.closePath();
-        ctx!.fill();
-      }
+      // Coloured smoke: gathers round the card during the build-up, bursts out with the explosion, then billows up.
+      ctx!.globalCompositeOperation = "source-over";
+      smoke(dt, t, c, fade);
+      ctx!.globalCompositeOperation = "lighter";
 
-      if (!boomed && t >= boomAt) { boomed = true; explode(c.x, c.y); }
+      if (!boomed && t >= boomAt) { boomed = true; explode(c.x, c.y); smokeBurst(c.x, c.y, c); }
       if (t < total - 300) spawn(dt, t, c);
 
       // Shockwaves.
