@@ -9,3 +9,6 @@
 - LivePulls shows big_pulls (filled by a pack_openings trigger, Légendaire+ only, Secrète Ultime and admin accounts excluded in both the trigger and get_big_pulls) and owns its own realtime subscription on that table.
 - Tearing a pack goes straight from the light burst to the face-down reveal stack (no cinematic), so opening stays fast; a quick-open button (PackOpening instant) skips tear and stack straight to the summary; tear thresholds live in src/lib/pack-swipe.ts as pure functions with tests.
 - Pack results are revealed from a tap-to-flip stack (CardBack + src/lib/card-reveal.ts timings) in the order open_pack returns (least rare first, slot field); reveal suspense is presentation only.
+- Rarity styles draw through .card-style-fx[data-fx]; extra effects are layered by PlayerCard's exported ExtraFx over the main effect, which alone sets fonts/photo treatment.
+- CardBack draws a pack's back colour, shape outline (.gm-back[data-shape], same outlines as card shapes) and effects via ExtraFx; back pictures are blended with CSS because backs reshape per pack.
+- Custom pack pictures are baked in the browser into a crimped foil pack PNG (src/lib/packify.ts) before upload, so every pack surface (swipe tear, lists, opening, news) stays a plain image.
