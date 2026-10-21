@@ -31,12 +31,26 @@ export function rareFx(rarity: string, version = "normal"): RareFx | null {
 }
 
 /**
+ * Big reveal for any rarity: its look first (a rarity wearing the Légendaire effect explodes in gold), then the
+ * built-in it plays as, and finally its place in the ranking, so every rarity ranked from Légendaire upwards
+ * (including ones an admin creates later, whatever look they wear) always gets an animation.
+ */
+export function rarityRevealFx(rarity: string, version = "normal"): RareFx | null {
+  const r = rarityMeta(rarity);
+  const byLook = rareFx(r.fx, version) ?? rareFx(r.play, version);
+  if (byLook) return byLook;
+  if (r.rank < rarityMeta("legendary").rank) return null;
+  if (r.rank >= rarityMeta("secret_ultimate").rank) return "secret_ultimate";
+  if (r.rank >= rarityMeta("secret_legendary").rank) return version === "shiny" ? "shiny" : "secret_legendary";
+  return version === "alt" ? "alt" : "legendary";
+}
+
+/**
  * When the card flips (charge), when the explosion hits (boom: the card face appears mid-flip),
  * and how long taps are ignored (lock) so the animation always plays out in full.
  */
 export function revealTiming(card: { rarity: string; version: string; tier: number; is_bonus: boolean }) {
-  // Admin-created rarities get the big reveal of the effect they wear.
-  const fx = rareFx(rarityMeta(card.rarity).fx, card.version);
+  const fx = rarityRevealFx(card.rarity, card.version);
   if (!fx) {
     const charge = chargeDelay(card.tier, card.is_bonus, card.version);
     return { fx, charge, boom: charge + FLIP_MS * 0.4, lock: charge + FLIP_MS, total: 0 };

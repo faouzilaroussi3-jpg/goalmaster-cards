@@ -57,7 +57,7 @@ export function PackOpening({
   const [busy, setBusy] = useState(false);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
-  const [rare, setRare] = useState<{ fx: RareFx; key: number; boom: number; total: number; title: boolean; shake: boolean } | null>(null);
+  const [rare, setRare] = useState<{ fx: RareFx; key: number; boom: number; total: number; title: boolean; shake: boolean; tint: string | null } | null>(null);
   const stackRef = useRef<HTMLButtonElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -84,8 +84,8 @@ export function PackOpening({
   }
 
   /** Légendaire or better: glow build-up, explosion as the face appears, then lingering light (3.6 to 4.8 s). */
-  function playRare(fx: RareFx, key: number, boom: number, total: number) {
-    setRare({ fx, key, boom, total, title: false, shake: false });
+  function playRare(fx: RareFx, key: number, boom: number, total: number, tint: string | null) {
+    setRare({ fx, key, boom, total, title: false, shake: false, tint });
     later(() => setRare((r) => (r && r.key === key ? { ...r, title: true, shake: true } : r)), boom);
     later(() => setRare((r) => (r && r.key === key ? { ...r, shake: false } : r)), boom + 500);
     later(() => setRare((r) => (r && r.key === key ? null : r)), total);
@@ -106,7 +106,7 @@ export function PackOpening({
       sfx.rareBuild(timing.fx, timing.charge);
       later(() => sfx.cardFlip(), timing.charge);
       later(() => sfx.rareBoom(timing.fx!), timing.boom);
-      playRare(timing.fx, turned + 1, timing.boom, timing.total);
+      playRare(timing.fx, turned + 1, timing.boom, timing.total, rarityMeta(next.rarity).color);
     } else {
       if (next.tier >= 4) { sfx.charge(timing.charge, next.tier); later(() => triggerFlash(next), timing.boom); }
       later(() => sfx.cardFlip(), timing.charge);
@@ -141,7 +141,7 @@ export function PackOpening({
         />
       )}
       {rare && phase === "reveal" && (
-        <RareRevealFx key={rare.key} fx={rare.fx} boomAt={rare.boom} total={rare.total} anchor={stackRef} />
+        <RareRevealFx key={rare.key} fx={rare.fx} tint={rare.tint} boomAt={rare.boom} total={rare.total} anchor={stackRef} />
       )}
       {rare?.title && front && (
         <div className="pointer-events-none fixed inset-x-0 top-[6%] z-20 flex justify-center px-4">
@@ -216,10 +216,10 @@ export function PackOpening({
                     ["--charge" as string]: `${charge}ms`,
                   }}
                 >
-                  {front.tier >= 5 && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }} />}
+                  {(front.tier >= 5 || fx) && !busy && <div className="rays -z-10" style={{ ["--rc" as string]: rarityMeta(front.rarity).color ?? RARITY_VAR[rarityMeta(front.rarity).fx] }} />}
                   <div className="flip-inner reveal-flip">
                     <div className="flip-face">
-                      <CardBack bonus={front.is_bonus} className={cn(front.tier >= 4 && "gm-back-charge", fx && "gm-back-rare")} />
+                      <CardBack bonus={front.is_bonus} className={cn((front.tier >= 4 || fx) && "gm-back-charge", fx && "gm-back-rare")} />
                     </div>
                     <div className="flip-face flip-back">
                       <PlayerCard card={front} />

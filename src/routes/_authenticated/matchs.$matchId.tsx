@@ -67,10 +67,12 @@ function MatchPage() {
             {m.status === "cancelled" ? "Ce match a été annulé." : m.status === "declined" ? "Le défi a été refusé." :
               m.side === "home" ? "En attente de ton adversaire. Le match se jouera dès qu'il accepte." : "Ce manager te défie avec cette équipe. Ton équipe enregistrée jouera."}
           </p>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <TeamStats team={m.home.team} />
-            <LineupList players={m.home.team.players} />
-          </div>
+          {m.home.team && (
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <TeamStats team={m.home.team} />
+              <LineupList players={m.home.team.players} />
+            </div>
+          )}
           {m.status === "pending" && (
             <div className="mt-4 flex gap-2">
               {m.side === "home" ? <Button variant="ghost" disabled={act.isPending} onClick={() => act.mutate("leave")}>Annuler le défi</Button> : (

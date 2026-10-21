@@ -26,3 +26,25 @@ describe("rare reveal animation", () => {
     expect(revealTiming(card("common", 1)).total).toBe(0);
   });
 });
+
+describe("rarities above Légendaire", () => {
+  it("every rarity ranked Légendaire or higher gets a big reveal, whatever look it wears", async () => {
+    const { setRarities } = await import("@/lib/rarity");
+    const { rarityRevealFx } = await import("@/lib/rare-reveal");
+    const row = (key: string, rank: number, effect: string, builtin = false) => ({ key, label: key, short_label: key, tier: 3, rank, effect, color: null, builtin });
+    setRarities([
+      row("common", 1, "common", true), row("super_rare", 4, "super_rare", true), row("legendary", 5, "legendary", true),
+      row("secret_legendary", 6, "neon", true), row("secret_ultimate", 7, "vintage", true),
+      row("custom_low", 4.5, "cartoon"), row("custom_mid", 5.5, "cartoon"), row("custom_high", 6.5, "vintage"), row("custom_top", 8, "tinted"),
+    ]);
+    expect(rarityRevealFx("custom_low")).toBeNull();
+    expect(rarityRevealFx("custom_mid")).toBe("legendary");
+    expect(rarityRevealFx("custom_high")).toBe("secret_legendary");
+    expect(rarityRevealFx("custom_high", "shiny")).toBe("shiny");
+    expect(rarityRevealFx("custom_top")).toBe("secret_ultimate");
+    // Built-ins wearing another look keep their own reveal.
+    expect(rarityRevealFx("secret_legendary")).toBe("secret_legendary");
+    expect(rarityRevealFx("secret_ultimate")).toBe("secret_ultimate");
+    expect(revealTiming({ rarity: "custom_mid", version: "normal", tier: 3, is_bonus: false }).total).toBeGreaterThanOrEqual(3000);
+  });
+});
