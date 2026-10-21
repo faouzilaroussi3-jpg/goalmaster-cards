@@ -1043,6 +1043,7 @@ export type Database = {
           archived: boolean
           art: string
           bonus_rates: Json
+          card_back: Json
           description: string | null
           effect: string
           id: string
@@ -1065,6 +1066,7 @@ export type Database = {
           archived?: boolean
           art?: string
           bonus_rates: Json
+          card_back?: Json
           description?: string | null
           effect?: string
           id?: string
@@ -1087,6 +1089,7 @@ export type Database = {
           archived?: boolean
           art?: string
           bonus_rates?: Json
+          card_back?: Json
           description?: string | null
           effect?: string
           id?: string
@@ -1787,6 +1790,7 @@ export type Database = {
         Args: never
         Returns: {
           art: string
+          card_back: Json
           count: number
           description: string
           effect: string
