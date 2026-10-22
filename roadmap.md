@@ -36,3 +36,4 @@
 - [x] Admin packs : dos des cartes personnalisable par pack (couleur, effets mélangés, forme, image) visible à l'ouverture
 - [x] Tirages Légendaire+ : remplacer l'effet qui tourne par de la fumée couleur rareté
 - [x] Retournement des cartes fluide et sans bug quel que soit le dos personnalisé du pack
+- [x] 30 cartes Holographique de plus (stars, photos réelles, sur le modèle de Désiré Doué)
