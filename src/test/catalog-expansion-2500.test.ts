@@ -1,20 +1,17 @@
 import { describe, expect, it } from "vitest";
 import expansion from "@/data/catalog-expansion-2500.json";
 import first from "@/data/catalog-expansion.json";
+import { RATING_BANDS } from "@/lib/card-ratings";
 
-const RANGE: Record<string, [number, number]> = {
-  common: [60, 69],
-  uncommon: [70, 75],
-  rare: [76, 81],
-};
+const RANGE: Record<string, readonly [number, number]> = RATING_BANDS;
 
 describe("2 500-card expansion", () => {
   it("adds exactly 2 500 cards", () => {
     expect(expansion).toHaveLength(2500);
   });
 
-  it("only uses Commune, Peu commune and Rare", () => {
-    expect(new Set(expansion.map((c) => c.rarity))).toEqual(new Set(["common", "uncommon", "rare"]));
+  it("only uses Commune to Super Rare", () => {
+    for (const c of expansion) expect(Object.keys(RANGE), c.name).toContain(c.rarity);
   });
 
   it("keeps ratings inside each rarity band", () => {

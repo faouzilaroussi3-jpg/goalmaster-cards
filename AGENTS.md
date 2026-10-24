@@ -28,3 +28,4 @@
 - Steered matches (live_matches): the engine runs in the browser (src/lib/live-match.ts, input via src/lib/pad.ts); the home player hosts live games over a broadcast channel. The server snapshots teams, builds bots, checks timing, reconciles both reports (mismatch = draw) and pays via _lm_finish under the shared daily cap.
 - Nouveautés: announcements are written by triggers on cards (merged within 30 min), rarities and pack_types (first time playable); rules in src/lib/news.ts, seen state via mark_news_seen.
 - Each pack has a card back look (pack_types.card_back, read through cardBackOf in src/lib/card-back.ts); looks only, never revealing the rarity.
+- Commune–Super Rare player cards: rarity and rating come from a strength ranking (club, league, fame, age) with non-overlapping bands in src/lib/card-ratings.ts; rebalances keep each rarity's card count so pack pools and rates stay unchanged, and src/data/*.json plus catalog-editions.ts mirror the cards rows.
