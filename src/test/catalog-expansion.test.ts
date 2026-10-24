@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
 import expansion from "@/data/catalog-expansion.json";
+import { RATING_BANDS } from "@/lib/card-ratings";
 
-const RANGE: Record<string, [number, number]> = {
-  common: [60, 69],
-  uncommon: [70, 75],
-  rare: [76, 81],
-  super_rare: [82, 88],
-};
+const RANGE: Record<string, readonly [number, number]> = RATING_BANDS;
 
 describe("500-card expansion", () => {
   it("adds exactly 500 cards", () => {
