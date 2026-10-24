@@ -225,6 +225,13 @@
       "when": 1792602139886,
       "tag": "0031_pack_card_backs",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792826505066,
+      "tag": "0032_special_timed_challenges",
+      "breakpoints": true
     }
   ]
 }

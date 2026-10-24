@@ -1154,6 +1154,7 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          ends_at: string | null
           id: string
           key: string
           metric: string
@@ -1163,6 +1164,7 @@ export type Database = {
           reward_pack_key: string | null
           reward_packs: number
           slot: number
+          starts_at: string | null
           target: number
           title: string
           version: string | null
@@ -1170,6 +1172,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          ends_at?: string | null
           id?: string
           key: string
           metric: string
@@ -1179,6 +1182,7 @@ export type Database = {
           reward_pack_key?: string | null
           reward_packs?: number
           slot?: number
+          starts_at?: string | null
           target: number
           title: string
           version?: string | null
@@ -1186,6 +1190,7 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          ends_at?: string | null
           id?: string
           key?: string
           metric?: string
@@ -1195,6 +1200,7 @@ export type Database = {
           reward_pack_key?: string | null
           reward_packs?: number
           slot?: number
+          starts_at?: string | null
           target?: number
           title?: string
           version?: string | null
@@ -1486,10 +1492,28 @@ export type Database = {
         }
         Returns: string
       }
+      admin_create_special_challenge: {
+        Args: {
+          _metric: string
+          _minutes: number
+          _rarity: string
+          _reward_coins: number
+          _reward_pack_key: string
+          _reward_packs: number
+          _target: number
+          _title: string
+          _version: string
+        }
+        Returns: string
+      }
       admin_delete_pack: { Args: { _pack_id: string }; Returns: string }
       admin_delete_rarity: {
         Args: { _key: string; _move_to: string }
         Returns: number
+      }
+      admin_end_special_challenge: {
+        Args: { _challenge_id: string }
+        Returns: undefined
       }
       admin_grant: {
         Args: {
