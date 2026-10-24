@@ -3,7 +3,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Anthony Briançon",
     "rarity": "common",
-    "rating": 65,
+    "rating": 64,
     "club": "Pau",
     "nationality": "France",
     "pos": "DC",
@@ -12,7 +12,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Mathieu Cafaro",
     "rarity": "common",
-    "rating": 66,
+    "rating": 65,
     "club": "Nantes",
     "nationality": "France",
     "pos": "MC",
@@ -21,7 +21,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Massadio Haidara",
     "rarity": "common",
-    "rating": 67,
+    "rating": 69,
     "club": "Kocaelispor",
     "nationality": "Mali",
     "pos": "DG",
@@ -29,8 +29,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Jean-Ricner Bellegarde",
-    "rarity": "common",
-    "rating": 68,
+    "rarity": "uncommon",
+    "rating": 72,
     "club": "Wolverhampton",
     "nationality": "Haïti",
     "pos": "MC",
@@ -38,8 +38,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Angelo Fulgini",
-    "rarity": "common",
-    "rating": 69,
+    "rarity": "uncommon",
+    "rating": 70,
     "club": "Al-Khaleej",
     "nationality": "France",
     "pos": "MC",
@@ -48,7 +48,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Jordan Ferri",
     "rarity": "common",
-    "rating": 70,
+    "rating": 66,
     "club": "Montpellier",
     "nationality": "France",
     "pos": "MC",
@@ -57,7 +57,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Jonathan Gradit",
     "rarity": "common",
-    "rating": 71,
+    "rating": 69,
     "club": "Lens",
     "nationality": "France",
     "pos": "DC",
@@ -66,7 +66,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Florian Sotoca",
     "rarity": "common",
-    "rating": 71,
+    "rating": 67,
     "club": "Lens",
     "nationality": "France",
     "pos": "BU",
@@ -74,8 +74,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Romain Del Castillo",
-    "rarity": "common",
-    "rating": 71,
+    "rarity": "uncommon",
+    "rating": 73,
     "club": "Brest",
     "nationality": "France",
     "pos": "AD",
@@ -84,7 +84,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Paul Bernardoni",
     "rarity": "common",
-    "rating": 71,
+    "rating": 67,
     "club": "Yverdon-Sport",
     "nationality": "France",
     "pos": "G",
@@ -93,7 +93,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Yvann Maçon",
     "rarity": "common",
-    "rating": 71,
+    "rating": 65,
     "club": "Saint-Étienne",
     "nationality": "France",
     "pos": "DD",
@@ -102,7 +102,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Aïmen Moueffek",
     "rarity": "common",
-    "rating": 71,
+    "rating": 65,
     "club": "Saint-Étienne",
     "nationality": "Maroc",
     "pos": "MC",
@@ -111,7 +111,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Wahbi Khazri",
     "rarity": "uncommon",
-    "rating": 72,
+    "rating": 71,
     "club": "Montpellier",
     "nationality": "Tunisie",
     "pos": "MOC",
@@ -120,7 +120,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Rémy Cabella",
     "rarity": "uncommon",
-    "rating": 73,
+    "rating": 74,
     "club": "Lille",
     "nationality": "France",
     "pos": "MOC",
@@ -128,8 +128,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Arnaud Nordin",
-    "rarity": "uncommon",
-    "rating": 74,
+    "rarity": "common",
+    "rating": 68,
     "club": "Montpellier",
     "nationality": "France",
     "pos": "AD",
@@ -137,7 +137,7 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Ludovic Blas",
-    "rarity": "uncommon",
+    "rarity": "rare",
     "rating": 75,
     "club": "Rennes",
     "nationality": "France",
@@ -146,8 +146,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Adrien Thomasson",
-    "rarity": "uncommon",
-    "rating": 76,
+    "rarity": "common",
+    "rating": 67,
     "club": "Rennes",
     "nationality": "France",
     "pos": "MC",
@@ -155,8 +155,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Boubakary Soumaré",
-    "rarity": "uncommon",
-    "rating": 77,
+    "rarity": "common",
+    "rating": 68,
     "club": "Al-Duhail",
     "nationality": "France",
     "pos": "MDC",
@@ -165,7 +165,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Jonathan Bamba",
     "rarity": "uncommon",
-    "rating": 77,
+    "rating": 73,
     "club": "Chicago Fire",
     "nationality": "Côte d’Ivoire",
     "pos": "AG",
@@ -173,8 +173,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Gautier Larsonneur",
-    "rarity": "uncommon",
-    "rating": 77,
+    "rarity": "common",
+    "rating": 67,
     "club": "Saint-Étienne",
     "nationality": "France",
     "pos": "G",
@@ -182,8 +182,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Téji Savanier",
-    "rarity": "rare",
-    "rating": 78,
+    "rarity": "common",
+    "rating": 65,
     "club": "Montpellier",
     "nationality": "France",
     "pos": "MOC",
@@ -191,8 +191,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Benjamin André",
-    "rarity": "rare",
-    "rating": 79,
+    "rarity": "common",
+    "rating": 68,
     "club": "Lille",
     "nationality": "France",
     "pos": "MC",
@@ -201,7 +201,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Gaëtan Laborde",
     "rarity": "rare",
-    "rating": 80,
+    "rating": 75,
     "club": "Nice",
     "nationality": "France",
     "pos": "BU",
@@ -210,7 +210,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Kevin Danso",
     "rarity": "rare",
-    "rating": 81,
+    "rating": 78,
     "club": "Sunderland",
     "nationality": "Autriche",
     "pos": "DC",
@@ -219,7 +219,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Loïc Badé",
     "rarity": "rare",
-    "rating": 82,
+    "rating": 76,
     "club": "Bayer Leverkusen",
     "nationality": "France",
     "pos": "DC",
@@ -227,8 +227,8 @@ export const CATALOG_EDITIONS = [
   },
   {
     "name": "Denis Bouanga",
-    "rarity": "rare",
-    "rating": 83,
+    "rarity": "uncommon",
+    "rating": 70,
     "club": "Los Angeles FC",
     "nationality": "Gabon",
     "pos": "AG",
@@ -237,7 +237,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Nabil Bentaleb",
     "rarity": "rare",
-    "rating": 84,
+    "rating": 78,
     "club": "Lille",
     "nationality": "Algérie",
     "pos": "MC",
@@ -246,7 +246,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Erling Haaland",
     "rarity": "super_rare",
-    "rating": 86,
+    "rating": 88,
     "club": "Norvège · Sélection",
     "nationality": "Norvège",
     "pos": "BU",
@@ -255,7 +255,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Kylian Mbappé",
     "rarity": "super_rare",
-    "rating": 87,
+    "rating": 88,
     "club": "France · Sélection",
     "nationality": "France",
     "pos": "BU",
@@ -273,7 +273,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Jude Bellingham",
     "rarity": "super_rare",
-    "rating": 86,
+    "rating": 88,
     "club": "Angleterre · Sélection",
     "nationality": "Angleterre",
     "pos": "MOC",
@@ -282,7 +282,7 @@ export const CATALOG_EDITIONS = [
   {
     "name": "Vinícius Júnior",
     "rarity": "super_rare",
-    "rating": 87,
+    "rating": 88,
     "club": "Brésil · Sélection",
     "nationality": "Brésil",
     "pos": "AG",
