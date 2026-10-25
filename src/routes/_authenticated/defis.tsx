@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CalendarDays, Check, Clock, Coins, Gift, Lock, Package, Sun, Target } from "lucide-react";
+import { CalendarDays, Check, Clock, Coins, Gift, Lock, Package, Sparkles, Sun, Target } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyChallenges, useMyPeriodicChallenges } from "@/lib/auth";
 import { challengeState, claimableSummary, goalText, groupChallenges, progressRatio, type Challenge } from "@/lib/challenges";
@@ -61,6 +61,7 @@ function ChallengesPage() {
   const done = list.filter((c) => c.claimed).length;
   const daily = periodic.filter((c) => c.period === "daily");
   const weekly = periodic.filter((c) => c.period === "weekly");
+  const special = periodic.filter((c) => c.period === "special" && new Date(c.ends_at).getTime() > now);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["challenges"] });
@@ -148,6 +149,21 @@ function ChallengesPage() {
         </Button>
       </div>
 
+      {special.length > 0 && (
+        <section className="mt-8 rounded-xl border border-primary bg-card p-4 shadow-[0_0_32px_-10px_var(--primary)]">
+          <header className="mb-3 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h2 className="font-display text-2xl tracking-wide text-primary">Défis spéciaux</h2>
+            <span className="ml-auto text-xs text-muted-foreground">Disponibles pour une durée limitée</span>
+          </header>
+          <ul className="grid gap-2 md:grid-cols-2">
+            {special.map((c) => (
+              <PeriodicRow key={c.challenge_id} c={c} busy={busy} onClaim={() => claimPeriodic.mutate(c)} endsIn={timeLeft(c.ends_at, now)} />
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         <PeriodSection
           icon={<Sun className="h-5 w-5 text-primary" />}
@@ -234,7 +250,7 @@ function PeriodSection({ icon, title, items, now, loading, busy, onClaim }: {
   );
 }
 
-function PeriodicRow({ c, busy, onClaim }: { c: PeriodicChallenge; busy: boolean; onClaim: () => void }) {
+function PeriodicRow({ c, busy, onClaim, endsIn }: { c: PeriodicChallenge; busy: boolean; onClaim: () => void; endsIn?: string }) {
   const state = challengeState(c);
   const pct = Math.round(progressRatio(c) * 100);
   return (
@@ -251,6 +267,7 @@ function PeriodicRow({ c, busy, onClaim }: { c: PeriodicChallenge; busy: boolean
           <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{Math.min(c.progress, c.target)} / {c.target}</span>
         </div>
         <p className="truncate text-xs text-muted-foreground">{periodicGoalText(c)}</p>
+        {endsIn && <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-primary"><Clock className="h-3 w-3" /> Disparaît dans {endsIn}</p>}
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
           <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
         </div>
