@@ -21,7 +21,7 @@
 - Players may only UPDATE username/avatar_url on profiles, so coins cannot be edited client-side.
 - Feature rules are mirrored as pure helpers in src/lib/<feature>.ts with tests in src/test.
 - Transfer market: create_auction, place_bid, cancel_auction, get_auctions, get_auction_bids; bids escrow coins, _settle_auctions settles lazily.
-- Défis: progress counted from pack_openings.results (transfers never count), paid only by claim_* functions; daily/weekly periodic_challenges rotate and use Paris-time bounds in SQL, claims unique per period_start.
+- Défis: progress counted from pack_openings.results (transfers never count), paid only by claim_* functions; daily/weekly periodic_challenges rotate and use Paris-time bounds in SQL, claims unique per period_start. Admin special challenges are periodic_challenges rows with period 'special' and their own starts_at/ends_at window (created/ended only via admin_create/end_special_challenge), so they reuse the same progress, claim and header-badge paths.
 - Duels: create_duel/accept_duel/play_card/leave_duel/get_duel; frozen decks, hidden moves, rewards/Elo in _finish_duel with a daily cap.
 - Sound: Web Audio synthesis in src/lib/sfx.ts (no files); one document listener from __root sounds every control, data-sfx="none" opts out.
 - Friends/messages, admin gifts (admin_grant) and announcements are written only by SECURITY DEFINER functions or triggers; AppHeader owns their realtime subscriptions and toasts. Gifted cards never count for Défis or live pulls.
