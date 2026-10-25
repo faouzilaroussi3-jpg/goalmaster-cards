@@ -37,3 +37,4 @@
 - [x] Tirages Légendaire+ : remplacer l'effet qui tourne par de la fumée couleur rareté
 - [x] Retournement des cartes fluide et sans bug quel que soit le dos personnalisé du pack
 - [x] 30 cartes Holographique de plus (stars, photos réelles, sur le modèle de Désiré Doué)
+- [ ] Raretés au-dessus de Légendaire très très dures à tirer (Classique et Premium)
