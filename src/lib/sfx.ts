@@ -474,6 +474,39 @@ export const sfx = {
     noise(e, { dur: 0.9, freq: 520, to: 380, q: 0.8, gain: 0.08, attack: 0.12, reverb: 0.4 });
     tone(e, { freq: 210, to: 120, dur: 0.12, gain: 0.12 });
   }),
+
+  // ---------- Avatar & Ballon d'Or ----------
+  /** Snare roll that swells for `seconds`, ending on a cymbal-like hit. */
+  drumroll: (seconds = 3) => play((e) => {
+    special();
+    const n = Math.round(seconds * 26);
+    for (let i = 0; i < n; i++) {
+      const at = (i / 26) + rand(0, 0.008);
+      noise(e, { start: at, dur: 0.05, filter: "bandpass", freq: 1900, q: 0.8, gain: 0.03 + (i / n) * 0.11, pan: rand(-0.2, 0.2) });
+    }
+    noise(e, { start: seconds, dur: 1.6, filter: "highpass", freq: 5000, gain: 0.14, reverb: 0.5 });
+    tone(e, { start: seconds, freq: 90, to: 45, dur: 0.5, gain: 0.25 });
+  }),
+  /** Brassy triumphant fanfare with bells and a crowd swell. */
+  fanfare: () => play((e) => {
+    special();
+    const line: [number, number, number][] = [[523.25, 0, 0.18], [523.25, 0.2, 0.12], [523.25, 0.34, 0.12], [698.46, 0.5, 0.5], [880, 1.05, 0.25], [783.99, 1.32, 0.25], [1046.5, 1.6, 1.2]];
+    for (const [f, at, d] of line) {
+      tone(e, { freq: f, start: at, dur: d, type: "sawtooth", gain: 0.06, lowpass: 2600, attack: 0.02, reverb: 0.45 });
+      tone(e, { freq: f / 2, start: at, dur: d, type: "triangle", gain: 0.06, reverb: 0.45 });
+    }
+    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => bell(e, f, 1.6 + i * 0.05, 2.6, 0.05, (i - 2) * 0.25));
+    noise(e, { start: 0.4, dur: 4, freq: 900, to: 1400, q: 0.5, gain: 0.14, attack: 0.6, reverb: 0.6 });
+  }),
+  /** Short crowd applause. */
+  applause: (seconds = 2.5) => play((e) => {
+    for (let i = 0; i < seconds * 40; i++) noise(e, { start: rand(0, seconds), dur: 0.02, filter: "bandpass", freq: rand(1200, 3200), q: 2, gain: rand(0.02, 0.06), pan: rand(-0.9, 0.9) });
+  }),
+  /** Fabric swish when an avatar option changes. */
+  outfit: () => play((e) => {
+    noise(e, { dur: 0.16, freq: 700, to: 2200, q: 1, gain: 0.07, attack: 0.04 });
+    tone(e, { start: 0.06, freq: 990, to: 1480, dur: 0.12, gain: 0.05, reverb: 0.2 });
+  }),
 };
 
 export type SfxName = keyof typeof sfx;
