@@ -230,6 +230,100 @@ export type Database = {
           },
         ]
       }
+      avatars: {
+        Row: {
+          hair: string
+          hair_color: string
+          kit_club: string | null
+          shirt_name: string
+          shirt_number: number
+          shoe_color: string
+          shoes: string
+          skin: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          hair?: string
+          hair_color?: string
+          kit_club?: string | null
+          shirt_name?: string
+          shirt_number?: number
+          shoe_color?: string
+          shoes?: string
+          skin?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          hair?: string
+          hair_color?: string
+          kit_club?: string | null
+          shirt_name?: string
+          shirt_number?: number
+          shoe_color?: string
+          shoes?: string
+          skin?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avatars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ballon_dor_ceremonies: {
+        Row: {
+          awarded_at: string | null
+          created_at: string
+          id: string
+          reward_coins: number
+          scheduled_at: string
+          started_at: string | null
+          status: string
+          title: string
+          winner_id: string | null
+          winner_name: string | null
+        }
+        Insert: {
+          awarded_at?: string | null
+          created_at?: string
+          id?: string
+          reward_coins?: number
+          scheduled_at: string
+          started_at?: string | null
+          status?: string
+          title: string
+          winner_id?: string | null
+          winner_name?: string | null
+        }
+        Update: {
+          awarded_at?: string | null
+          created_at?: string
+          id?: string
+          reward_coins?: number
+          scheduled_at?: string
+          started_at?: string | null
+          status?: string
+          title?: string
+          winner_id?: string | null
+          winner_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ballon_dor_ceremonies_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       big_pulls: {
         Row: {
           card_id: string
@@ -1413,6 +1507,13 @@ export type Database = {
         Returns: undefined
       }
       _is_big_pull: { Args: { _rarity: string }; Returns: boolean }
+      _kit_clubs: {
+        Args: { _uid: string }
+        Returns: {
+          club: string
+          pulls: number
+        }[]
+      }
       _lm_bot_team: { Args: { _level: string }; Returns: Json }
       _lm_finish: {
         Args: {
@@ -1472,6 +1573,11 @@ export type Database = {
       }
       accept_live_match: { Args: { _match_id: string }; Returns: string }
       accept_match: { Args: { _match_id: string }; Returns: string }
+      admin_award_ballon_dor: {
+        Args: { _id: string; _winner: string }
+        Returns: undefined
+      }
+      admin_cancel_ballon_dor: { Args: { _id: string }; Returns: undefined }
       admin_card_stats: {
         Args: never
         Returns: {
@@ -1544,6 +1650,10 @@ export type Database = {
         Args: { _from: string; _to: string }
         Returns: number
       }
+      admin_schedule_ballon_dor: {
+        Args: { _at: string; _coins: number; _title: string }
+        Returns: string
+      }
       admin_set_rarity_active: {
         Args: { _active: boolean; _key: string }
         Returns: undefined
@@ -1552,6 +1662,7 @@ export type Database = {
         Args: { _key: string; _shape: string }
         Returns: undefined
       }
+      admin_start_ballon_dor: { Args: { _id: string }; Returns: undefined }
       admin_update_rarity: {
         Args: {
           _color: string
@@ -1762,6 +1873,13 @@ export type Database = {
           they_played: boolean
         }[]
       }
+      get_my_kit_clubs: {
+        Args: never
+        Returns: {
+          club: string
+          pulls: number
+        }[]
+      }
       get_my_listed_copies: {
         Args: never
         Returns: {
@@ -1912,6 +2030,19 @@ export type Database = {
       }
       respond_friend_request: {
         Args: { _accept: boolean; _friendship_id: string }
+        Returns: undefined
+      }
+      save_avatar: {
+        Args: {
+          _hair: string
+          _hair_color: string
+          _kit_club: string
+          _shirt_name: string
+          _shirt_number: number
+          _shoe_color: string
+          _shoes: string
+          _skin: string
+        }
         Returns: undefined
       }
       save_manager_team: {

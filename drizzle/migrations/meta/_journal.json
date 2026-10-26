@@ -232,6 +232,13 @@
       "when": 1792826505066,
       "tag": "0032_special_timed_challenges",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1793041193889,
+      "tag": "0033_avatars_ballon_dor",
+      "breakpoints": true
     }
   ]
 }
