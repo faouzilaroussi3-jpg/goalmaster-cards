@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, type ThreeElements } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
@@ -88,7 +88,6 @@ const torsoGeo = new THREE.LatheGeometry(TORSO_POINTS, 40);
 const headGeo = new THREE.SphereGeometry(0.17, 32, 24);
 const capGeo = new THREE.SphereGeometry(0.182, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.52);
 const buzzGeo = new THREE.SphereGeometry(0.174, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.5);
-const limbGeo = new THREE.CapsuleGeometry(1, 1, 6, 14);
 const sphereGeo = new THREE.SphereGeometry(1, 16, 12);
 
 /** Deterministic pseudo-random so audience avatars sway out of sync without Math.random at render. */
@@ -100,7 +99,8 @@ function seeded(seed: string) {
 
 function Limb({ len, r, color, position, rough = 0.6 }: { len: number; r: number; color: string; position: [number, number, number]; rough?: number }) {
   return (
-    <mesh geometry={limbGeo} position={position} scale={[r, len / 2, r]} castShadow>
+    <mesh position={position} castShadow>
+      <capsuleGeometry args={[r, len, 6, 14]} />
       <meshStandardMaterial color={color} roughness={rough} />
     </mesh>
   );
@@ -159,7 +159,7 @@ function Hair({ style, color, detail }: { style: AvatarLook["hair"]; color: stri
           {cap}
           {(detail ? Array.from({ length: 12 }, (_, i) => i) : [0, 3, 6, 9]).map((i) => {
             const a = Math.PI * 0.15 + (i / 11) * Math.PI * 0.7;
-            return <mesh key={i} geometry={limbGeo} scale={[0.022, 0.1, 0.022]} position={[Math.cos(a) * 0.16, -0.08, -Math.sin(a) * 0.15]}>{mat}</mesh>;
+            return <mesh key={i} position={[Math.cos(a) * 0.16, -0.08, -Math.sin(a) * 0.15]}><capsuleGeometry args={[0.022, 0.16, 4, 8]} />{mat}</mesh>;
           })}
         </group>
       );
@@ -197,7 +197,7 @@ function Shoe({ x, style, color }: { x: number; style: AvatarLook["shoes"]; colo
  */
 export function Avatar3D({
   look, pose = "idle", detail = "high", seed = "", ...group
-}: { look: AvatarLook; pose?: AvatarPose; detail?: "high" | "low"; seed?: string } & JSX.IntrinsicElements["group"]) {
+}: { look: AvatarLook; pose?: AvatarPose; detail?: "high" | "low"; seed?: string } & ThreeElements["group"]) {
   const fonts = useFontsReady();
   const kit = kitFor(look.club);
   const shirtTex = useMemo(() => drawShirt(kit, look.shirtName, look.number, fonts), [kit, look.shirtName, look.number, fonts]);
@@ -215,11 +215,11 @@ export function Avatar3D({
     const t = clock.elapsedTime + phase;
     const a = armL.current, b = armR.current;
     if (!a || !b || !root.current) return;
-    let la = 0.14, ra = -0.14, lx = 0, rx = 0, bob = Math.sin(t * 2) * 0.008, legSwing = 0;
-    if (pose === "idle") { la += Math.sin(t * 1.6) * 0.04; ra -= Math.sin(t * 1.6) * 0.04; lx = Math.sin(t * 1.1) * 0.06; rx = -lx; }
-    if (pose === "clap") { const c = Math.abs(Math.sin(t * 9)); lx = -1.25; rx = -1.25; la = -0.35 + c * 0.25; ra = 0.35 - c * 0.25; bob = Math.abs(Math.sin(t * 4.5)) * 0.03; }
-    if (pose === "cheer") { la = 2.6 + Math.sin(t * 6) * 0.2; ra = -2.6 - Math.sin(t * 6 + 1) * 0.2; bob = Math.abs(Math.sin(t * 5)) * 0.07; }
-    if (pose === "trophy") { la = 2.75; ra = -2.75; lx = -0.15; rx = -0.15; bob = Math.abs(Math.sin(t * 3)) * 0.03; }
+    let la = -0.14, ra = 0.14, lx = 0, rx = 0, bob = Math.sin(t * 2) * 0.008, legSwing = 0;
+    if (pose === "idle") { la -= Math.sin(t * 1.6) * 0.04; ra += Math.sin(t * 1.6) * 0.04; lx = Math.sin(t * 1.1) * 0.06; rx = -lx; }
+    if (pose === "clap") { const c = Math.abs(Math.sin(t * 9)); lx = -1.2; rx = -1.2; la = 0.12 + c * 0.32; ra = -la; bob = Math.abs(Math.sin(t * 4.5)) * 0.03; }
+    if (pose === "cheer") { la = -2.6 - Math.sin(t * 6) * 0.2; ra = 2.6 + Math.sin(t * 6 + 1) * 0.2; bob = Math.abs(Math.sin(t * 5)) * 0.07; }
+    if (pose === "trophy") { la = -2.75; ra = 2.75; lx = -0.15; rx = -0.15; bob = Math.abs(Math.sin(t * 3)) * 0.03; }
     if (pose === "walk") { legSwing = Math.sin(t * 8) * 0.5; lx = -legSwing * 0.8; rx = legSwing * 0.8; bob = Math.abs(Math.sin(t * 8)) * 0.03; }
     a.rotation.set(lx, 0, la);
     b.rotation.set(rx, 0, ra);
@@ -236,7 +236,7 @@ export function Avatar3D({
         {([[-0.1, legL], [0.1, legR]] as const).map(([x, ref]) => (
           <group key={x} ref={ref} position={[x, 0.78, 0]}>
             <Limb len={0.2} r={0.068} color={skin} position={[0, -0.12, 0]} rough={0.5} />
-            <Limb len={0.3} r={0.06} color={kit.socks} position={[0, -0.47, 0]} />
+            <Limb len={0.26} r={0.06} color={kit.socks} position={[0, -0.45, 0]} />
             <group position={[-x, -0.78, 0]}><Shoe x={x} style={look.shoes} color={look.shoeColor} /></group>
           </group>
         ))}
@@ -329,7 +329,7 @@ function goldBallTexture() {
 }
 
 /** The Ballon d'Or trophy: gold ball on a black plinth with a gold band. Origin at the plinth base. */
-export function GoldenBall(props: JSX.IntrinsicElements["group"]) {
+export function GoldenBall(props: ThreeElements["group"]) {
   const tex = useMemo(() => goldBallTexture(), []);
   return (
     <group {...props}>
@@ -353,7 +353,7 @@ export function GoldenBall(props: JSX.IntrinsicElements["group"]) {
  * Glass trophy cabinet: every Ballon d'Or the player won stands on its shelves (12 visible, the rest counted).
  * Origin at the floor centre; the cabinet faces +z.
  */
-export function TrophyCase({ count, ...group }: { count: number } & JSX.IntrinsicElements["group"]) {
+export function TrophyCase({ count, ...group }: { count: number } & ThreeElements["group"]) {
   const W = 1.7, H = 2.3, D = 0.5;
   const shelves = [0.55, 1.15, 1.75];
   const shown = Math.min(count, 12);
