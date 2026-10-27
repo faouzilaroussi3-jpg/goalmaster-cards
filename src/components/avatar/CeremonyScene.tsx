@@ -68,7 +68,7 @@ function Confetti({ active }: { active: boolean }) {
     const mesh = ref.current;
     if (!mesh) return;
     const c = new THREE.Color();
-    parts.forEach((_, i) => mesh.setColorAt(i, c.set(colors[i % colors.length])));
+    parts.forEach((_, i) => mesh.setColorAt(i, c.set(colors[i % colors.length] ?? "#ffffff")));
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   }, [parts, colors]);
   useFrame((_, raw) => {

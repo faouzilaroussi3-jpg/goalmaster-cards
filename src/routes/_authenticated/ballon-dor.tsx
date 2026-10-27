@@ -38,7 +38,7 @@ function usePresence(uid: string, name: string, host: boolean) {
     channel
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState<Omit<Present, "id">>();
-        const list = Object.entries(state).map(([id, metas]) => ({ id, ...metas[0] }));
+        const list: Present[] = Object.entries(state).map(([id, metas]) => ({ id, name: metas[0]?.name ?? "Joueur", host: !!metas[0]?.host, at: metas[0]?.at ?? 0 }));
         setPeople(list.sort((a, b) => a.at - b.at));
       })
       .subscribe(async (status) => {
@@ -64,7 +64,7 @@ function BallonDorPage() {
   const [revealAt, setRevealAt] = useState<number | null>(null);
   const prev = useRef<{ id: string; status: string } | null>(null);
   useEffect(() => {
-    if (!cur) return;
+    if (!cur) return undefined;
     const p = prev.current;
     if (p && p.id === cur.id && p.status === "live" && cur.status === "finished") {
       setRevealAt(Date.now());
@@ -75,6 +75,7 @@ function BallonDorPage() {
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
     prev.current = { id: cur.id, status: cur.status };
+    return undefined;
   }, [cur]);
   const [revealText, setRevealText] = useState(false);
   useEffect(() => {
