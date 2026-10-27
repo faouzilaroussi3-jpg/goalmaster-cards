@@ -98,9 +98,12 @@ function Confetti({ active }: { active: boolean }) {
 function CameraRig({ view, focus }: { view: CeremonyView; focus: React.MutableRefObject<THREE.Vector3 | null> }) {
   const { camera } = useThree();
   const look = useRef(new THREE.Vector3(0, 1.2, 0));
+  const snapped = useRef(false);
   useFrame((_, raw) => {
     const dt = Math.min(raw, 0.05);
-    const k = 1 - Math.exp(-2.2 * dt);
+    // First frame jumps straight to the chosen view; afterwards the camera glides.
+    const k = snapped.current ? 1 - Math.exp(-2.2 * dt) : 1;
+    snapped.current = true;
     let pos: THREE.Vector3, at: THREE.Vector3;
     if (focus.current) {
       pos = focus.current.clone().add(new THREE.Vector3(1.8, 1.7, 3.4));
@@ -119,9 +122,33 @@ function CameraRig({ view, focus }: { view: CeremonyView; focus: React.MutableRe
   return null;
 }
 
+/** Velvet gala chairs behind every audience spot (one instanced draw call). */
+function Seats({ count }: { count: number }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  useEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    const d = new THREE.Object3D();
+    for (let i = 0; i < count; i++) {
+      const [x, y, z] = seatPosition(i);
+      d.position.set(x, y + 0.55, z + 0.45);
+      d.updateMatrix();
+      m.setMatrixAt(i, d.matrix);
+    }
+    m.instanceMatrix.needsUpdate = true;
+  }, [count]);
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, count]}>
+      <boxGeometry args={[0.7, 1.1, 0.14]} />
+      <meshStandardMaterial color="#5a0f33" roughness={0.85} />
+    </instancedMesh>
+  );
+}
+
 function Hall({ rows }: { rows: number }) {
   return (
     <group>
+      <Seats count={rows * 8} />
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, 4]}>
         <planeGeometry args={[26, 26]} />
         <meshStandardMaterial color="#141016" roughness={0.85} />
@@ -203,7 +230,7 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   }, [scene]);
   const seatIndex = winner ? audience.findIndex((g) => g.id === winner.id) : -1;
   const start = useMemo(() => (seatIndex >= 0 ? new THREE.Vector3(...seatPosition(seatIndex)) : BACKSTAGE.clone()), [seatIndex]);
-  const rows = Math.max(1, Math.ceil(audience.length / 8));
+  const rows = Math.max(3, Math.ceil(audience.length / 8));
 
   useEffect(() => { setPhase(winner ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winner, revealAt]);
 
