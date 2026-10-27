@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
+import { Route as AuthenticatedAvatarRouteImport } from './routes/_authenticated/avatar'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedDefisRouteImport } from './routes/_authenticated/defis'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
@@ -56,6 +57,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 const AuthenticatedAmisRoute = AuthenticatedAmisRouteImport.update({
   id: '/amis',
   path: '/amis',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAvatarRoute = AuthenticatedAvatarRouteImport.update({
+  id: '/avatar',
+  path: '/avatar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
+  '/avatar': typeof AuthenticatedAvatarRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
   '/messages': typeof AuthenticatedMessagesRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
+  '/avatar': typeof AuthenticatedAvatarRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
   '/messages': typeof AuthenticatedMessagesRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/amis': typeof AuthenticatedAmisRoute
+  '/_authenticated/avatar': typeof AuthenticatedAvatarRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/defis': typeof AuthenticatedDefisRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/admin'
     | '/amis'
+    | '/avatar'
     | '/collection'
     | '/defis'
     | '/messages'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/admin'
     | '/amis'
+    | '/avatar'
     | '/collection'
     | '/defis'
     | '/messages'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/_authenticated/admin'
     | '/_authenticated/amis'
+    | '/_authenticated/avatar'
     | '/_authenticated/collection'
     | '/_authenticated/defis'
     | '/_authenticated/messages'
@@ -305,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/amis'
       fullPath: '/amis'
       preLoaderRoute: typeof AuthenticatedAmisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/avatar': {
+      id: '/_authenticated/avatar'
+      path: '/avatar'
+      fullPath: '/avatar'
+      preLoaderRoute: typeof AuthenticatedAvatarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/collection': {
@@ -404,6 +423,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAmisRoute: typeof AuthenticatedAmisRoute
+  AuthenticatedAvatarRoute: typeof AuthenticatedAvatarRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDefisRoute: typeof AuthenticatedDefisRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
@@ -421,6 +441,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAmisRoute: AuthenticatedAmisRoute,
+  AuthenticatedAvatarRoute: AuthenticatedAvatarRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDefisRoute: AuthenticatedDefisRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
