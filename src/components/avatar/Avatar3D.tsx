@@ -383,7 +383,7 @@ export function TrophyCase({ count, ...group }: { count: number } & ThreeElement
       ))}
       {Array.from({ length: shown }, (_, i) => {
         const shelf = Math.floor(i / 4), slot = i % 4;
-        return <GoldenBall key={i} position={[(slot - 1.5) * 0.38, shelves[shelf] + 0.01, 0]} scale={0.62} />;
+        return <GoldenBall key={i} position={[(slot - 1.5) * 0.38, (shelves[shelf] ?? 0) + 0.01, 0]} scale={0.62} />;
       })}
       {/* Glass front */}
       <mesh position={[0, H / 2, D / 2]}>
