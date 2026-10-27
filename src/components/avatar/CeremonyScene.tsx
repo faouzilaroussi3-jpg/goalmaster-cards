@@ -193,6 +193,14 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   const winnerRef = useRef<THREE.Group>(null);
   const spotTarget = useRef(new THREE.Vector3(0, 0, 4));
   const focus = useRef<THREE.Vector3 | null>(null);
+  const spot = useRef<THREE.SpotLight>(null);
+  const { scene } = useThree();
+  useEffect(() => {
+    const target = spot.current?.target;
+    if (!target) return;
+    scene.add(target);
+    return () => { scene.remove(target); };
+  }, [scene]);
   const seatIndex = winner ? audience.findIndex((g) => g.id === winner.id) : -1;
   const start = useMemo(() => (seatIndex >= 0 ? new THREE.Vector3(...seatPosition(seatIndex)) : BACKSTAGE.clone()), [seatIndex]);
   const rows = Math.max(1, Math.ceil(audience.length / 8));
@@ -200,6 +208,7 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   useEffect(() => { setPhase(winner ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winner, revealAt]);
 
   useFrame(({ clock }) => {
+    spot.current?.target.position.copy(spotTarget.current);
     const t = revealAt ? (Date.now() - revealAt) / 1000 : -1;
     if (winner && revealAt) {
       const p = phaseAt(t);
@@ -249,8 +258,7 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
       <Hall rows={rows} />
       {showTrophyOnPedestal && <GoldenBall position={[0, STAGE_Y + 0.9, -3.1]} scale={1.5} />}
       <Beam from={new THREE.Vector3(0, 7.5, 9)} target={spotTarget} width={0.75} />
-      <spotLight position={[0, 7.5, 9]} angle={0.16} penumbra={0.6} intensity={140} color="#fff4e0" distance={30} />
-      <SpotFollow target={spotTarget} />
+      <spotLight ref={spot} position={[0, 7.5, 9]} angle={0.16} penumbra={0.6} intensity={140} color="#fff4e0" distance={30} />
       {audience.map((g, i) => (g.id === winner?.id && phase !== "waiting") ? null : (
         <group key={g.id} position={seatPosition(i)} rotation-y={Math.PI}>
           <Avatar3D look={g.look} pose={crowdPose(i)} detail="low" seed={g.id} />
@@ -275,18 +283,6 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
       <Confetti active={phase === "trophy"} />
     </>
   );
-}
-
-/** Points the follow spotlight (the last spotLight added) at the moving target. */
-function SpotFollow({ target }: { target: React.MutableRefObject<THREE.Vector3> }) {
-  const { scene } = useThree();
-  useFrame(() => {
-    const spot = scene.children.filter((c): c is THREE.SpotLight => (c as THREE.SpotLight).isSpotLight).find((s) => s.position.z === 9);
-    if (!spot) return;
-    if (spot.target.parent !== scene) scene.add(spot.target);
-    spot.target.position.copy(target.current);
-  });
-  return null;
 }
 
 /** Ballon d'Or gala hall: stage with the trophy, the admin as host, connected players' avatars in the stands. */
