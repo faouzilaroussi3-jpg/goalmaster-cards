@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Crown } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -6,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
+import { trophiesOf } from "@/lib/ballon-dor";
+import { useCeremonies } from "@/lib/ballon-dor-query";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -28,6 +31,8 @@ function ProfilePage() {
   const uid = session!.user.id;
   const { data: profile } = useProfile();
   const qc = useQueryClient();
+  const { data: ceremonies = [] } = useCeremonies();
+  const trophies = trophiesOf(ceremonies, uid);
   const [name, setName] = useState("");
   useEffect(() => { if (profile) setName(profile.username); }, [profile]);
 
@@ -91,6 +96,21 @@ function ProfilePage() {
             <div className="text-xs text-muted-foreground">{l}</div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-6 panel p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-3xl">Mes Ballons d'Or <span className="text-gold">{trophies.length}</span></h2>
+          <Link to="/avatar" className="rounded-full bg-secondary px-4 py-1.5 text-sm font-bold text-foreground">Mon avatar & ma vitrine</Link>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {trophies.map((t) => (
+            <span key={t.id} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-bold">
+              <Crown className="h-3.5 w-3.5 text-gold" /> {t.title} · {new Date(t.awarded_at ?? t.scheduled_at).toLocaleDateString("fr-FR")}
+            </span>
+          ))}
+          {!trophies.length && <p className="text-sm text-muted-foreground">Aucun pour l'instant : le Ballon d'Or est remis chaque semaine par l'admin.</p>}
+        </div>
       </div>
 
       <h2 className="mb-3 mt-8 text-3xl">Historique d'ouverture</h2>

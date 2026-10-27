@@ -153,7 +153,7 @@ export function kitFor(club: string | null | undefined): Kit {
   if (!club) return GOALMASTER_KIT;
   const n = normalizeClub(club);
   for (const [keys, kit] of KITS) if (keys.some((key) => n.includes(key))) return kit;
-  return FALLBACK[hash(n) % FALLBACK.length];
+  return FALLBACK[hash(n) % FALLBACK.length] ?? GOALMASTER_KIT;
 }
 
 /** Readable print colour (name, number) over a shirt colour. */

@@ -12,6 +12,7 @@ import { periodicSummary } from "@/lib/periodic-challenges";
 import { giftSummary } from "@/lib/admin-grants";
 import { newsSplash, unseenNews } from "@/lib/news";
 import { useNews } from "@/lib/news-query";
+import { useCeremonies } from "@/lib/ballon-dor-query";
 
 const linkCls = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground";
 const activeCls = { className: "text-primary" };
@@ -37,6 +38,8 @@ export function AppHeader() {
   const unread = unreadTotal(friendList ?? []);
   const { data: news } = useNews();
   const newsCount = news ? unseenNews(news.list, news.seenAt).length : 0;
+  const { data: ceremonies } = useCeremonies();
+  const ceremonyLive = !!ceremonies?.some((c) => c.status === "live");
   const pathname = useRouterState({ select: (st) => st.location.pathname });
   const pathRef = useRef(pathname);
   pathRef.current = pathname;
@@ -116,6 +119,32 @@ export function AppHeader() {
     return () => { supabase.removeChannel(channel); };
   }, [uid, qc]);
 
+  // Ballon d'Or: ceremonies scheduled, going live and awarded are announced to everyone signed in.
+  useEffect(() => {
+    if (!uid) return;
+    const channel = supabase
+      .channel(`ballon-dor-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "ballon_dor_ceremonies" }, (p) => {
+        qc.invalidateQueries({ queryKey: ["ballon-dor"] });
+        const row = p.new as { status?: string; title?: string; scheduled_at?: string; winner_name?: string; winner_id?: string } | null;
+        if (!row?.status) return;
+        if (row.status === "finished" && row.winner_id === uid) qc.invalidateQueries({ queryKey: ["profile"] });
+        const onHall = pathRef.current.startsWith("/ballon-dor");
+        const go = { label: "Rejoindre", onClick: () => navigate({ to: "/ballon-dor" }) };
+        if (p.eventType === "INSERT" && row.status === "scheduled" && row.scheduled_at) {
+          toast(`${row.title ?? "Ballon d'Or"} programmé`, { description: new Date(row.scheduled_at).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }), duration: 9000 });
+        } else if (p.eventType === "UPDATE" && row.status === "live" && !onHall) {
+          sfx.sparkle();
+          toast("La cérémonie du Ballon d'Or commence !", { description: "Entre dans la salle avec ton avatar.", duration: 20000, action: go });
+        } else if (p.eventType === "UPDATE" && row.status === "finished" && row.winner_name && !onHall) {
+          if (row.winner_id === uid) sfx.fanfare();
+          toast(row.winner_id === uid ? "Tu as gagné le Ballon d'Or !" : `Ballon d'Or : ${row.winner_name}`, { duration: 12000, action: { label: "Voir", onClick: () => navigate({ to: "/ballon-dor" }) } });
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [uid, qc, navigate]);
+
   // One realtime subscription for the whole app: any change on my duels refreshes duel lists and boards.
   useEffect(() => {
     if (!uid) return;
@@ -191,6 +220,14 @@ export function AppHeader() {
     </Link>
   );
 
+  const ballon = (
+    <Link to="/ballon-dor" className={linkCls} activeProps={activeCls}>
+      Ballon d'Or
+      {ceremonyLive && <span aria-label="Cérémonie en direct" className="ml-1 inline-block h-2 w-2 animate-pulse rounded-full bg-primary" />}
+    </Link>
+  );
+  const avatarLink = <Link to="/avatar" className={linkCls} activeProps={activeCls}>Avatar</Link>;
+
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -213,6 +250,8 @@ export function AppHeader() {
           {session && matchLink}
           {session && amis}
           {session && messages}
+          {session && avatarLink}
+          {session && ballon}
           <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
           {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
           {profile?.isAdmin && (
@@ -256,6 +295,8 @@ export function AppHeader() {
         {session && matchLink}
         {session && amis}
         {session && messages}
+        {session && avatarLink}
+        {session && ballon}
         <Link to="/leaderboard" className={linkCls} activeProps={activeCls}>Classement</Link>
         {session && <Link to="/profile" className={linkCls} activeProps={activeCls}>Profil</Link>}
         {profile?.isAdmin && <Link to="/admin" className={linkCls} activeProps={activeCls}>Admin</Link>}
