@@ -128,6 +128,7 @@ export function AppHeader() {
         qc.invalidateQueries({ queryKey: ["ballon-dor"] });
         const row = p.new as { status?: string; title?: string; scheduled_at?: string; winner_name?: string; winner_id?: string } | null;
         if (!row?.status) return;
+        if (row.status === "finished" && row.winner_id === uid) qc.invalidateQueries({ queryKey: ["profile"] });
         const onHall = pathRef.current.startsWith("/ballon-dor");
         const go = { label: "Rejoindre", onClick: () => navigate({ to: "/ballon-dor" }) };
         if (p.eventType === "INSERT" && row.status === "scheduled" && row.scheduled_at) {
@@ -136,7 +137,7 @@ export function AppHeader() {
           sfx.sparkle();
           toast("La cérémonie du Ballon d'Or commence !", { description: "Entre dans la salle avec ton avatar.", duration: 20000, action: go });
         } else if (p.eventType === "UPDATE" && row.status === "finished" && row.winner_name && !onHall) {
-          if (row.winner_id === uid) { sfx.fanfare(); qc.invalidateQueries({ queryKey: ["profile"] }); }
+          if (row.winner_id === uid) sfx.fanfare();
           toast(row.winner_id === uid ? "Tu as gagné le Ballon d'Or !" : `Ballon d'Or : ${row.winner_name}`, { duration: 12000, action: { label: "Voir", onClick: () => navigate({ to: "/ballon-dor" }) } });
         }
       })
