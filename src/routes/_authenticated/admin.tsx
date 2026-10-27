@@ -9,6 +9,7 @@ import { GiftsAdmin } from "@/components/admin/GiftsAdmin";
 import { RaritiesAdmin } from "@/components/admin/RaritiesAdmin";
 import { PacksAdmin } from "@/components/admin/PacksAdmin";
 import { ChallengesAdmin } from "@/components/admin/ChallengesAdmin";
+import { BallonDorAdmin } from "@/components/admin/BallonDorAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -28,15 +29,15 @@ const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm t
 
 function AdminPage() {
   const { data: profile, isLoading } = useProfile();
-  const [tab, setTab] = useState<"cards" | "rarities" | "gifts" | "packs" | "challenges" | "events">("cards");
+  const [tab, setTab] = useState<"cards" | "rarities" | "gifts" | "packs" | "challenges" | "ballon" | "events">("cards");
   if (isLoading) return null;
   if (!profile?.isAdmin) return <p className="p-8 text-center text-muted-foreground">Accès réservé aux administrateurs.</p>;
-  const label = { cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs", challenges: "Défis", events: "Événements" } as const;
+  const label = { cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs", challenges: "Défis", ballon: "Ballon d'Or", events: "Événements" } as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-5xl text-gold">Administration</h1>
       <div className="my-4 flex flex-wrap gap-2">
-        {(["cards", "rarities", "gifts", "packs", "challenges", "events"] as const).map((t) => (
+        {(["cards", "rarities", "gifts", "packs", "challenges", "ballon", "events"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 text-sm font-bold ${tab === t ? "bg-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             {label[t]}
           </button>
@@ -47,6 +48,7 @@ function AdminPage() {
       {tab === "gifts" && <GiftsAdmin />}
       {tab === "packs" && <PacksAdmin />}
       {tab === "challenges" && <ChallengesAdmin />}
+      {tab === "ballon" && <BallonDorAdmin />}
       {tab === "events" && <EventsAdmin />}
     </div>
   );

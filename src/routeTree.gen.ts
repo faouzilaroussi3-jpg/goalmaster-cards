@@ -16,6 +16,7 @@ import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
 import { Route as AuthenticatedAvatarRouteImport } from './routes/_authenticated/avatar'
+import { Route as AuthenticatedBallonDorRouteImport } from './routes/_authenticated/ballon-dor'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedDefisRouteImport } from './routes/_authenticated/defis'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
@@ -62,6 +63,11 @@ const AuthenticatedAmisRoute = AuthenticatedAmisRouteImport.update({
 const AuthenticatedAvatarRoute = AuthenticatedAvatarRouteImport.update({
   id: '/avatar',
   path: '/avatar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBallonDorRoute = AuthenticatedBallonDorRouteImport.update({
+  id: '/ballon-dor',
+  path: '/ballon-dor',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/avatar': typeof AuthenticatedAvatarRoute
+  '/ballon-dor': typeof AuthenticatedBallonDorRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
   '/messages': typeof AuthenticatedMessagesRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/avatar': typeof AuthenticatedAvatarRoute
+  '/ballon-dor': typeof AuthenticatedBallonDorRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/defis': typeof AuthenticatedDefisRoute
   '/messages': typeof AuthenticatedMessagesRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/amis': typeof AuthenticatedAmisRoute
   '/_authenticated/avatar': typeof AuthenticatedAvatarRoute
+  '/_authenticated/ballon-dor': typeof AuthenticatedBallonDorRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/defis': typeof AuthenticatedDefisRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/amis'
     | '/avatar'
+    | '/ballon-dor'
     | '/collection'
     | '/defis'
     | '/messages'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/amis'
     | '/avatar'
+    | '/ballon-dor'
     | '/collection'
     | '/defis'
     | '/messages'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/amis'
     | '/_authenticated/avatar'
+    | '/_authenticated/ballon-dor'
     | '/_authenticated/collection'
     | '/_authenticated/defis'
     | '/_authenticated/messages'
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       path: '/avatar'
       fullPath: '/avatar'
       preLoaderRoute: typeof AuthenticatedAvatarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ballon-dor': {
+      id: '/_authenticated/ballon-dor'
+      path: '/ballon-dor'
+      fullPath: '/ballon-dor'
+      preLoaderRoute: typeof AuthenticatedBallonDorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/collection': {
@@ -424,6 +443,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAmisRoute: typeof AuthenticatedAmisRoute
   AuthenticatedAvatarRoute: typeof AuthenticatedAvatarRoute
+  AuthenticatedBallonDorRoute: typeof AuthenticatedBallonDorRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDefisRoute: typeof AuthenticatedDefisRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
@@ -442,6 +462,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAmisRoute: AuthenticatedAmisRoute,
   AuthenticatedAvatarRoute: AuthenticatedAvatarRoute,
+  AuthenticatedBallonDorRoute: AuthenticatedBallonDorRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDefisRoute: AuthenticatedDefisRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
