@@ -106,7 +106,7 @@ function ProfilePage() {
         <div className="mt-2 flex flex-wrap gap-2">
           {trophies.map((t) => (
             <span key={t.id} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-bold">
-              <Crown className="h-3.5 w-3.5 text-gold" /> {t.title} · {new Date(t.awarded_at ?? t.scheduled_at).toLocaleDateString("fr-FR")}
+              <Crown className="h-3.5 w-3.5 text-primary" /> {t.title} · {new Date(t.awarded_at ?? t.scheduled_at).toLocaleDateString("fr-FR")}
             </span>
           ))}
           {!trophies.length && <p className="text-sm text-muted-foreground">Aucun pour l'instant : le Ballon d'Or est remis chaque semaine par l'admin.</p>}

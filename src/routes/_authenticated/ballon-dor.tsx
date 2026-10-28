@@ -143,7 +143,7 @@ function BallonDorPage() {
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {palmares.map((c) => (
           <div key={c.id} className="panel flex items-center gap-3 p-3">
-            <Crown className="h-6 w-6 shrink-0 text-gold" />
+            <Crown className="h-6 w-6 shrink-0 text-primary" />
             <div className="min-w-0">
               <div className="truncate font-bold">{c.winner_name}{c.winner_id === uid ? " (toi)" : ""}</div>
               <div className="truncate text-xs text-muted-foreground">{c.title} · {new Date(c.awarded_at ?? c.scheduled_at).toLocaleDateString("fr-FR")}</div>
