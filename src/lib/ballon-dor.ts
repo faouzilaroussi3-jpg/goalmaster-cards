@@ -6,10 +6,17 @@ export interface Ceremony {
   winner_id: string | null; winner_name: string | null; started_at: string | null; awarded_at: string | null; created_at: string;
 }
 
-/** The ceremony the hall shows: the live one, else the next scheduled one, else the last finished one. */
-export function currentCeremony(list: Ceremony[]): Ceremony | null {
+/** A just-awarded ceremony stays on stage this long before the hall moves on to the next one. */
+export const STAGE_AFTER_AWARD_MS = 3 * 60 * 60 * 1000;
+
+/** The ceremony the hall shows: the live one, else one awarded in the last 3 hours, else the next scheduled one, else the last finished one. */
+export function currentCeremony(list: Ceremony[], now = Date.now()): Ceremony | null {
   const live = list.find((c) => c.status === "live");
   if (live) return live;
+  const recent = list
+    .filter((c) => c.status === "finished" && c.awarded_at && now - new Date(c.awarded_at).getTime() < STAGE_AFTER_AWARD_MS)
+    .sort((a, b) => (b.awarded_at ?? "").localeCompare(a.awarded_at ?? ""))[0];
+  if (recent) return recent;
   const next = list.filter((c) => c.status === "scheduled").sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at))[0];
   if (next) return next;
   return list.filter((c) => c.status === "finished").sort((a, b) => (b.awarded_at ?? "").localeCompare(a.awarded_at ?? ""))[0] ?? null;

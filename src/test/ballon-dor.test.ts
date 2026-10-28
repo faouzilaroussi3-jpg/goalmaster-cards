@@ -14,6 +14,12 @@ describe("Ballon d'Or ceremonies", () => {
     expect(currentCeremony([later, soon, live])?.id).toBe("live");
     expect(currentCeremony([later, soon])?.id).toBe("soon");
   });
+  it("keeps a just-awarded ceremony on stage for 3 hours before showing the next one", () => {
+    const done = c({ id: "done", status: "finished", winner_id: "u", awarded_at: "2026-11-01T20:00:00Z" });
+    const next = c({ id: "next", scheduled_at: "2026-11-08T19:00:00Z" });
+    expect(currentCeremony([next, done], Date.parse("2026-11-01T22:59:00Z"))?.id).toBe("done");
+    expect(currentCeremony([next, done], Date.parse("2026-11-01T23:01:00Z"))?.id).toBe("next");
+  });
   it("only one ceremony can be live at a time", () => {
     const live = c({ id: "a", status: "live" });
     const next = c({ id: "b" });

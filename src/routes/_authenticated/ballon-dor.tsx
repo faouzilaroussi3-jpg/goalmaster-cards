@@ -55,7 +55,9 @@ function BallonDorPage() {
   const { data: profile } = useProfile();
   const isAdmin = !!profile?.isAdmin;
   const { data: ceremonies = [] } = useCeremonies();
-  const cur = currentCeremony(ceremonies);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  const cur = currentCeremony(ceremonies, now);
   const people = usePresence(uid, profile?.username ?? "", isAdmin);
   const [view, setView] = useState<CeremonyView | null>(null);
   const viewNow: CeremonyView = view ?? (isAdmin ? "stage" : "hall");
@@ -94,9 +96,6 @@ function BallonDorPage() {
   const host = hostP ? guest(hostP.id, hostP.name) : null;
   const winner = cur && winnerId ? guest(winnerId, cur.winner_name ?? "Gagnant") : null;
   const palmares = ceremonies.filter((c) => c.status === "finished");
-
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
