@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Html, Lightformer } from "@react-three/drei";
+import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
 import { seatPosition } from "@/lib/ballon-dor";
@@ -23,13 +23,33 @@ function phaseAt(t: number): Phase {
   return "trophy";
 }
 
+/** Name pill above an avatar, drawn on a canvas sprite (no DOM, so dozens stay cheap and unmount cleanly). */
 function NameTag({ name, trophies, me, y = 2.12 }: { name: string; trophies: number; me?: boolean; y?: number }) {
+  const label = trophies > 0 ? `${name}  ${trophies}× BALLON D'OR` : name;
+  const { tex, aspect } = useMemo(() => {
+    const c = document.createElement("canvas");
+    const g = c.getContext("2d")!;
+    const font = '600 44px "Barlow", "Bebas Neue", sans-serif';
+    g.font = font;
+    const w = Math.ceil(Math.min(900, g.measureText(label).width + 56));
+    c.width = w; c.height = 72;
+    g.font = font;
+    g.fillStyle = me ? "#ff2d87" : "rgba(14,12,18,0.85)";
+    g.strokeStyle = me ? "#ffd1e6" : "rgba(255,255,255,0.25)";
+    g.lineWidth = 3;
+    g.beginPath(); g.roundRect(2, 2, w - 4, 68, 34); g.fill(); g.stroke();
+    g.fillStyle = "#ffffff"; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText(label, w / 2, 38, w - 40);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return { tex: t, aspect: w / 72 };
+  }, [label, me]);
+  useEffect(() => () => tex.dispose(), [tex]);
+  const h = 0.2;
   return (
-    <Html position={[0, y, 0]} center distanceFactor={12} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-      <div className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] font-bold ${me ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background/80 text-foreground"}`}>
-        {name}{trophies > 0 ? ` · ${trophies}×★` : ""}
-      </div>
-    </Html>
+    <sprite position={[0, y, 0]} scale={[h * aspect, h, 1]} renderOrder={10}>
+      <spriteMaterial map={tex} transparent depthTest={false} />
+    </sprite>
   );
 }
 
