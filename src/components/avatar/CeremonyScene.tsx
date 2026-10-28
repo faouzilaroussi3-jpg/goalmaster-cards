@@ -25,7 +25,7 @@ function phaseAt(t: number): Phase {
 
 function NameTag({ name, trophies, me, y = 2.12 }: { name: string; trophies: number; me?: boolean; y?: number }) {
   return (
-    <Html position={[0, y, 0]} center distanceFactor={9} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
+    <Html position={[0, y, 0]} center distanceFactor={12} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
       <div className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] font-bold ${me ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background/80 text-foreground"}`}>
         {name}{trophies > 0 ? ` · ${trophies}×★` : ""}
       </div>
@@ -109,8 +109,8 @@ function CameraRig({ view, focus }: { view: CeremonyView; focus: React.MutableRe
       pos = focus.current.clone().add(new THREE.Vector3(1.8, 1.7, 3.4));
       at = focus.current.clone().add(new THREE.Vector3(0, 1.25, 0));
     } else if (view === "stage") {
-      pos = new THREE.Vector3(-0.4, 2.5, -4.3);
-      at = new THREE.Vector3(0, 1.3, 6);
+      pos = new THREE.Vector3(-3.4, 3.1, -4.5);
+      at = new THREE.Vector3(0.6, 0.9, 6);
     } else {
       pos = new THREE.Vector3(0, 4.3, 12.8);
       at = new THREE.Vector3(0, 1.4, -2.6);
@@ -151,7 +151,7 @@ function Hall({ rows }: { rows: number }) {
       <Seats count={rows * 8} />
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, 4]}>
         <planeGeometry args={[26, 26]} />
-        <meshStandardMaterial color="#141016" roughness={0.85} />
+        <meshStandardMaterial color="#0c0a0e" roughness={0.9} />
       </mesh>
       {/* Pink carpet from the seats to the stage */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.005, 4.5]}>
@@ -232,7 +232,8 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   const start = useMemo(() => (seatIndex >= 0 ? new THREE.Vector3(...seatPosition(seatIndex)) : BACKSTAGE.clone()), [seatIndex]);
   const rows = Math.max(3, Math.ceil(audience.length / 8));
 
-  useEffect(() => { setPhase(winner ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winner, revealAt]);
+  const winnerId = winner?.id ?? null;
+  useEffect(() => { setPhase(winnerId ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winnerId, revealAt]);
 
   useFrame(({ clock }) => {
     spot.current?.target.position.copy(spotTarget.current);
@@ -292,7 +293,7 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
           <NameTag name={g.name} trophies={g.trophies} me={g.id === myId} />
         </group>
       ))}
-      {host && (
+      {host && (host.id !== winner?.id || phase === "waiting") && (
         <group position={HOST_SPOT} rotation-y={0.35}>
           <Avatar3D look={host.look} pose={phase === "trophy" ? "clap" : "idle"} seed={host.id} />
           <NameTag name={`${host.name} · Présentateur`} trophies={0} me={host.id === myId} />
