@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, type ThreeElements } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AvatarLook } from "@/lib/avatar";
 import { inkOn, kitFor, type Kit } from "@/lib/kits";
 
@@ -306,45 +307,131 @@ export function Avatar3D({
   );
 }
 
-let ballTex: THREE.CanvasTexture | null = null;
-/** Gold ball skin: soft panel seams so the trophy reads as a football. */
-function goldBallTexture() {
-  if (ballTex) return ballTex;
-  const c = document.createElement("canvas");
-  c.width = 512; c.height = 256;
-  const g = c.getContext("2d")!;
-  const grad = g.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, "#fff1b0"); grad.addColorStop(0.5, "#e8b830"); grad.addColorStop(1, "#a8761a");
-  g.fillStyle = grad; g.fillRect(0, 0, 512, 256);
-  g.strokeStyle = "rgba(90,55,5,0.55)"; g.lineWidth = 3;
-  for (let row = 0; row < 4; row++) for (let col = 0; col < 8; col++) {
-    const cx = col * 64 + (row % 2) * 32 + 16, cy = row * 64 + 32;
-    g.beginPath();
-    for (let k = 0; k < 6; k++) { const a = (k / 6) * Math.PI * 2; g.lineTo(cx + Math.cos(a) * 26, cy + Math.sin(a) * 26); }
-    g.closePath(); g.stroke();
+/* ---------------- Ballon d'Or trophy ---------------- */
+
+const BALL_R = 0.19;
+const BALL_Y = 0.37;
+
+let seamGeo: THREE.BufferGeometry | null = null;
+/**
+ * Raised seams of a classic football (truncated icosahedron: 12 pentagons, 20 hexagons),
+ * every edge bent onto the sphere and merged into one mesh (a single draw call).
+ */
+function ballSeams() {
+  if (seamGeo) return seamGeo;
+  const phi = (1 + Math.sqrt(5)) / 2;
+  const base: [number, number, number][] = [
+    [0, 1, 3 * phi],
+    [1, 2 + phi, 2 * phi],
+    [phi, 2, 2 * phi + 1],
+  ];
+  const verts: THREE.Vector3[] = [];
+  const seen = new Set<string>();
+  for (const [a, b, c] of base) {
+    for (const [x, y, z] of [[a, b, c], [b, c, a], [c, a, b]] as const) {
+      for (const sx of x ? [1, -1] : [1]) for (const sy of y ? [1, -1] : [1]) for (const sz of z ? [1, -1] : [1]) {
+        const v = new THREE.Vector3(x * sx, y * sy, z * sz);
+        const key = v.toArray().map((n) => n.toFixed(3)).join(",");
+        if (!seen.has(key)) { seen.add(key); verts.push(v); }
+      }
+    }
   }
-  ballTex = new THREE.CanvasTexture(c);
-  ballTex.colorSpace = THREE.SRGBColorSpace;
-  return ballTex;
+  const r = BALL_R * 1.004;
+  const parts: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < verts.length; i++) for (let j = i + 1; j < verts.length; j++) {
+    if (Math.abs(verts[i].distanceTo(verts[j]) - 2) > 0.01) continue;
+    const a = verts[i].clone().normalize(), b = verts[j].clone().normalize();
+    const pts: THREE.Vector3[] = [];
+    for (let k = 0; k <= 6; k++) pts.push(a.clone().lerp(b, k / 6).normalize().multiplyScalar(r));
+    parts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 6, BALL_R * 0.022, 5, false));
+  }
+  seamGeo = mergeGeometries(parts) ?? new THREE.BufferGeometry();
+  parts.forEach((p) => p.dispose());
+  return seamGeo;
 }
 
-/** The Ballon d'Or trophy: gold ball on a black plinth with a gold band. Origin at the plinth base. */
+let bandTex: THREE.CanvasTexture | null = null;
+/** Engraved "BALLON D'OR" band wrapped round the plinth: lettering is cut darker into brushed gold. */
+function engravedBand() {
+  if (bandTex) return bandTex;
+  const c = document.createElement("canvas");
+  c.width = 1024; c.height = 128;
+  const g = c.getContext("2d")!;
+  const grad = g.createLinearGradient(0, 0, 0, 128);
+  grad.addColorStop(0, "#ffe9a0"); grad.addColorStop(0.45, "#e2ad2c"); grad.addColorStop(1, "#9c6a12");
+  g.fillStyle = grad; g.fillRect(0, 0, 1024, 128);
+  // brushed-metal streaks
+  for (let i = 0; i < 260; i++) {
+    g.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
+    g.fillRect(Math.random() * 1024, Math.random() * 128, 40 + Math.random() * 120, 1);
+  }
+  g.font = "bold 64px Georgia, 'Times New Roman', serif";
+  g.textAlign = "center"; g.textBaseline = "middle";
+  for (const x of [256, 768]) {
+    // light edge below + dark cut = engraved look
+    g.fillStyle = "rgba(255,240,190,0.7)"; g.fillText("BALLON D'OR", x, 68);
+    g.fillStyle = "#5a3a06"; g.fillText("BALLON D'OR", x, 65);
+  }
+  g.fillStyle = "#5a3a06";
+  g.fillRect(0, 8, 1024, 3); g.fillRect(0, 117, 1024, 3);
+  bandTex = new THREE.CanvasTexture(c);
+  bandTex.colorSpace = THREE.SRGBColorSpace;
+  bandTex.anisotropy = 4;
+  return bandTex;
+}
+
+/** Cradle that holds the ball on top of the plinth (lathe profile). */
+const CRADLE_POINTS = [
+  [0.0, 0], [0.105, 0], [0.11, 0.01], [0.085, 0.03], [0.07, 0.05], [0.085, 0.07], [0.0, 0.07],
+].map(([x, y]) => new THREE.Vector2(x, y));
+
+/**
+ * The Ballon d'Or trophy: gold ball with raised football seams, held by a gold cradle on a
+ * two-tier black plinth with an engraved gold band. Origin at the plinth base.
+ */
 export function GoldenBall(props: ThreeElements["group"]) {
-  const tex = useMemo(() => goldBallTexture(), []);
+  const seams = useMemo(() => ballSeams(), []);
+  const band = useMemo(() => engravedBand(), []);
+  const gold = useMemo(
+    () => new THREE.MeshPhysicalMaterial({ color: "#f4c542", metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.12, emissive: "#6b4300", emissiveIntensity: 0.18 }),
+    [],
+  );
+  const seamGold = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: "#c58f1c", metalness: 1, roughness: 0.32 }),
+    [],
+  );
+  const black = useMemo(
+    () => new THREE.MeshPhysicalMaterial({ color: "#0d0d0f", metalness: 0.2, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05 }),
+    [],
+  );
   return (
     <group {...props}>
-      <mesh position={[0, 0.08, 0]} castShadow>
-        <cylinderGeometry args={[0.13, 0.16, 0.16, 24]} />
-        <meshStandardMaterial color="#141414" roughness={0.3} metalness={0.5} />
+      {/* lower tier: polished black */}
+      <mesh position={[0, 0.035, 0]} material={black} castShadow receiveShadow>
+        <cylinderGeometry args={[0.165, 0.18, 0.07, 40]} />
       </mesh>
-      <mesh position={[0, 0.12, 0]}>
-        <cylinderGeometry args={[0.135, 0.135, 0.03, 24]} />
-        <meshStandardMaterial color="#e8b830" roughness={0.25} metalness={1} />
+      <mesh position={[0, 0.074, 0]} material={gold}>
+        <cylinderGeometry args={[0.168, 0.168, 0.01, 40]} />
       </mesh>
-      <mesh position={[0, 0.36, 0]} castShadow>
-        <sphereGeometry args={[0.2, 40, 28]} />
-        <meshStandardMaterial map={tex} color="#ffd75e" roughness={0.18} metalness={1} emissive="#7a4e00" emissiveIntensity={0.25} />
+      {/* upper tier: engraved band */}
+      <mesh position={[0, 0.108, 0]} castShadow>
+        <cylinderGeometry args={[0.138, 0.15, 0.058, 48, 1, true]} />
+        <meshPhysicalMaterial map={band} bumpMap={band} bumpScale={-1.5} metalness={1} roughness={0.22} clearcoat={0.4} />
       </mesh>
+      <mesh position={[0, 0.139, 0]} material={black}>
+        <cylinderGeometry args={[0.12, 0.138, 0.008, 40]} />
+      </mesh>
+      {/* gold cradle */}
+      <mesh position={[0, 0.142, 0]} material={gold} castShadow>
+        <latheGeometry args={[CRADLE_POINTS, 40]} />
+      </mesh>
+      {/* the ball */}
+      <group position={[0, BALL_Y, 0]} rotation={[0.35, 0.6, 0.1]}>
+        <mesh material={gold} castShadow>
+          <sphereGeometry args={[BALL_R, 64, 48]} />
+        </mesh>
+        <mesh geometry={seams} material={seamGold} />
+      </group>
     </group>
   );
 }
