@@ -338,9 +338,9 @@ function ballSeams() {
   }
   const r = BALL_R * 1.004;
   const parts: THREE.BufferGeometry[] = [];
-  for (let i = 0; i < verts.length; i++) for (let j = i + 1; j < verts.length; j++) {
-    if (Math.abs(verts[i].distanceTo(verts[j]) - 2) > 0.01) continue;
-    const a = verts[i].clone().normalize(), b = verts[j].clone().normalize();
+  verts.forEach((vi, i) => verts.slice(i + 1).forEach((vj) => {
+    if (Math.abs(vi.distanceTo(vj) - 2) > 0.01) return;
+    const a = vi.clone().normalize(), b = vj.clone().normalize();
     const pts: THREE.Vector3[] = [];
     for (let k = 0; k <= 6; k++) pts.push(a.clone().lerp(b, k / 6).normalize().multiplyScalar(r));
     parts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 6, BALL_R * 0.022, 5, false));
