@@ -137,7 +137,7 @@ function BallonDorPage() {
       </div>
       {people.length > MAX_AUDIENCE + 1 && <p className="mt-1 text-xs text-muted-foreground">{people.length - MAX_AUDIENCE - 1} autres joueurs regardent aussi.</p>}
 
-      {isAdmin && <HostDesk list={ceremonies} cur={cur} present={crowd} hostId={hostP?.id ?? uid} />}
+      {isAdmin && <HostDesk list={ceremonies} present={crowd} hostId={hostP?.id ?? uid} />}
 
       <h2 className="mb-3 mt-8 text-3xl">Palmarès</h2>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,7 +169,7 @@ function StatusPill({ c, now }: { c: Ceremony | null; now: number }) {
 }
 
 /** Admin controls inside the hall: launch, name the winner (players present first, or search anyone), cancel. */
-function HostDesk({ list, cur, present, hostId }: { list: Ceremony[]; cur: Ceremony | null; present: Present[]; hostId: string }) {
+function HostDesk({ list, present, hostId }: { list: Ceremony[]; present: Present[]; hostId: string }) {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
@@ -195,26 +195,28 @@ function HostDesk({ list, cur, present, hostId }: { list: Ceremony[]; cur: Cerem
     qc.invalidateQueries({ queryKey: ["profile"] });
   }
 
-  if (!cur || cur.status === "finished" || cur.status === "cancelled") {
+  // The desk drives the live ceremony, else the next scheduled one (even while last week's winner is still on stage).
+  const target = list.find((c) => c.status === "live") ?? list.filter((c) => c.status === "scheduled").sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at))[0] ?? null;
+  if (!target) {
     return <div className="panel mt-4 p-4 text-sm text-muted-foreground">Programme la prochaine cérémonie dans Administration → Ballon d'Or.</div>;
   }
   return (
     <div className="panel mt-4 space-y-3 p-4">
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="mr-auto text-2xl">Pupitre de l'admin</h2>
-        {canStart(cur, list) && (
-          <button type="button" disabled={busy} onClick={() => run(() => supabase.rpc("admin_start_ballon_dor", { _id: cur.id }), "La cérémonie est lancée !")}
+        {canStart(target, list) && (
+          <button type="button" disabled={busy} onClick={() => run(() => supabase.rpc("admin_start_ballon_dor", { _id: target.id }), "La cérémonie est lancée !")}
             className="rounded-lg bg-gold px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">Lancer la cérémonie</button>
         )}
-        {canCancel(cur) && (
-          <button type="button" disabled={busy} onClick={() => { if (confirm("Annuler cette cérémonie ?")) run(() => supabase.rpc("admin_cancel_ballon_dor", { _id: cur.id }), "Cérémonie annulée"); }}
+        {canCancel(target) && (
+          <button type="button" disabled={busy} onClick={() => { if (confirm("Annuler cette cérémonie ?")) run(() => supabase.rpc("admin_cancel_ballon_dor", { _id: target.id }), "Cérémonie annulée"); }}
             className="rounded-lg bg-secondary px-4 py-2 text-sm font-bold text-muted-foreground disabled:opacity-50">Annuler</button>
         )}
       </div>
-      {cur.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt, puis désigne le gagnant.</p>}
-      {canAward(cur) && (
+      {target.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt, puis désigne le gagnant.</p>}
+      {canAward(target) && (
         <>
-          <p className="text-sm text-muted-foreground">Choisis le Ballon d'Or : il reçoit {cur.reward_coins} pièces et le trophée rejoint sa vitrine.</p>
+          <p className="text-sm text-muted-foreground">Choisis le Ballon d'Or : il reçoit {target.reward_coins} pièces et le trophée rejoint sa vitrine.</p>
           <label className="flex items-center gap-2 rounded-lg border border-input bg-background/60 px-2 py-1.5">
             <Search className="h-4 w-4 text-muted-foreground" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher un joueur absent…" className="w-full bg-transparent text-sm text-foreground outline-none" />
@@ -222,7 +224,7 @@ function HostDesk({ list, cur, present, hostId }: { list: Ceremony[]; cur: Cerem
           <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
             {candidates.map(([id, name]) => (
               <button key={id} type="button" disabled={busy} data-sfx="none"
-                onClick={() => { if (confirm(`Remettre le Ballon d'Or à ${name} ?`)) run(() => supabase.rpc("admin_award_ballon_dor", { _id: cur.id, _winner: id }), `Ballon d'Or remis à ${name}`); }}
+                onClick={() => { if (confirm(`Remettre le Ballon d'Or à ${name} ?`)) run(() => supabase.rpc("admin_award_ballon_dor", { _id: target.id, _winner: id }), `Ballon d'Or remis à ${name}`); }}
                 className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-left text-sm hover:border-primary disabled:opacity-50">
                 <span className="truncate font-bold">{name}</span>
                 <span className="text-xs text-primary">{present.some((p) => p.id === id) ? "présent · " : ""}Désigner</span>
