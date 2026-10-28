@@ -38,5 +38,5 @@
 - [x] Retournement des cartes fluide et sans bug quel que soit le dos personnalisé du pack
 - [x] 30 cartes Holographique de plus (stars, photos réelles, sur le modèle de Désiré Doué)
 - [x] Raretés au-dessus de Légendaire très très dures à tirer (Classique et Premium)
-- [ ] Avatar 3D par joueur : peau, coiffure, chaussures, nom + numéro, maillot/short des clubs tirés dans les packs, vitrine des Ballons d'Or derrière
-- [ ] Cérémonie Ballon d'Or hebdo : l'admin programme, lance et désigne le gagnant ; avatars des joueurs connectés dans la salle ; pièces + trophée au profil
+- [x] Avatar 3D par joueur : peau, coiffure, chaussures, nom + numéro, maillot/short des clubs tirés dans les packs, vitrine des Ballons d'Or derrière
+- [x] Cérémonie Ballon d'Or hebdo : l'admin programme, lance et désigne le gagnant ; avatars des joueurs connectés dans la salle ; pièces + trophée au profil

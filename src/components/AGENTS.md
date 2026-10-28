@@ -12,3 +12,4 @@
 - Rarity styles draw through .card-style-fx[data-fx]; extra effects are layered by PlayerCard's exported ExtraFx over the main effect, which alone sets fonts/photo treatment.
 - CardBack draws a pack's back colour, shape outline (.gm-back[data-shape], same outlines as card shapes) and effects via ExtraFx; back pictures are blended with CSS because backs reshape per pack.
 - Custom pack pictures are baked in the browser into a crimped foil pack PNG (src/lib/packify.ts) before upload, so every pack surface (swipe tear, lists, opening, news) stays a plain image.
+- 3D (React Three Fiber) lives only in components/avatar and is lazy-loaded by the avatar and ballon-dor routes: Avatar3D is a procedural figurine (printed lathe shirt texture, u = 0 chest / 0.5 back) so kits, hair and shoes stay fully customisable; the ceremony hall uses canvas-sprite name tags and instanced seats/confetti to keep a 40-avatar crowd light.
