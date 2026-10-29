@@ -36,7 +36,6 @@ export function StatsAdmin() {
     players: rows.length,
     packs: rows.reduce((a, r) => a + Number(r.packs_opened), 0),
     duels: rows.reduce((a, r) => a + duelRecord(r).played, 0) / 2,
-    matches: rows.reduce((a, r) => a + matchRecord(r).played, 0),
   }), [rows]);
 
   const table = useMemo(() => {
@@ -65,7 +64,6 @@ export function StatsAdmin() {
           <Pill label="Joueurs" value={totals.players} />
           <Pill label="Packs ouverts" value={totals.packs} />
           <Pill label="Duels joués" value={Math.round(totals.duels)} />
-          <Pill label="Matchs joués" value={totals.matches} />
         </div>
       </div>
 
@@ -75,11 +73,11 @@ export function StatsAdmin() {
         <>
           <div className="grid gap-4 lg:grid-cols-3">
             <BoardCard board="rare" rows={ranked} icon={<Gem className="h-5 w-5" />} title="Plus de cartes rares"
-              hint={`Cartes ${min?.label ?? "Rare"} et plus tirées dans les packs`} unit="cartes" />
+              hint={`Cartes ${min?.label ?? "Rare"} et plus tirées dans les packs`} unit={["carte", "cartes"]} />
             <BoardCard board="duels" rows={ranked} icon={<Swords className="h-5 w-5" />} title="Plus de duels gagnés"
-              hint="Victoires en duel" unit="victoires" />
+              hint="Victoires en duel" unit={["victoire", "victoires"]} />
             <BoardCard board="matches" rows={ranked} icon={<Trophy className="h-5 w-5" />} title="Plus de matchs gagnés"
-              hint="Matchs 11 contre 11 et matchs joués à la main" unit="victoires" />
+              hint="Matchs 11 contre 11 et matchs joués à la main" unit={["victoire", "victoires"]} />
           </div>
 
           <div className="panel p-4">
@@ -196,7 +194,7 @@ function Detail({ r, minLabel }: { r: PlayerStats; minLabel: string }) {
 
 const MEDAL = ["text-gold", "text-foreground", "text-primary"];
 
-function BoardCard({ board, rows, icon, title, hint, unit }: { board: Board; rows: PlayerStats[]; icon: React.ReactNode; title: string; hint: string; unit: string }) {
+function BoardCard({ board, rows, icon, title, hint, unit }: { board: Board; rows: PlayerStats[]; icon: React.ReactNode; title: string; hint: string; unit: [string, string] }) {
   const top = rankBoard(rows, board, 10);
   return (
     <section className="panel p-4">
@@ -208,7 +206,7 @@ function BoardCard({ board, rows, icon, title, hint, unit }: { board: Board; row
           <li key={player.user_id} className={cn("flex items-center gap-3 rounded-lg px-2 py-1.5", place === 1 ? "bg-primary/15" : "bg-secondary/40")}>
             <span className={cn("w-6 text-center text-lg font-bold", MEDAL[place - 1] ?? "text-muted-foreground")}>{place}</span>
             <span className="flex-1 truncate font-bold text-foreground">{player.username}</span>
-            <span className="text-sm"><b className="text-primary">{fmt(value)}</b> <span className="text-muted-foreground">{unit}</span></span>
+            <span className="text-sm"><b className="text-primary">{fmt(value)}</b> <span className="text-muted-foreground">{value > 1 ? unit[1] : unit[0]}</span></span>
           </li>
         ))}
       </ol>
