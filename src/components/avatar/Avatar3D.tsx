@@ -344,7 +344,7 @@ function ballSeams() {
     const pts: THREE.Vector3[] = [];
     for (let k = 0; k <= 6; k++) pts.push(a.clone().lerp(b, k / 6).normalize().multiplyScalar(r));
     parts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 6, BALL_R * 0.022, 5, false));
-  }
+  }));
   seamGeo = mergeGeometries(parts) ?? new THREE.BufferGeometry();
   parts.forEach((p) => p.dispose());
   return seamGeo;
@@ -365,7 +365,7 @@ function engravedBand() {
     g.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
     g.fillRect(Math.random() * 1024, Math.random() * 128, 40 + Math.random() * 120, 1);
   }
-  g.font = "bold 64px Georgia, 'Times New Roman', serif";
+  g.font = "bold 44px Georgia, 'Times New Roman', serif";
   g.textAlign = "center"; g.textBaseline = "middle";
   for (const x of [256, 768]) {
     // light edge below + dark cut = engraved look
@@ -377,6 +377,9 @@ function engravedBand() {
   bandTex = new THREE.CanvasTexture(c);
   bandTex.colorSpace = THREE.SRGBColorSpace;
   bandTex.anisotropy = 4;
+  // centre one "BALLON D'OR" on the front of the plinth
+  bandTex.wrapS = THREE.RepeatWrapping;
+  bandTex.offset.x = 0.25;
   return bandTex;
 }
 
