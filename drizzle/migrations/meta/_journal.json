@@ -239,6 +239,13 @@
       "when": 1793041193889,
       "tag": "0033_avatars_ballon_dor",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793296380890,
+      "tag": "0034_admin_player_stats",
+      "breakpoints": true
     }
   ]
 }
