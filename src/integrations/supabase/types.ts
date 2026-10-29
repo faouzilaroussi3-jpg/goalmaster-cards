@@ -1646,6 +1646,41 @@ export type Database = {
           username: string
         }[]
       }
+      admin_player_stats: {
+        Args: { _min_rank?: number }
+        Returns: {
+          auctions_sold: number
+          ballon_dor: number
+          cards_owned: number
+          cards_pulled: number
+          challenges_claimed: number
+          coins: number
+          duel_draws: number
+          duel_losses: number
+          duel_rating: number
+          duel_wins: number
+          goals_against: number
+          goals_for: number
+          is_admin: boolean
+          joined_at: string
+          legendary_pulled: number
+          level: number
+          live_draws: number
+          live_losses: number
+          live_wins: number
+          match_rating: number
+          packs_opened: number
+          rare_owned: number
+          rare_pulled: number
+          tactic_draws: number
+          tactic_losses: number
+          tactic_wins: number
+          unique_owned: number
+          user_id: string
+          username: string
+          xp: number
+        }[]
+      }
       admin_replace_card: {
         Args: { _from: string; _to: string }
         Returns: number
