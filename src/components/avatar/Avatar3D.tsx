@@ -365,7 +365,7 @@ function engravedBand() {
     g.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
     g.fillRect(Math.random() * 1024, Math.random() * 128, 40 + Math.random() * 120, 1);
   }
-  g.font = "bold 64px Georgia, 'Times New Roman', serif";
+  g.font = "bold 44px Georgia, 'Times New Roman', serif";
   g.textAlign = "center"; g.textBaseline = "middle";
   for (const x of [256, 768]) {
     // light edge below + dark cut = engraved look
