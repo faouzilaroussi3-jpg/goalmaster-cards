@@ -344,7 +344,7 @@ function ballSeams() {
     const pts: THREE.Vector3[] = [];
     for (let k = 0; k <= 6; k++) pts.push(a.clone().lerp(b, k / 6).normalize().multiplyScalar(r));
     parts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 6, BALL_R * 0.022, 5, false));
-  }
+  }));
   seamGeo = mergeGeometries(parts) ?? new THREE.BufferGeometry();
   parts.forEach((p) => p.dispose());
   return seamGeo;
