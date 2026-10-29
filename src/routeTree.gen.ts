@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as TrophyPreviewRouteImport } from './routes/trophy-preview'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
 import { Route as AuthenticatedAvatarRouteImport } from './routes/_authenticated/avatar'
@@ -49,11 +48,6 @@ const AuthRoute = AuthRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrophyPreviewRoute = TrophyPreviewRouteImport.update({
-  id: '/trophy-preview',
-  path: '/trophy-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -151,7 +145,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/trophy-preview': typeof TrophyPreviewRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/avatar': typeof AuthenticatedAvatarRoute
@@ -174,7 +167,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/trophy-preview': typeof TrophyPreviewRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
   '/avatar': typeof AuthenticatedAvatarRoute
@@ -199,7 +191,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/trophy-preview': typeof TrophyPreviewRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/amis': typeof AuthenticatedAmisRoute
   '/_authenticated/avatar': typeof AuthenticatedAvatarRoute
@@ -224,7 +215,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/leaderboard'
-    | '/trophy-preview'
     | '/admin'
     | '/amis'
     | '/avatar'
@@ -247,7 +237,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/leaderboard'
-    | '/trophy-preview'
     | '/admin'
     | '/amis'
     | '/avatar'
@@ -271,7 +260,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/leaderboard'
-    | '/trophy-preview'
     | '/_authenticated/admin'
     | '/_authenticated/amis'
     | '/_authenticated/avatar'
@@ -296,7 +284,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   LeaderboardRoute: typeof LeaderboardRoute
-  TrophyPreviewRoute: typeof TrophyPreviewRoute
   ApiPublicCardPhotoSplatRoute: typeof ApiPublicCardPhotoSplatRoute
 }
 
@@ -328,13 +315,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trophy-preview': {
-      id: '/trophy-preview'
-      path: '/trophy-preview'
-      fullPath: '/trophy-preview'
-      preLoaderRoute: typeof TrophyPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -505,7 +485,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   LeaderboardRoute: LeaderboardRoute,
-  TrophyPreviewRoute: TrophyPreviewRoute,
   ApiPublicCardPhotoSplatRoute: ApiPublicCardPhotoSplatRoute,
 }
 export const routeTree = rootRouteImport
