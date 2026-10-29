@@ -414,7 +414,7 @@ export function GoldenBall(props: ThreeElements["group"]) {
         <cylinderGeometry args={[0.168, 0.168, 0.01, 40]} />
       </mesh>
       {/* upper tier: engraved band */}
-      <mesh position={[0, 0.108, 0]} castShadow>
+      <mesh position={[0, 0.108, 0]} rotation-y={Math.PI / 2} castShadow>
         <cylinderGeometry args={[0.138, 0.15, 0.058, 48, 1, true]} />
         <meshPhysicalMaterial map={band} bumpMap={band} bumpScale={-1.5} metalness={1} roughness={0.22} clearcoat={0.4} />
       </mesh>
