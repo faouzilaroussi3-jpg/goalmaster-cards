@@ -379,7 +379,7 @@ function engravedBand() {
   bandTex.anisotropy = 4;
   // centre one "BALLON D'OR" on the front of the plinth
   bandTex.wrapS = THREE.RepeatWrapping;
-  bandTex.offset.x = 0.5;
+  bandTex.offset.x = 0.25;
   return bandTex;
 }
 
