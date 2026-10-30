@@ -439,23 +439,24 @@ function diamondIcicles() {
 }
 
 let diamondMat: THREE.MeshPhysicalMaterial | null = null;
-/** Clear diamond: full transmission, diamond IOR 2.42 with dispersion for rainbow fire, faint iridescence. */
+/** Diamond: mirror-bright facets over partial transmission (a fully clear crystal only shows the black plinth behind it), diamond IOR 2.42, dispersion and iridescence for rainbow fire. */
 function diamondMaterial() {
   return (diamondMat ??= new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
-    metalness: 0,
+    metalness: 0.35,
     roughness: 0,
-    transmission: 1,
-    thickness: 0.012,
+    transmission: 0.6,
+    thickness: 0.03,
     ior: 2.42,
     dispersion: 4,
-    iridescence: 0.35,
+    iridescence: 0.8,
+    iridescenceThicknessRange: [180, 650],
     iridescenceIOR: 1.6,
     specularIntensity: 1,
     specularColor: new THREE.Color("#ffffff"),
     clearcoat: 1,
     clearcoatRoughness: 0,
-    envMapIntensity: 2.6,
+    envMapIntensity: 3.5,
     attenuationColor: new THREE.Color("#eaf6ff"),
     attenuationDistance: 0.5,
   }));
