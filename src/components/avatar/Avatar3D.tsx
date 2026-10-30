@@ -415,9 +415,9 @@ function diamondIcicles() {
     const long = i % 2 === 0;
     const L = long ? 0.034 + rnd(i) * 0.022 : 0.014 + rnd(i) * 0.014;
     const r = (long ? 0.0075 : 0.0055) + rnd(i + 50) * 0.002;
-    const sides = 6 + (i % 3);
+    const sides = 8 + (i % 3) * 2;
     const prof = [
-      [0, 0.0015], [r * 0.8, 0.0015], [r, -0.0025], [r * 0.92, -L * 0.18], [r * 0.5, -L * 0.62], [r * 0.12, -L * 0.93], [0, -L],
+      [0, 0.0015], [r * 0.8, 0.0015], [r, -0.0025], [r * 0.95, -L * 0.12], [r * 0.78, -L * 0.3], [r * 0.5, -L * 0.55], [r * 0.24, -L * 0.8], [0, -L],
     ].map(([x, y]) => new THREE.Vector2(x, y));
     let g: THREE.BufferGeometry = new THREE.LatheGeometry(prof, sides);
     g = g.toNonIndexed();
@@ -449,13 +449,15 @@ function diamondMaterial() {
     thickness: 0.03,
     ior: 2.42,
     dispersion: 4,
-    iridescence: 0.8,
+    iridescence: 1,
     iridescenceThicknessRange: [180, 650],
     iridescenceIOR: 1.6,
     specularIntensity: 1,
     specularColor: new THREE.Color("#ffffff"),
     clearcoat: 1,
     clearcoatRoughness: 0,
+    emissive: new THREE.Color("#d8efff"),
+    emissiveIntensity: 0.07,
     envMapIntensity: 3.5,
     attenuationColor: new THREE.Color("#eaf6ff"),
     attenuationDistance: 0.5,
