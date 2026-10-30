@@ -8,7 +8,7 @@ export const Route = createFileRoute("/trophy-preview")({
   ssr: false,
   component: () => (
     <div style={{ width: "100vw", height: "100vh", background: "#111" }} data-scene-ready>
-      <Canvas camera={{ position: [0, 0.32, 0.75], fov: 35 }} onCreated={({ camera }) => camera.lookAt(0, 0.2, 0)}>
+      <Canvas camera={{ position: [0, 0.16, 0.42], fov: 35 }} onCreated={({ camera }) => camera.lookAt(0, 0.07, 0)}>
         <color attach="background" args={["#1a0d14"]} />
         <ambientLight intensity={0.3} />
         <spotLight position={[1, 2, 1.5]} intensity={8} angle={0.5} />
