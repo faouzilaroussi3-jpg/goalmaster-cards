@@ -388,6 +388,133 @@ const CRADLE_POINTS = [
   [0.0, 0], [0.105, 0], [0.11, 0.01], [0.085, 0.03], [0.07, 0.05], [0.085, 0.07], [0.0, 0.07],
 ].map(([x, y]) => new THREE.Vector2(x, y));
 
+/** Diamond stalactites hang from the gold lip round the lower tier (lip radius, ring of crystals, top y). */
+const LIP_R = 0.19;
+const ICICLE_R = 0.184;
+const ICICLE_TOP = 0.07;
+const ICICLE_COUNT = 34;
+
+/** Seeded 0..1 noise so every trophy grows the same crystals. */
+const rnd = (i: number) => {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+let icicleGeo: THREE.BufferGeometry | null = null;
+let icicleTips: Float32Array | null = null;
+/**
+ * Faceted diamond stalactites round the plinth: each is a low-sided lathe (crisp facets,
+ * flat normals) with a short crown and a long tapering point, slightly leaning and twisted,
+ * long and short ones alternating. Merged into one mesh so the ring is a single draw call.
+ */
+function diamondIcicles() {
+  if (icicleGeo && icicleTips) return { geo: icicleGeo, tips: icicleTips };
+  const parts: THREE.BufferGeometry[] = [];
+  const tips: number[] = [];
+  for (let i = 0; i < ICICLE_COUNT; i++) {
+    const long = i % 2 === 0;
+    const L = long ? 0.034 + rnd(i) * 0.022 : 0.014 + rnd(i) * 0.014;
+    const r = (long ? 0.0075 : 0.0055) + rnd(i + 50) * 0.002;
+    const sides = 8 + (i % 3) * 2;
+    const prof = [
+      [0, 0.0015], [r * 0.8, 0.0015], [r, -0.0025], [r * 0.95, -L * 0.12], [r * 0.78, -L * 0.3], [r * 0.5, -L * 0.55], [r * 0.24, -L * 0.8], [0, -L],
+    ].map(([x, y]) => new THREE.Vector2(x, y));
+    let g: THREE.BufferGeometry = new THREE.LatheGeometry(prof, sides);
+    g = g.toNonIndexed();
+    g.computeVertexNormals();
+    const a = (i / ICICLE_COUNT) * Math.PI * 2 + (rnd(i + 9) - 0.5) * 0.06;
+    const m = new THREE.Matrix4()
+      .makeTranslation(Math.sin(a) * ICICLE_R, ICICLE_TOP, Math.cos(a) * ICICLE_R)
+      .multiply(new THREE.Matrix4().makeRotationY(a))
+      .multiply(new THREE.Matrix4().makeRotationX(-0.06 - rnd(i + 3) * 0.08)) // lean outward
+      .multiply(new THREE.Matrix4().makeRotationY(rnd(i + 21) * Math.PI)); // twist facets
+    g.applyMatrix4(m);
+    parts.push(g);
+    if (long) tips.push(...new THREE.Vector3(0, -L * 0.85, 0).applyMatrix4(m).toArray());
+  }
+  icicleGeo = mergeGeometries(parts) ?? new THREE.BufferGeometry();
+  parts.forEach((p) => p.dispose());
+  icicleTips = new Float32Array(tips);
+  return { geo: icicleGeo, tips: icicleTips };
+}
+
+let diamondMat: THREE.MeshPhysicalMaterial | null = null;
+/** Diamond: mirror-bright facets over partial transmission (a fully clear crystal only shows the black plinth behind it), diamond IOR 2.42, dispersion and iridescence for rainbow fire. */
+function diamondMaterial() {
+  return (diamondMat ??= new THREE.MeshPhysicalMaterial({
+    color: "#ffffff",
+    metalness: 0.35,
+    roughness: 0,
+    transmission: 0.6,
+    thickness: 0.03,
+    ior: 2.42,
+    dispersion: 4,
+    iridescence: 1,
+    iridescenceThicknessRange: [180, 650],
+    iridescenceIOR: 1.6,
+    specularIntensity: 1,
+    specularColor: new THREE.Color("#ffffff"),
+    clearcoat: 1,
+    clearcoatRoughness: 0,
+    emissive: new THREE.Color("#d8efff"),
+    emissiveIntensity: 0.07,
+    envMapIntensity: 3.5,
+    attenuationColor: new THREE.Color("#eaf6ff"),
+    attenuationDistance: 0.5,
+  }));
+}
+
+let glintTex: THREE.CanvasTexture | null = null;
+/** Four-point star sprite for the sparkles that twinkle on the crystal tips. */
+function glintTexture() {
+  if (glintTex) return glintTex;
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const g = c.getContext("2d")!;
+  const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  rg.addColorStop(0, "rgba(255,255,255,1)"); rg.addColorStop(0.15, "rgba(230,245,255,0.8)"); rg.addColorStop(0.4, "rgba(200,230,255,0)");
+  g.fillStyle = rg; g.fillRect(0, 0, 64, 64);
+  g.fillStyle = "rgba(255,255,255,0.9)";
+  g.beginPath(); g.moveTo(32, 0); g.lineTo(34, 30); g.lineTo(64, 32); g.lineTo(34, 34); g.lineTo(32, 64); g.lineTo(30, 34); g.lineTo(0, 32); g.lineTo(30, 30); g.closePath(); g.fill();
+  glintTex = new THREE.CanvasTexture(c);
+  return glintTex;
+}
+
+/** Diamond stalactites + twinkling glints (two draw calls per trophy). */
+function DiamondIcicles() {
+  const { geo, tips } = useMemo(() => diamondIcicles(), []);
+  const mat = useMemo(() => diamondMaterial(), []);
+  const glints = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(tips, 3));
+    g.setAttribute("color", new THREE.BufferAttribute(new Float32Array(tips.length), 3));
+    return g;
+  }, [tips]);
+  const glintMat = useMemo(
+    () => new THREE.PointsMaterial({ map: glintTexture(), size: 0.035, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+    [],
+  );
+  const reduced = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches, []);
+  useEffect(() => () => { glints.dispose(); glintMat.dispose(); }, [glints, glintMat]);
+  useFrame(({ clock }) => {
+    const col = glints.getAttribute("color") as THREE.BufferAttribute;
+    const t = reduced ? 0 : clock.elapsedTime;
+    for (let i = 0; i < col.count; i++) {
+      // each tip flashes briefly at its own rhythm
+      const s = Math.max(0, Math.sin(t * (1.3 + rnd(i + 70) * 1.7) + i * 2.1)) ** 12;
+      col.setXYZ(i, s, s, s);
+    }
+    col.needsUpdate = true;
+  });
+  return (
+    <>
+      <mesh geometry={geo} material={mat} castShadow />
+      <points geometry={glints} material={glintMat} />
+    </>
+  );
+}
+
+
 /**
  * The Ballon d'Or trophy: gold ball with raised football seams, held by a gold cradle on a
  * two-tier black plinth with an engraved gold band. Origin at the plinth base.
@@ -413,9 +540,11 @@ export function GoldenBall(props: ThreeElements["group"]) {
       <mesh position={[0, 0.035, 0]} material={black} castShadow receiveShadow>
         <cylinderGeometry args={[0.165, 0.18, 0.07, 40]} />
       </mesh>
+      {/* gold lip the diamond stalactites hang from */}
       <mesh position={[0, 0.074, 0]} material={gold}>
-        <cylinderGeometry args={[0.168, 0.168, 0.01, 40]} />
+        <cylinderGeometry args={[LIP_R, LIP_R, 0.01, 48]} />
       </mesh>
+      <DiamondIcicles />
       {/* upper tier: engraved band */}
       <mesh position={[0, 0.108, 0]} castShadow>
         <cylinderGeometry args={[0.138, 0.15, 0.058, 48, 1, true]} />
