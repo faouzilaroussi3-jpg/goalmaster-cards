@@ -287,6 +287,7 @@ export type Database = {
           started_at: string | null
           status: string
           title: string
+          trophy_coins: number
           winner_id: string | null
           winner_name: string | null
         }
@@ -299,6 +300,7 @@ export type Database = {
           started_at?: string | null
           status?: string
           title: string
+          trophy_coins?: number
           winner_id?: string | null
           winner_name?: string | null
         }
@@ -311,6 +313,7 @@ export type Database = {
           started_at?: string | null
           status?: string
           title?: string
+          trophy_coins?: number
           winner_id?: string | null
           winner_name?: string | null
         }
@@ -463,6 +466,54 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rarities"
             referencedColumns: ["key"]
+          },
+        ]
+      }
+      ceremony_awards: {
+        Row: {
+          awarded_at: string
+          ceremony_id: string
+          detail: string
+          id: string
+          kind: string
+          reward_coins: number
+          winner_id: string | null
+          winner_name: string
+        }
+        Insert: {
+          awarded_at?: string
+          ceremony_id: string
+          detail?: string
+          id?: string
+          kind: string
+          reward_coins?: number
+          winner_id?: string | null
+          winner_name: string
+        }
+        Update: {
+          awarded_at?: string
+          ceremony_id?: string
+          detail?: string
+          id?: string
+          kind?: string
+          reward_coins?: number
+          winner_id?: string | null
+          winner_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ceremony_awards_ceremony_id_fkey"
+            columns: ["ceremony_id"]
+            isOneToOne: false
+            referencedRelation: "ballon_dor_ceremonies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ceremony_awards_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1561,12 +1612,45 @@ export type Database = {
         Args: { _exclude?: string[]; _rarity: string }
         Returns: string
       }
+      _rarest_label: {
+        Args: {
+          _label: string
+          _name: string
+          _rarity: string
+          _version: string
+        }
+        Returns: string
+      }
       _rarity_fx: { Args: { _key: string }; Returns: string }
       _settle_auctions: { Args: never; Returns: undefined }
       _settle_duels: { Args: never; Returns: undefined }
       _settle_live_matches: { Args: never; Returns: undefined }
       _settle_matches: { Args: never; Returns: undefined }
       _sync_stock: { Args: { _pt: string; _uid: string }; Returns: undefined }
+      _weekly_match_wins: {
+        Args: { _limit: number; _since: string; _until: string }
+        Returns: {
+          goal_diff: number
+          played: number
+          user_id: string
+          username: string
+          wins: number
+        }[]
+      }
+      _weekly_rarest_pulls: {
+        Args: { _limit: number; _since: string; _until: string }
+        Returns: {
+          card_name: string
+          pulled_at: string
+          rarity: string
+          rarity_label: string
+          rarity_rank: number
+          rating: number
+          user_id: string
+          username: string
+          version: string
+        }[]
+      }
       accept_duel: {
         Args: { _duel_id: string; _user_card_ids: string[] }
         Returns: string
@@ -1575,6 +1659,10 @@ export type Database = {
       accept_match: { Args: { _match_id: string }; Returns: string }
       admin_award_ballon_dor: {
         Args: { _id: string; _winner: string }
+        Returns: undefined
+      }
+      admin_award_ceremony_trophy: {
+        Args: { _id: string; _kind: string }
         Returns: undefined
       }
       admin_cancel_ballon_dor: { Args: { _id: string }; Returns: undefined }
@@ -1686,7 +1774,12 @@ export type Database = {
         Returns: number
       }
       admin_schedule_ballon_dor: {
-        Args: { _at: string; _coins: number; _title: string }
+        Args: {
+          _at: string
+          _coins: number
+          _title: string
+          _trophy_coins?: number
+        }
         Returns: string
       }
       admin_set_rarity_active: {
@@ -1710,6 +1803,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_weekly_trophies: { Args: never; Returns: Json }
       auction_min_bid: {
         Args: { _current: number; _start: number }
         Returns: number
