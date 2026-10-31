@@ -632,7 +632,7 @@ export function RareCardTrophy(props: ThreeElements["group"]) {
 export function WinsCup(props: ThreeElements["group"]) {
   const { gold, black } = useTrophyMaterials();
   // the lathe's outer and inner walls share one surface, so both sides must be lit
-  const cupGold = useMemo(() => Object.assign(gold.clone(), { side: THREE.DoubleSide }), [gold]);
+  const cupGold = useMemo(() => Object.assign(gold.clone(), { side: THREE.DoubleSide, roughness: 0.34, emissiveIntensity: 0.4 }), [gold]);
   const gem = useMemo(() => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0, roughness: 0, transmission: 0.5, thickness: 0.02, ior: 2, clearcoat: 1, emissive: "#ff2d87", emissiveIntensity: 0.25 }), []);
   return (
     <group {...props}>
