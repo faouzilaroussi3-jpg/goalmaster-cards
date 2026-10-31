@@ -11,6 +11,7 @@ import { PacksAdmin } from "@/components/admin/PacksAdmin";
 import { ChallengesAdmin } from "@/components/admin/ChallengesAdmin";
 import { BallonDorAdmin } from "@/components/admin/BallonDorAdmin";
 import { StatsAdmin } from "@/components/admin/StatsAdmin";
+import { TrophiesAdmin } from "@/components/admin/TrophiesAdmin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -30,15 +31,15 @@ const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm t
 
 function AdminPage() {
   const { data: profile, isLoading } = useProfile();
-  const [tab, setTab] = useState<"stats" | "cards" | "rarities" | "gifts" | "packs" | "challenges" | "ballon" | "events">("cards");
+  const [tab, setTab] = useState<"stats" | "cards" | "rarities" | "gifts" | "packs" | "challenges" | "ballon" | "trophies" | "events">("cards");
   if (isLoading) return null;
   if (!profile?.isAdmin) return <p className="p-8 text-center text-muted-foreground">Accès réservé aux administrateurs.</p>;
-  const label = { stats: "Statistiques joueurs", cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs", challenges: "Défis", ballon: "Ballon d'Or", events: "Événements" } as const;
+  const label = { stats: "Statistiques joueurs", cards: "Cartes", rarities: "Raretés", gifts: "Cadeaux joueurs", packs: "Packs", challenges: "Défis", ballon: "Ballon d'Or", trophies: "Trophées de la semaine", events: "Événements" } as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-5xl text-gold">Administration</h1>
       <div className="my-4 flex flex-wrap gap-2">
-        {(["stats", "cards", "rarities", "gifts", "packs", "challenges", "ballon", "events"] as const).map((t) => (
+        {(["stats", "cards", "rarities", "gifts", "packs", "challenges", "ballon", "trophies", "events"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 text-sm font-bold ${tab === t ? "bg-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             {label[t]}
           </button>
@@ -51,6 +52,7 @@ function AdminPage() {
       {tab === "packs" && <PacksAdmin />}
       {tab === "challenges" && <ChallengesAdmin />}
       {tab === "ballon" && <BallonDorAdmin />}
+      {tab === "trophies" && <TrophiesAdmin />}
       {tab === "events" && <EventsAdmin />}
     </div>
   );

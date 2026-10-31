@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AvatarLook } from "@/lib/avatar";
 import { inkOn, kitFor, type Kit } from "@/lib/kits";
+import type { TrophyKind } from "@/lib/ballon-dor";
 
 export type AvatarPose = "idle" | "clap" | "cheer" | "trophy" | "walk";
 
@@ -197,8 +198,8 @@ function Shoe({ x, style, color }: { x: number; style: AvatarLook["shoes"]; colo
  * `detail="low"` drops small face and hair parts for crowds.
  */
 export function Avatar3D({
-  look, pose = "idle", detail = "high", seed = "", ...group
-}: { look: AvatarLook; pose?: AvatarPose; detail?: "high" | "low"; seed?: string } & ThreeElements["group"]) {
+  look, pose = "idle", detail = "high", seed = "", held = "ballon", ...group
+}: { look: AvatarLook; pose?: AvatarPose; detail?: "high" | "low"; seed?: string; held?: TrophyKind } & ThreeElements["group"]) {
   const fonts = useFontsReady();
   const kit = kitFor(look.club);
   const shirtTex = useMemo(() => drawShirt(kit, look.shirtName, look.number, fonts), [kit, look.shirtName, look.number, fonts]);
@@ -301,7 +302,7 @@ export function Avatar3D({
             {high && <mesh geometry={sphereGeo} scale={0.058} position={[s * 0.035, -0.56, 0]}><meshStandardMaterial color={skin} roughness={0.5} /></mesh>}
           </group>
         ))}
-        {pose === "trophy" && <GoldenBall position={[0, 2.38, 0.05]} scale={0.55} />}
+        {pose === "trophy" && <TrophyModel kind={held} position={[0, 2.38, 0.05]} scale={0.55} />}
       </group>
     </group>
   );
@@ -568,14 +569,102 @@ export function GoldenBall(props: ThreeElements["group"]) {
   );
 }
 
+/** Gold cup profile (lathe): foot, stem, knot, then a wide bowl with a rolled lip folding back inside. */
+const CUP_POINTS = [
+  [0, 0], [0.075, 0], [0.078, 0.012], [0.045, 0.03], [0.022, 0.06], [0.03, 0.085], [0.022, 0.11], [0.03, 0.125],
+  [0.07, 0.15], [0.105, 0.19], [0.122, 0.25], [0.128, 0.305], [0.136, 0.312], [0.12, 0.31], [0.112, 0.26], [0.095, 0.205], [0.05, 0.17], [0, 0.165],
+].map(([x, y]) => new THREE.Vector2(x, y));
+
+function useTrophyMaterials() {
+  return useMemo(() => ({
+    gold: new THREE.MeshPhysicalMaterial({ color: "#f4c542", metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.12, emissive: "#6b4300", emissiveIntensity: 0.18 }),
+    black: new THREE.MeshPhysicalMaterial({ color: "#0d0d0f", metalness: 0.2, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05 }),
+  }), []);
+}
+
+/** Polished black two-tier plinth with a gold ring, shared by the side trophies (top at y = 0.1). */
+function Plinth({ gold, black }: { gold: THREE.Material; black: THREE.Material }) {
+  return (
+    <>
+      <mesh position={[0, 0.035, 0]} material={black} castShadow receiveShadow><cylinderGeometry args={[0.15, 0.165, 0.07, 40]} /></mesh>
+      <mesh position={[0, 0.074, 0]} material={gold}><cylinderGeometry args={[0.158, 0.158, 0.01, 40]} /></mesh>
+      <mesh position={[0, 0.09, 0]} material={black}><cylinderGeometry args={[0.115, 0.13, 0.024, 40]} /></mesh>
+    </>
+  );
+}
+
 /**
- * Glass trophy cabinet: every Ballon d'Or the player won stands on its shelves (12 visible, the rest counted).
+ * Rarest-card trophy: an upright holographic pink card in a gold frame with a diamond set in its
+ * centre, on a gold stem over the black plinth. Origin at the plinth base, about 0.5 tall.
+ */
+export function RareCardTrophy(props: ThreeElements["group"]) {
+  const { gold, black } = useTrophyMaterials();
+  const holo = useMemo(
+    () => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0.55, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [200, 800], emissive: "#5a0026", emissiveIntensity: 0.35 }),
+    [],
+  );
+  const diamond = useMemo(() => diamondMaterial(), []);
+  const W = 0.2, H = 0.29, F = 0.014;
+  return (
+    <group {...props}>
+      <Plinth gold={gold} black={black} />
+      <mesh position={[0, 0.125, 0]} material={gold} castShadow><cylinderGeometry args={[0.018, 0.035, 0.05, 24]} /></mesh>
+      <group position={[0, 0.15 + H / 2, 0]} rotation={[0, 0.25, 0.04]}>
+        <mesh material={holo} castShadow><boxGeometry args={[W, H, 0.012]} /></mesh>
+        {/* gold frame */}
+        {([[0, H / 2, W + F, F], [0, -H / 2, W + F, F], [W / 2, 0, F, H + F], [-W / 2, 0, F, H + F]] as const).map(([x, y, w, h], i) => (
+          <mesh key={i} position={[x, y, 0]} material={gold}><boxGeometry args={[w, h, 0.02]} /></mesh>
+        ))}
+        {/* inner gold line and the centre diamond, on both faces */}
+        {[1, -1].map((s) => (
+          <group key={s} position={[0, 0, s * 0.008]} rotation-y={s > 0 ? 0 : Math.PI}>
+            <mesh position={[0, 0.095, 0]} material={gold}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
+            <mesh position={[0, -0.095, 0]} material={gold}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
+            <mesh position={[0, 0, 0.012]} scale={[1, 1.3, 0.55]} material={diamond}><octahedronGeometry args={[0.045, 0]} /></mesh>
+          </group>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+/** Most-matches-won trophy: a classic two-handled gold cup with a pink gem, on the black plinth. Origin at the base, about 0.43 tall. */
+export function WinsCup(props: ThreeElements["group"]) {
+  const { gold, black } = useTrophyMaterials();
+  // the lathe's outer and inner walls share one surface, so both sides must be lit
+  const cupGold = useMemo(() => Object.assign(gold.clone(), { side: THREE.DoubleSide, roughness: 0.34, emissiveIntensity: 0.4 }), [gold]);
+  const gem = useMemo(() => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0, roughness: 0, transmission: 0.5, thickness: 0.02, ior: 2, clearcoat: 1, emissive: "#ff2d87", emissiveIntensity: 0.25 }), []);
+  return (
+    <group {...props}>
+      <Plinth gold={gold} black={black} />
+      <group position={[0, 0.1, 0]}>
+        <mesh material={cupGold} castShadow><latheGeometry args={[CUP_POINTS, 48]} /></mesh>
+        {[1, -1].map((s) => (
+          <mesh key={s} position={[s * 0.112, 0.235, 0]} rotation-z={-s * Math.PI / 2} material={gold}>
+            <torusGeometry args={[0.055, 0.011, 12, 28, Math.PI]} />
+          </mesh>
+        ))}
+        <mesh position={[0, 0.24, 0.118]} rotation-x={-0.25} scale={[1, 1.25, 0.6]} material={gem}><octahedronGeometry args={[0.022, 0]} /></mesh>
+      </group>
+    </group>
+  );
+}
+
+/** Any trophy of the ceremony by kind. */
+export function TrophyModel({ kind, ...group }: { kind: TrophyKind } & ThreeElements["group"]) {
+  if (kind === "rarest_card") return <RareCardTrophy {...group} />;
+  if (kind === "most_wins") return <WinsCup {...group} />;
+  return <GoldenBall {...group} />;
+}
+
+/**
+ * Glass trophy cabinet: every Ballon d'Or the player won stands on its shelves, then the side trophies (12 visible, the rest counted).
  * Origin at the floor centre; the cabinet faces +z.
  */
-export function TrophyCase({ count, ...group }: { count: number } & ThreeElements["group"]) {
+export function TrophyCase({ count, others = [], ...group }: { count: number; others?: TrophyKind[] } & ThreeElements["group"]) {
   const W = 1.7, H = 2.3, D = 0.5;
   const shelves = [0.55, 1.15, 1.75];
-  const shown = Math.min(count, 12);
+  const items: TrophyKind[] = [...Array.from({ length: count }, () => "ballon" as const), ...others].slice(0, 12);
   const frame = <meshStandardMaterial color="#1a1a1f" roughness={0.35} metalness={0.8} />;
   return (
     <group {...group}>
@@ -600,9 +689,9 @@ export function TrophyCase({ count, ...group }: { count: number } & ThreeElement
           <meshStandardMaterial color="#cfe8ff" transparent opacity={0.35} roughness={0.05} metalness={0.2} />
         </mesh>
       ))}
-      {Array.from({ length: shown }, (_, i) => {
+      {items.map((kind, i) => {
         const shelf = Math.floor(i / 4), slot = i % 4;
-        return <GoldenBall key={i} position={[(slot - 1.5) * 0.38, (shelves[shelf] ?? 0) + 0.01, 0]} scale={0.62} />;
+        return <TrophyModel key={i} kind={kind} position={[(slot - 1.5) * 0.38, (shelves[shelf] ?? 0) + 0.01, 0]} scale={0.62} />;
       })}
       {/* Glass front */}
       <mesh position={[0, H / 2, D / 2]}>

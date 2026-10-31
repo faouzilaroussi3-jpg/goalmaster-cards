@@ -11,8 +11,8 @@ import {
   type AvatarLook, type AvatarRow,
 } from "@/lib/avatar";
 import { kitFor, type Kit } from "@/lib/kits";
-import { trophiesOf } from "@/lib/ballon-dor";
-import { useCeremonies } from "@/lib/ballon-dor-query";
+import { sideTrophiesOf, trophiesOf } from "@/lib/ballon-dor";
+import { useCeremonies, useCeremonyAwards } from "@/lib/ballon-dor-query";
 
 const AvatarStage = lazy(() => import("@/components/avatar/AvatarStage"));
 
@@ -87,6 +87,8 @@ function AvatarPage() {
   });
   const { data: ceremonies = [] } = useCeremonies();
   const trophies = trophiesOf(ceremonies, uid).length;
+  const { data: awards = [] } = useCeremonyAwards();
+  const others = useMemo(() => sideTrophiesOf(awards, uid).map((a) => a.kind), [awards, uid]);
   const [look, setLook] = useState<AvatarLook>(DEFAULT_LOOK);
   const [back, setBack] = useState(false);
   const [q, setQ] = useState("");
@@ -133,14 +135,14 @@ function AvatarPage() {
       <div className="mt-5 grid gap-5 lg:grid-cols-[1.15fr_1fr]">
         <div className="panel relative h-[58vh] min-h-[380px] overflow-hidden p-0">
           <Suspense fallback={<div className="grid h-full place-items-center text-sm text-muted-foreground">Chargement du vestiaire…</div>}>
-            <AvatarStage look={look} trophies={trophies} back={back} />
+            <AvatarStage look={look} trophies={trophies} others={others} back={back} />
           </Suspense>
           <div className="absolute inset-x-0 bottom-3 flex justify-center gap-2">
             <button type="button" onClick={() => setBack(false)} className={`rounded-full px-4 py-1.5 text-xs font-bold ${!back ? "bg-primary text-primary-foreground" : "bg-background/80 text-foreground"}`}>Face</button>
             <button type="button" onClick={() => setBack(true)} className={`rounded-full px-4 py-1.5 text-xs font-bold ${back ? "bg-primary text-primary-foreground" : "bg-background/80 text-foreground"}`}>Dos</button>
           </div>
           <div className="absolute left-3 top-3 rounded-full bg-background/80 px-3 py-1 text-xs font-bold text-foreground">
-            Vitrine : {trophies} Ballon{trophies > 1 ? "s" : ""} d'Or
+            Vitrine : {trophies} Ballon{trophies > 1 ? "s" : ""} d'Or{others.length ? ` · ${others.length} autre${others.length > 1 ? "s" : ""} trophée${others.length > 1 ? "s" : ""}` : ""}
           </div>
         </div>
 

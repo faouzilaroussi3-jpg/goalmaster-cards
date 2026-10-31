@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Crown } from "lucide-react";
+import { Crown, Gem, Swords } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -7,8 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
-import { trophiesOf } from "@/lib/ballon-dor";
-import { useCeremonies } from "@/lib/ballon-dor-query";
+import { sideTrophiesOf, TROPHY_LABEL, trophiesOf } from "@/lib/ballon-dor";
+import { useCeremonies, useCeremonyAwards } from "@/lib/ballon-dor-query";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -33,6 +33,8 @@ function ProfilePage() {
   const qc = useQueryClient();
   const { data: ceremonies = [] } = useCeremonies();
   const trophies = trophiesOf(ceremonies, uid);
+  const { data: awards = [] } = useCeremonyAwards();
+  const sideTrophies = sideTrophiesOf(awards, uid);
   const [name, setName] = useState("");
   useEffect(() => { if (profile) setName(profile.username); }, [profile]);
 
@@ -110,6 +112,15 @@ function ProfilePage() {
             </span>
           ))}
           {!trophies.length && <p className="text-sm text-muted-foreground">Aucun pour l'instant : le Ballon d'Or est remis chaque semaine par l'admin.</p>}
+        </div>
+        <h3 className="mt-4 text-xl">Autres trophées <span className="text-gold">{sideTrophies.length}</span></h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {sideTrophies.map((t) => (
+            <span key={t.id} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-bold">
+              {t.kind === "rarest_card" ? <Gem className="h-3.5 w-3.5 text-primary" /> : <Swords className="h-3.5 w-3.5 text-primary" />} {TROPHY_LABEL[t.kind]} · {t.detail} · {new Date(t.awarded_at).toLocaleDateString("fr-FR")}
+            </span>
+          ))}
+          {!sideTrophies.length && <p className="text-sm text-muted-foreground">La carte la plus rare et le plus de matchs gagnés de la semaine sont récompensés pendant la cérémonie, avant le Ballon d'Or.</p>}
         </div>
       </div>
 

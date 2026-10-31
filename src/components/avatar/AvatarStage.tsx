@@ -4,6 +4,7 @@ import { ContactShadows, Environment, Lightformer, OrbitControls } from "@react-
 import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
 import { Avatar3D, TrophyCase, type AvatarPose } from "./Avatar3D";
+import type { TrophyKind } from "@/lib/ballon-dor";
 
 /** Turns the avatar smoothly to face front (0) or back (π). */
 function Turntable({ back, children }: { back: boolean; children: React.ReactNode }) {
@@ -18,7 +19,7 @@ function Turntable({ back, children }: { back: boolean; children: React.ReactNod
 }
 
 /** Locker-room podium: the avatar on a lit plinth with its Ballon d'Or cabinet behind. */
-export default function AvatarStage({ look, trophies, back = false, pose = "idle" }: { look: AvatarLook; trophies: number; back?: boolean; pose?: AvatarPose }) {
+export default function AvatarStage({ look, trophies, others = [], back = false, pose = "idle" }: { look: AvatarLook; trophies: number; others?: TrophyKind[]; back?: boolean; pose?: AvatarPose }) {
   return (
     <Canvas shadows dpr={[1, 1.75]} camera={{ position: [0, 1.45, 3.6], fov: 40 }}>
       <color attach="background" args={["#0b0a0e"]} />
@@ -47,7 +48,7 @@ export default function AvatarStage({ look, trophies, back = false, pose = "idle
         <ringGeometry args={[0.7, 0.75, 64]} />
         <meshStandardMaterial color="#ff2d87" emissive="#ff2d87" emissiveIntensity={2} />
       </mesh>
-      <TrophyCase count={trophies} position={[0, 0, -1.25]} />
+      <TrophyCase count={trophies} others={others} position={[0, 0, -1.25]} />
       <Turntable back={back}>
         <Avatar3D look={look} pose={pose} position={[0, 0.12, 0]} seed="me" />
       </Turntable>

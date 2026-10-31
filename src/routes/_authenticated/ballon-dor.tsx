@@ -2,13 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Crown, Eye, Radio, Search, Shirt, Users } from "lucide-react";
+import { Check, Crown, Eye, Gem, Radio, Search, Shirt, Swords, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useProfile } from "@/lib/auth";
 import { sfx } from "@/lib/sfx";
 import { lookFromRow } from "@/lib/avatar";
-import { canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, trophiesOf, type Ceremony } from "@/lib/ballon-dor";
-import { useAvatars, useCeremonies } from "@/lib/ballon-dor-query";
+import {
+  awardedIn, canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, nextTrophy, SIDE_TROPHIES, stageMoment, TROPHY_LABEL, trophiesOf,
+  type Ceremony, type CeremonyAward, type TrophyKind,
+} from "@/lib/ballon-dor";
+import { useAvatars, useCeremonies, useCeremonyAwards, useTrophyLeaders } from "@/lib/ballon-dor-query";
 import type { CeremonyView, Guest } from "@/components/avatar/CeremonyScene";
 
 const CeremonyScene = lazy(() => import("@/components/avatar/CeremonyScene"));
@@ -54,7 +57,8 @@ function BallonDorPage() {
   const uid = session!.user.id;
   const { data: profile } = useProfile();
   const isAdmin = !!profile?.isAdmin;
-  const { data: ceremonies = [] } = useCeremonies();
+  const { data: ceremonies = [], isSuccess: ceremoniesReady } = useCeremonies();
+  const { data: awards = [], isSuccess: awardsReady } = useCeremonyAwards();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
   const cur = currentCeremony(ceremonies, now);
@@ -62,39 +66,41 @@ function BallonDorPage() {
   const [view, setView] = useState<CeremonyView | null>(null);
   const viewNow: CeremonyView = view ?? (isAdmin ? "stage" : "hall");
 
-  // Reveal: plays when the current ceremony goes from live to finished while the page is open.
-  const [revealAt, setRevealAt] = useState<number | null>(null);
-  const prev = useRef<{ id: string; status: string } | null>(null);
+  // Reveal: plays whenever a new trophy lands on stage while the page is open (side trophies first, the Ballon d'Or last).
+  const moment = stageMoment(cur, awards);
+  const momentKey = moment?.key ?? null;
+  const [reveal, setReveal] = useState<{ at: number; key: string } | null>(null);
+  const prevKey = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    if (!cur) return undefined;
-    const p = prev.current;
-    if (p && p.id === cur.id && p.status === "live" && cur.status === "finished") {
-      setRevealAt(Date.now());
-      sfx.drumroll(3.2);
-      const t1 = setTimeout(() => sfx.fanfare(), 6300);
-      const t2 = setTimeout(() => sfx.applause(3), 6600);
-      prev.current = { id: cur.id, status: cur.status };
-      return () => { clearTimeout(t1); clearTimeout(t2); };
-    }
-    prev.current = { id: cur.id, status: cur.status };
-    return undefined;
-  }, [cur]);
+    if (!ceremoniesReady || !awardsReady) return undefined;
+    const p = prevKey.current;
+    prevKey.current = momentKey;
+    if (p === undefined || !momentKey || momentKey === p) return undefined;
+    setReveal({ at: Date.now(), key: momentKey });
+    sfx.drumroll(3.2);
+    const t1 = setTimeout(() => sfx.fanfare(), 6300);
+    const t2 = setTimeout(() => sfx.applause(3), 6600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [momentKey, ceremoniesReady, awardsReady]);
+  const revealAt = reveal && reveal.key === momentKey ? reveal.at : null;
   const [revealText, setRevealText] = useState(false);
   useEffect(() => {
     if (!revealAt) { setRevealText(false); return; }
+    setRevealText(false);
     const a = setTimeout(() => setRevealText(true), 3200);
     return () => clearTimeout(a);
   }, [revealAt]);
 
   const hostP = people.find((p) => p.host) ?? null;
   const crowd = people.filter((p) => p.id !== hostP?.id).slice(0, MAX_AUDIENCE);
-  const winnerId = cur?.status === "finished" ? cur.winner_id : null;
+  const winnerId = moment?.winnerId ?? null;
   const ids = [...crowd.map((p) => p.id), ...(hostP ? [hostP.id] : []), ...(winnerId ? [winnerId] : [])];
   const { data: avatars } = useAvatars(ids);
   const guest = (id: string, name: string): Guest => ({ id, name, look: lookFromRow(avatars?.get(id)), trophies: trophiesOf(ceremonies, id).length });
   const audience = crowd.map((p) => guest(p.id, p.name));
   const host = hostP ? guest(hostP.id, hostP.name) : null;
-  const winner = cur && winnerId ? guest(winnerId, cur.winner_name ?? "Gagnant") : null;
+  const winner = moment && winnerId ? guest(winnerId, moment.winnerName) : null;
+  const trophy: TrophyKind = moment?.kind ?? "ballon";
   const palmares = ceremonies.filter((c) => c.status === "finished");
 
   return (
@@ -111,7 +117,7 @@ function BallonDorPage() {
 
       <div className="panel relative mt-4 h-[66vh] min-h-[420px] overflow-hidden p-0">
         <Suspense fallback={<div className="grid h-full place-items-center text-sm text-muted-foreground">Ouverture de la salle…</div>}>
-          <CeremonyScene audience={audience} host={host} winner={winner} revealAt={revealAt} view={viewNow} myId={uid} />
+          <CeremonyScene audience={audience} host={host} winner={winner} revealAt={revealAt} view={viewNow} myId={uid} trophy={trophy} awarded={awardedIn(cur, awards)} />
         </Suspense>
         <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-2 p-3">
           <StatusPill c={cur} now={now} />
@@ -124,20 +130,21 @@ function BallonDorPage() {
         </div>
         {winner && (revealText || !revealAt) && (
           <div className="pointer-events-none absolute inset-x-0 bottom-6 text-center">
-            <div className="text-xs font-bold uppercase tracking-[0.35em] text-muted-foreground">{cur?.title}</div>
+            <div className="text-xs font-bold uppercase tracking-[0.35em] text-muted-foreground">{trophy === "ballon" ? cur?.title : TROPHY_LABEL[trophy]}</div>
             <div className={`font-display text-5xl text-gold sm:text-7xl ${revealAt ? "animate-in zoom-in-50 fade-in duration-700" : ""}`}>{winner.name}</div>
-            {revealAt && <div className="text-sm font-bold text-foreground">+{cur?.reward_coins} pièces · trophée ajouté à sa vitrine</div>}
+            {moment?.detail && <div className="text-sm font-bold text-primary">{moment.detail}</div>}
+            {revealAt && <div className="text-sm font-bold text-foreground">+{moment?.coins} pièces · trophée ajouté à sa vitrine</div>}
           </div>
         )}
         {revealAt && !revealText && (
           <div className="pointer-events-none absolute inset-x-0 bottom-8 text-center font-display text-3xl tracking-widest text-foreground sm:text-5xl">
-            Et le Ballon d'Or est attribué à…
+            Et le {TROPHY_LABEL[trophy]} est attribué à…
           </div>
         )}
       </div>
       {people.length > MAX_AUDIENCE + 1 && <p className="mt-1 text-xs text-muted-foreground">{people.length - MAX_AUDIENCE - 1} autres joueurs regardent aussi.</p>}
 
-      {isAdmin && <HostDesk list={ceremonies} present={crowd} hostId={hostP?.id ?? uid} />}
+      {isAdmin && <HostDesk list={ceremonies} awards={awards} present={crowd} hostId={hostP?.id ?? uid} />}
 
       <h2 className="mb-3 mt-8 text-3xl">Palmarès</h2>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,6 +154,11 @@ function BallonDorPage() {
             <div className="min-w-0">
               <div className="truncate font-bold">{c.winner_name}{c.winner_id === uid ? " (toi)" : ""}</div>
               <div className="truncate text-xs text-muted-foreground">{c.title} · {new Date(c.awarded_at ?? c.scheduled_at).toLocaleDateString("fr-FR")}</div>
+              {awards.filter((a) => a.ceremony_id === c.id).map((a) => (
+                <div key={a.id} className="truncate text-xs text-muted-foreground">
+                  {a.kind === "rarest_card" ? "Carte la plus rare" : "Matchs gagnés"} : <span className="font-bold text-foreground">{a.winner_name}</span>{a.winner_id === uid ? " (toi)" : ""} · {a.detail}
+                </div>
+              ))}
             </div>
           </div>
         ))}
@@ -169,7 +181,7 @@ function StatusPill({ c, now }: { c: Ceremony | null; now: number }) {
 }
 
 /** Admin controls inside the hall: launch, name the winner (players present first, or search anyone), cancel. */
-function HostDesk({ list, present, hostId }: { list: Ceremony[]; present: Present[]; hostId: string }) {
+function HostDesk({ list, awards, present, hostId }: { list: Ceremony[]; awards: CeremonyAward[]; present: Present[]; hostId: string }) {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
@@ -193,10 +205,12 @@ function HostDesk({ list, present, hostId }: { list: Ceremony[]; present: Presen
     toast.success(ok);
     qc.invalidateQueries({ queryKey: ["ballon-dor"] });
     qc.invalidateQueries({ queryKey: ["profile"] });
+    qc.invalidateQueries({ queryKey: ["admin-weekly-trophies"] });
   }
 
   // The desk drives the live ceremony, else the next scheduled one (even while last week's winner is still on stage).
   const target = list.find((c) => c.status === "live") ?? list.filter((c) => c.status === "scheduled").sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at))[0] ?? null;
+  const { data: leaders } = useTrophyLeaders(target?.status === "live");
   if (!target) {
     return <div className="panel mt-4 p-4 text-sm text-muted-foreground">Programme la prochaine cérémonie dans Administration → Ballon d'Or.</div>;
   }
@@ -213,8 +227,42 @@ function HostDesk({ list, present, hostId }: { list: Ceremony[]; present: Presen
             className="rounded-lg bg-secondary px-4 py-2 text-sm font-bold text-muted-foreground disabled:opacity-50">Annuler</button>
         )}
       </div>
-      {target.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt, puis désigne le gagnant.</p>}
-      {canAward(target) && (
+      {target.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt : tu remettras d'abord le trophée de la carte la plus rare, puis celui des matchs gagnés, et enfin le Ballon d'Or.</p>}
+      {canAward(target) && !leaders && <p className="text-sm text-muted-foreground">Calcul des trophées de la semaine…</p>}
+      {canAward(target) && leaders && (() => {
+        const contender = { rarest_card: leaders.rarest[0], most_wins: leaders.wins[0] };
+        const next = nextTrophy(awards, target.id, { rarest_card: !!contender.rarest_card, most_wins: !!contender.most_wins });
+        const given = (k: TrophyKind) => awards.find((a) => a.ceremony_id === target.id && a.kind === k);
+        return (
+          <>
+            <ol className="grid gap-1.5 sm:grid-cols-3">
+              {[...SIDE_TROPHIES, "ballon" as const].map((k, i) => {
+                const g = k === "ballon" ? null : given(k);
+                const none = k !== "ballon" && !g && !contender[k];
+                return (
+                  <li key={k} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${next === k ? "border-primary" : "border-border"}`}>
+                    {g ? <Check className="h-4 w-4 shrink-0 text-primary" /> : <span className="w-4 shrink-0 text-center font-display text-primary">{i + 1}</span>}
+                    <span className="min-w-0">
+                      <span className="block truncate font-bold">{TROPHY_LABEL[k]}</span>
+                      <span className="block truncate text-xs text-muted-foreground">{g ? `Remis à ${g.winner_name}` : none ? "Personne cette semaine, passé" : next === k ? "À remettre maintenant" : "À venir"}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+            {next === "rarest_card" && contender.rarest_card && (
+              <SideAward icon={<Gem className="h-5 w-5 text-primary" />} label={TROPHY_LABEL.rarest_card} name={contender.rarest_card.username}
+                detail={`${contender.rarest_card.card_name} · ${contender.rarest_card.rarity_label}${contender.rarest_card.version === "alt" ? " ALT" : contender.rarest_card.version === "shiny" ? " Shiny" : ""}`}
+                coins={target.trophy_coins ?? 500} busy={busy}
+                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "rarest_card" }), `Trophée remis à ${contender.rarest_card?.username}`)} />
+            )}
+            {next === "most_wins" && contender.most_wins && (
+              <SideAward icon={<Swords className="h-5 w-5 text-primary" />} label={TROPHY_LABEL.most_wins} name={contender.most_wins.username}
+                detail={`${contender.most_wins.wins} match${contender.most_wins.wins > 1 ? "s" : ""} gagné${contender.most_wins.wins > 1 ? "s" : ""} sur ${contender.most_wins.played}`}
+                coins={target.trophy_coins ?? 500} busy={busy}
+                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "most_wins" }), `Trophée remis à ${contender.most_wins?.username}`)} />
+            )}
+            {next === "ballon" && (
         <>
           <p className="text-sm text-muted-foreground">Choisis le Ballon d'Or : il reçoit {target.reward_coins} pièces et le trophée rejoint sa vitrine.</p>
           <label className="flex items-center gap-2 rounded-lg border border-input bg-background/60 px-2 py-1.5">
@@ -233,7 +281,26 @@ function HostDesk({ list, present, hostId }: { list: Ceremony[]; present: Presen
             {!candidates.length && <p className="text-sm text-muted-foreground">Aucun joueur dans la salle pour l'instant.</p>}
           </div>
         </>
-      )}
+            )}
+          </>
+        );
+      })()}
+    </div>
+  );
+}
+
+/** One side trophy step: the winner is this week's leader, computed by the server. */
+function SideAward({ icon, label, name, detail, coins, busy, onGive }: { icon: React.ReactNode; label: string; name: string; detail: string; coins: number; busy: boolean; onGive: () => void }) {
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/60 bg-primary/5 p-3">
+      {icon}
+      <div className="min-w-0 flex-1">
+        <div className="text-xs uppercase text-muted-foreground">{label} · 7 derniers jours</div>
+        <div className="truncate text-xl font-bold">{name}</div>
+        <div className="truncate text-xs text-muted-foreground">{detail} · +{coins} pièces</div>
+      </div>
+      <button type="button" disabled={busy} data-sfx="none" onClick={() => { if (confirm(`Remettre le ${label} à ${name} ?`)) onGive(); }}
+        className="rounded-lg bg-gold px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">Remettre le trophée</button>
     </div>
   );
 }

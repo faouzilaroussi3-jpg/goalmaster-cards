@@ -3,8 +3,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
-import { seatPosition } from "@/lib/ballon-dor";
-import { Avatar3D, GoldenBall, TrophyCase, type AvatarPose } from "./Avatar3D";
+import { seatPosition, type TrophyKind } from "@/lib/ballon-dor";
+import { Avatar3D, TrophyCase, TrophyModel, type AvatarPose } from "./Avatar3D";
 
 export interface Guest { id: string; name: string; look: AvatarLook; trophies: number }
 export type CeremonyView = "stage" | "hall";
@@ -15,6 +15,12 @@ const STAGE_Y = 0.5;
 const WINNER_SPOT = new THREE.Vector3(0, STAGE_Y, -2);
 const BACKSTAGE = new THREE.Vector3(4.2, STAGE_Y, -3.6);
 const HOST_SPOT: [number, number, number] = [-2.2, STAGE_Y, -2.3];
+/** Ballon d'Or on the tall centre pedestal, the side trophies on lower ones either side. */
+const PEDESTALS: { kind: TrophyKind; x: number; z: number; h: number; scale: number }[] = [
+  { kind: "ballon", x: 0, z: -3.1, h: 0.9, scale: 1.5 },
+  { kind: "rarest_card", x: -1.3, z: -3.3, h: 0.6, scale: 1.35 },
+  { kind: "most_wins", x: 1.3, z: -3.3, h: 0.6, scale: 1.35 },
+];
 type Phase = "waiting" | "drumroll" | "walk" | "trophy" | "done";
 
 function phaseAt(t: number): Phase {
@@ -224,18 +230,24 @@ function Hall({ rows }: { rows: number }) {
         <boxGeometry args={[0.55, 1.1, 0.4]} />
         <meshStandardMaterial color="#1a1720" roughness={0.3} metalness={0.6} />
       </mesh>
-      {/* Trophy pedestal */}
-      <mesh position={[0, STAGE_Y + 0.45, -3.1]}>
-        <cylinderGeometry args={[0.32, 0.38, 0.9, 32]} />
-        <meshStandardMaterial color="#141218" roughness={0.25} metalness={0.7} />
-      </mesh>
+      {/* Trophy pedestals */}
+      {PEDESTALS.map((p) => (
+        <mesh key={p.kind} position={[p.x, STAGE_Y + p.h / 2, p.z]}>
+          <cylinderGeometry args={[0.3, 0.36, p.h, 32]} />
+          <meshStandardMaterial color="#141218" roughness={0.25} metalness={0.7} />
+        </mesh>
+      ))}
     </group>
   );
 }
 
-function Show({ audience, host, winner, revealAt, view, myId }: {
+interface SceneProps {
   audience: Guest[]; host: Guest | null; winner: Guest | null; revealAt: number | null; view: CeremonyView; myId: string;
-}) {
+  /** Trophy the winner on stage receives; `awarded` lists this ceremony's trophies already handed out. */
+  trophy: TrophyKind; awarded: TrophyKind[];
+}
+
+function Show({ audience, host, winner, revealAt, view, myId, trophy, awarded }: SceneProps) {
   const [phase, setPhase] = useState<Phase>(winner ? (revealAt ? "drumroll" : "done") : "waiting");
   const winnerRef = useRef<THREE.Group>(null);
   const spotTarget = useRef(new THREE.Vector3(0, 0, 4));
@@ -253,7 +265,7 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   const rows = Math.max(3, Math.ceil(audience.length / 8));
 
   const winnerId = winner?.id ?? null;
-  useEffect(() => { setPhase(winnerId ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winnerId, revealAt]);
+  useEffect(() => { setPhase(winnerId ? (revealAt ? "drumroll" : "done") : "waiting"); }, [winnerId, revealAt, trophy]);
 
   useFrame(({ clock }) => {
     spot.current?.target.position.copy(spotTarget.current);
@@ -298,13 +310,15 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
 
   const crowdPose = (i: number): AvatarPose => (phase === "walk" ? "clap" : phase === "trophy" ? (i % 3 === 0 ? "cheer" : "clap") : "idle");
   const winnerPose: AvatarPose = phase === "walk" ? "walk" : phase === "trophy" || phase === "done" ? "trophy" : "idle";
-  const showTrophyOnPedestal = !winner || phase === "drumroll" || phase === "walk";
+  const revealing = !!winner && (phase === "drumroll" || phase === "walk");
+  // A trophy stays on its pedestal until handed out; the one being revealed stays there until the winner lifts it.
+  const onPedestal = (k: TrophyKind) => !awarded.includes(k) || (revealing && trophy === k);
 
   return (
     <>
       <CameraRig view={view} focus={focus} />
       <Hall rows={rows} />
-      {showTrophyOnPedestal && <GoldenBall position={[0, STAGE_Y + 0.9, -3.1]} scale={1.5} />}
+      {PEDESTALS.map((p) => onPedestal(p.kind) && <TrophyModel key={p.kind} kind={p.kind} position={[p.x, STAGE_Y + p.h, p.z]} scale={p.scale} />)}
       <Beam from={new THREE.Vector3(0, 7.5, 9)} target={spotTarget} width={0.75} />
       <spotLight ref={spot} position={[0, 7.5, 9]} angle={0.16} penumbra={0.6} intensity={140} color="#fff4e0" distance={30} />
       {audience.map((g, i) => (g.id === winner?.id && phase !== "waiting") ? null : (
@@ -322,10 +336,10 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
       {winner && phase !== "waiting" && (
         <>
           <group ref={winnerRef} position={start}>
-            <Avatar3D look={winner.look} pose={winnerPose} seed={winner.id} />
+            <Avatar3D look={winner.look} pose={winnerPose} seed={winner.id} held={trophy} />
             <NameTag name={winner.name} trophies={winner.trophies} me={winner.id === myId} y={phase === "trophy" || phase === "done" ? 2.85 : 2.12} />
           </group>
-          {(phase === "trophy" || phase === "done") && <TrophyCase count={winner.trophies} position={[0, STAGE_Y, -4.45]} scale={0.95} />}
+          {trophy === "ballon" && (phase === "trophy" || phase === "done") && <TrophyCase count={winner.trophies} position={[0, STAGE_Y, -4.45]} scale={0.95} />}
         </>
       )}
       <Confetti active={phase === "trophy"} />
@@ -333,8 +347,8 @@ function Show({ audience, host, winner, revealAt, view, myId }: {
   );
 }
 
-/** Ballon d'Or gala hall: stage with the trophy, the admin as host, connected players' avatars in the stands. */
-export default function CeremonyScene(props: { audience: Guest[]; host: Guest | null; winner: Guest | null; revealAt: number | null; view: CeremonyView; myId: string }) {
+/** Ballon d'Or gala hall: stage with the three trophies, the admin as host, connected players' avatars in the stands. */
+export default function CeremonyScene(props: SceneProps) {
   return (
     <Canvas dpr={[1, 1.5]} camera={{ position: [0, 4.3, 12.8], fov: 50 }} gl={{ antialias: true }}>
       <color attach="background" args={["#070609"]} />
