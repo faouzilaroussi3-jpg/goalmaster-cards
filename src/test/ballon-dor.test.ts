@@ -41,3 +41,38 @@ describe("Ballon d'Or ceremonies", () => {
     expect(trophiesOf(list, "u1").map((t) => t.id)).toEqual(["3", "1"]);
   });
 });
+
+import { nextTrophy, stageMoment, sideTrophiesOf, awardedIn, type CeremonyAward } from "@/lib/ballon-dor";
+
+const aw = (o: Partial<CeremonyAward>): CeremonyAward => ({
+  id: "a", ceremony_id: "live", kind: "rarest_card", winner_id: "u1", winner_name: "Ana", detail: "", reward_coins: 500, awarded_at: "2026-11-01T19:05:00Z", ...o,
+});
+const both = { rarest_card: true, most_wins: true };
+
+describe("Side trophies before the Ballon d'Or", () => {
+  it("hands out the rarest card trophy first, then most matches won, then the Ballon d'Or", () => {
+    expect(nextTrophy([], "live", both)).toBe("rarest_card");
+    expect(nextTrophy([aw({ kind: "rarest_card" })], "live", both)).toBe("most_wins");
+    expect(nextTrophy([aw({ kind: "rarest_card" }), aw({ id: "b", kind: "most_wins" })], "live", both)).toBe("ballon");
+  });
+  it("skips a side trophy nobody qualifies for this week", () => {
+    expect(nextTrophy([], "live", { rarest_card: true, most_wins: false })).toBe("rarest_card");
+    expect(nextTrophy([], "live", { rarest_card: false, most_wins: false })).toBe("ballon");
+  });
+  it("awards from another ceremony do not count for this one", () => {
+    expect(nextTrophy([aw({ ceremony_id: "last-week" })], "live", both)).toBe("rarest_card");
+  });
+  it("puts the latest side trophy on stage, and the Ballon d'Or once awarded", () => {
+    const live = c({ id: "live", status: "live" });
+    const list = [aw({ kind: "rarest_card", awarded_at: "2026-11-01T19:05:00Z" }), aw({ id: "b", kind: "most_wins", winner_name: "Bo", awarded_at: "2026-11-01T19:10:00Z" })];
+    expect(stageMoment(live, list)?.kind).toBe("most_wins");
+    expect(stageMoment(live, list)?.winnerName).toBe("Bo");
+    const done = c({ id: "live", status: "finished", winner_id: "u9", winner_name: "Zed" });
+    expect(stageMoment(done, list)?.kind).toBe("ballon");
+    expect(awardedIn(done, list)).toEqual(["rarest_card", "most_wins", "ballon"]);
+  });
+  it("side trophies go to the winner's showcase", () => {
+    const list = [aw({ id: "1", winner_id: "u1" }), aw({ id: "2", winner_id: "u2" })];
+    expect(sideTrophiesOf(list, "u1").map((a) => a.id)).toEqual(["1"]);
+  });
+});
