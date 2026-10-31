@@ -42,3 +42,4 @@
 - [x] Cérémonie Ballon d'Or hebdo : l'admin programme, lance et désigne le gagnant ; avatars des joueurs connectés dans la salle ; pièces + trophée au profil
 - [x] Admin : statistiques de tous les joueurs + classements cartes rares, duels gagnés, matchs gagnés
 - [x] Ballon d'Or : stalactites en diamant réalistes sur le socle
+- [x] Trophées remis avant le Ballon d'Or : carte la plus rare et plus de matchs gagnés de la semaine + onglet admin avec le nom des gagnants
