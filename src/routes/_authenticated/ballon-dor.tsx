@@ -227,7 +227,7 @@ function HostDesk({ list, awards, present, hostId }: { list: Ceremony[]; awards:
             className="rounded-lg bg-secondary px-4 py-2 text-sm font-bold text-muted-foreground disabled:opacity-50">Annuler</button>
         )}
       </div>
-      {target.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt, puis désigne le gagnant.</p>}
+      {target.status === "scheduled" && <p className="text-sm text-muted-foreground">Les joueurs peuvent déjà entrer dans la salle. Lance la cérémonie quand tu es prêt : tu remettras d'abord le trophée de la carte la plus rare, puis celui des matchs gagnés, et enfin le Ballon d'Or.</p>}
       {canAward(target) && !leaders && <p className="text-sm text-muted-foreground">Calcul des trophées de la semaine…</p>}
       {canAward(target) && leaders && (() => {
         const contender = { rarest_card: leaders.rarest[0], most_wins: leaders.wins[0] };
