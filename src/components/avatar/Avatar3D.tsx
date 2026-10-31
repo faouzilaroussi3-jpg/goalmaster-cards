@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { AvatarLook } from "@/lib/avatar";
 import { inkOn, kitFor, type Kit } from "@/lib/kits";
+import type { TrophyKind } from "@/lib/ballon-dor";
 
 export type AvatarPose = "idle" | "clap" | "cheer" | "trophy" | "walk";
 
