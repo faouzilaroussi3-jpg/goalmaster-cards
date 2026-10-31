@@ -141,6 +141,16 @@ export function AppHeader() {
           toast(row.winner_id === uid ? "Tu as gagné le Ballon d'Or !" : `Ballon d'Or : ${row.winner_name}`, { duration: 12000, action: { label: "Voir", onClick: () => navigate({ to: "/ballon-dor" }) } });
         }
       })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ceremony_awards" }, (p) => {
+        qc.invalidateQueries({ queryKey: ["ballon-dor"] });
+        const row = p.new as { kind?: string; winner_id?: string; winner_name?: string; detail?: string } | null;
+        if (!row?.winner_name) return;
+        if (row.winner_id === uid) qc.invalidateQueries({ queryKey: ["profile"] });
+        if (pathRef.current.startsWith("/ballon-dor")) return;
+        const label = row.kind === "rarest_card" ? "Trophée de la carte la plus rare" : "Trophée des matchs gagnés";
+        if (row.winner_id === uid) sfx.fanfare();
+        toast(row.winner_id === uid ? `Tu as gagné le ${label} !` : `${label} : ${row.winner_name}`, { description: row.detail, duration: 12000, action: { label: "Voir", onClick: () => navigate({ to: "/ballon-dor" }) } });
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [uid, qc, navigate]);
