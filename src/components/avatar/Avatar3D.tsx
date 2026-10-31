@@ -612,7 +612,7 @@ export function RareCardTrophy(props: ThreeElements["group"]) {
       <group position={[0, 0.15 + H / 2, 0]} rotation={[0, 0.25, 0.04]}>
         <mesh material={holo} castShadow><boxGeometry args={[W, H, 0.012]} /></mesh>
         {/* gold frame */}
-        {[[0, H / 2, W + F, F], [0, -H / 2, W + F, F], [W / 2, 0, F, H + F], [-W / 2, 0, F, H + F]].map(([x, y, w, h], i) => (
+        {([[0, H / 2, W + F, F], [0, -H / 2, W + F, F], [W / 2, 0, F, H + F], [-W / 2, 0, F, H + F]] as const).map(([x, y, w, h], i) => (
           <mesh key={i} position={[x, y, 0]} material={gold}><boxGeometry args={[w, h, 0.02]} /></mesh>
         ))}
         {/* inner gold line and the centre diamond, on both faces */}

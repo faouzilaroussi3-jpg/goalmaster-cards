@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canAward, canStart, currentCeremony, trophiesOf, type Ceremony } from "@/lib/ballon-dor";
+import { awardedIn, canAward, canStart, currentCeremony, nextTrophy, sideTrophiesOf, stageMoment, trophiesOf, type Ceremony, type CeremonyAward } from "@/lib/ballon-dor";
 
 const c = (o: Partial<Ceremony>): Ceremony => ({
   id: "x", title: "BO", scheduled_at: "2026-11-01T19:00:00Z", reward_coins: 1000, status: "scheduled",
@@ -42,7 +42,6 @@ describe("Ballon d'Or ceremonies", () => {
   });
 });
 
-import { nextTrophy, stageMoment, sideTrophiesOf, awardedIn, type CeremonyAward } from "@/lib/ballon-dor";
 
 const aw = (o: Partial<CeremonyAward>): CeremonyAward => ({
   id: "a", ceremony_id: "live", kind: "rarest_card", winner_id: "u1", winner_name: "Ana", detail: "", reward_coins: 500, awarded_at: "2026-11-01T19:05:00Z", ...o,

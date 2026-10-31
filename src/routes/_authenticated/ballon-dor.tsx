@@ -254,13 +254,13 @@ function HostDesk({ list, awards, present, hostId }: { list: Ceremony[]; awards:
               <SideAward icon={<Gem className="h-5 w-5 text-primary" />} label={TROPHY_LABEL.rarest_card} name={contender.rarest_card.username}
                 detail={`${contender.rarest_card.card_name} · ${contender.rarest_card.rarity_label}${contender.rarest_card.version === "alt" ? " ALT" : contender.rarest_card.version === "shiny" ? " Shiny" : ""}`}
                 coins={target.trophy_coins ?? 500} busy={busy}
-                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "rarest_card" }), `Trophée remis à ${contender.rarest_card.username}`)} />
+                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "rarest_card" }), `Trophée remis à ${contender.rarest_card?.username}`)} />
             )}
             {next === "most_wins" && contender.most_wins && (
               <SideAward icon={<Swords className="h-5 w-5 text-primary" />} label={TROPHY_LABEL.most_wins} name={contender.most_wins.username}
                 detail={`${contender.most_wins.wins} match${contender.most_wins.wins > 1 ? "s" : ""} gagné${contender.most_wins.wins > 1 ? "s" : ""} sur ${contender.most_wins.played}`}
                 coins={target.trophy_coins ?? 500} busy={busy}
-                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "most_wins" }), `Trophée remis à ${contender.most_wins.username}`)} />
+                onGive={() => run(() => supabase.rpc("admin_award_ceremony_trophy", { _id: target.id, _kind: "most_wins" }), `Trophée remis à ${contender.most_wins?.username}`)} />
             )}
             {next === "ballon" && (
         <>
