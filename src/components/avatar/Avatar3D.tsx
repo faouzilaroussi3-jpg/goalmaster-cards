@@ -631,12 +631,14 @@ export function RareCardTrophy(props: ThreeElements["group"]) {
 /** Most-matches-won trophy: a classic two-handled gold cup with a pink gem, on the black plinth. Origin at the base, about 0.43 tall. */
 export function WinsCup(props: ThreeElements["group"]) {
   const { gold, black } = useTrophyMaterials();
+  // the lathe's outer and inner walls share one surface, so both sides must be lit
+  const cupGold = useMemo(() => Object.assign(gold.clone(), { side: THREE.DoubleSide }), [gold]);
   const gem = useMemo(() => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0, roughness: 0, transmission: 0.5, thickness: 0.02, ior: 2, clearcoat: 1, emissive: "#ff2d87", emissiveIntensity: 0.25 }), []);
   return (
     <group {...props}>
       <Plinth gold={gold} black={black} />
       <group position={[0, 0.1, 0]}>
-        <mesh material={gold} castShadow><latheGeometry args={[CUP_POINTS, 48]} /></mesh>
+        <mesh material={cupGold} castShadow><latheGeometry args={[CUP_POINTS, 48]} /></mesh>
         {[1, -1].map((s) => (
           <mesh key={s} position={[s * 0.112, 0.235, 0]} rotation-z={-s * Math.PI / 2} material={gold}>
             <torusGeometry args={[0.055, 0.011, 12, 28, Math.PI]} />
