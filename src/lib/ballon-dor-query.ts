@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import type { Ceremony, CeremonyAward } from "@/lib/ballon-dor";
+import type { Ceremony, CeremonyAward, TrophyKind } from "@/lib/ballon-dor";
+import { designOf, trophyNames, type TrophyDesign } from "@/lib/trophy-design";
 import type { AvatarRow } from "@/lib/avatar";
 
 /** Every ceremony (newest first); AppHeader's realtime subscription invalidates ["ballon-dor"]. */
@@ -65,4 +66,31 @@ export function useTrophyLeaders(enabled = true) {
       return data as unknown as TrophyLeaders;
     },
   });
+}
+
+/** Trophy looks saved by the admin (missing kinds keep their original look). */
+export function useTrophyDesignRows() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: ["trophy-designs"],
+    enabled: !!session,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("trophy_designs").select("kind, name, inscription, metal, base, gem, accent, finish, diamonds");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/** One trophy's current look. */
+export function useTrophyDesign(kind: TrophyKind): TrophyDesign {
+  const { data } = useTrophyDesignRows();
+  return designOf(kind, data);
+}
+
+/** Display names of every trophy. */
+export function useTrophyNames(): Record<TrophyKind, string> {
+  const { data } = useTrophyDesignRows();
+  return trophyNames(data);
 }

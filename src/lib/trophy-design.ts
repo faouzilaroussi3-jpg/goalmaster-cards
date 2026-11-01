@@ -54,19 +54,25 @@ export function designError(d: TrophyDesign): string | null {
 /** Engraving is always in capitals, like the server stores it. */
 export const cleanInscription = (s: string) => s.toUpperCase().slice(0, INSCRIPTION_MAX);
 
-type Row = Partial<Omit<TrophyDesign, "kind">> & { kind: string };
+type Row = { kind: string; name?: string | null; inscription?: string | null; metal?: string | null; base?: string | null; gem?: string | null; accent?: string | null; finish?: string | null; diamonds?: boolean | null };
 
 /** A kind's current look: its saved row, else the original. */
 export function designOf(kind: TrophyKind, rows: Row[] | undefined): TrophyDesign {
   const row = rows?.find((r) => r.kind === kind);
-  const base = DEFAULT_DESIGNS[kind];
-  if (!row) return base;
+  const d = DEFAULT_DESIGNS[kind];
+  if (!row) return d;
+  const str = (v: unknown, fb: string) => (typeof v === "string" ? v : fb);
   return {
-    ...base,
-    ...Object.fromEntries(Object.entries(row).filter(([, v]) => v !== null && v !== undefined)),
     kind,
-    finish: (row.finish && row.finish in FINISH_LABEL ? row.finish : base.finish) as TrophyFinish,
-  } as TrophyDesign;
+    name: str(row.name, d.name),
+    inscription: str(row.inscription, d.inscription),
+    metal: str(row.metal, d.metal),
+    base: str(row.base, d.base),
+    gem: str(row.gem, d.gem),
+    accent: str(row.accent, d.accent),
+    finish: (row.finish && row.finish in FINISH_LABEL ? row.finish : d.finish) as TrophyFinish,
+    diamonds: typeof row.diamonds === "boolean" ? row.diamonds : d.diamonds,
+  };
 }
 
 /** Display names of every trophy (custom name when the admin saved one). */
