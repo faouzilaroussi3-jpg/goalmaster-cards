@@ -253,6 +253,13 @@
       "when": 1793389296855,
       "tag": "0035_ceremony_side_trophies",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793531028595,
+      "tag": "0036_trophy_designs",
+      "breakpoints": true
     }
   ]
 }
