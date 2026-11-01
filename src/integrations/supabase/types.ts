@@ -1445,6 +1445,48 @@ export type Database = {
         }
         Relationships: []
       }
+      trophy_designs: {
+        Row: {
+          accent: string
+          base: string
+          diamonds: boolean
+          finish: string
+          gem: string
+          inscription: string
+          kind: string
+          metal: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent: string
+          base: string
+          diamonds?: boolean
+          finish?: string
+          gem: string
+          inscription?: string
+          kind: string
+          metal: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent?: string
+          base?: string
+          diamonds?: boolean
+          finish?: string
+          gem?: string
+          inscription?: string
+          kind?: string
+          metal?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       user_cards: {
         Row: {
           card_id: string
@@ -1772,6 +1814,21 @@ export type Database = {
       admin_replace_card: {
         Args: { _from: string; _to: string }
         Returns: number
+      }
+      admin_reset_trophy_design: { Args: { _kind: string }; Returns: undefined }
+      admin_save_trophy_design: {
+        Args: {
+          _accent: string
+          _base: string
+          _diamonds: boolean
+          _finish: string
+          _gem: string
+          _inscription: string
+          _kind: string
+          _metal: string
+          _name: string
+        }
+        Returns: undefined
       }
       admin_schedule_ballon_dor: {
         Args: {
