@@ -43,3 +43,4 @@
 - [x] Admin : statistiques de tous les joueurs + classements cartes rares, duels gagnés, matchs gagnés
 - [x] Ballon d'Or : stalactites en diamant réalistes sur le socle
 - [x] Trophées remis avant le Ballon d'Or : carte la plus rare et plus de matchs gagnés de la semaine + onglet admin avec le nom des gagnants
+- [ ] Admin seulement : onglet « Qui mérite le Ballon d'Or » avec un score qui additionne tout ce que chaque joueur a accompli dans le jeu
