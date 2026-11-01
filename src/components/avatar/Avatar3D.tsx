@@ -6,6 +6,8 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import type { AvatarLook } from "@/lib/avatar";
 import { inkOn, kitFor, type Kit } from "@/lib/kits";
 import type { TrophyKind } from "@/lib/ballon-dor";
+import { DEFAULT_DESIGNS, FINISH_ROUGHNESS, type TrophyDesign } from "@/lib/trophy-design";
+import { useTrophyDesign } from "@/lib/ballon-dor-query";
 
 export type AvatarPose = "idle" | "clap" | "cheer" | "trophy" | "walk";
 
@@ -351,37 +353,53 @@ function ballSeams() {
   return seamGeo;
 }
 
-let bandTex: THREE.CanvasTexture | null = null;
-/** Engraved "BALLON D'OR" band wrapped round the plinth: lettering is cut darker into brushed gold. */
-function engravedBand() {
-  if (bandTex) return bandTex;
+/** A colour moved toward another (t = 0 keeps it, 1 reaches the target), as a #hex string. */
+function shade(hex: string, toward: string, t: number) {
+  return "#" + new THREE.Color(hex).lerp(new THREE.Color(toward), t).getHexString();
+}
+
+const bandCache = new Map<string, THREE.CanvasTexture>();
+/**
+ * Engraved band wrapped round a plinth tier: lettering cut darker into brushed metal of the trophy's colour.
+ * `aspect` is the band's circumference / height so letters are not stretched; the text appears twice, one centred on the front.
+ */
+function engravedBand(text: string, metal: string, aspect: number) {
+  const key = `${text}|${metal}|${aspect.toFixed(1)}`;
+  const hit = bandCache.get(key);
+  if (hit) return hit;
+  const W = 2048, H = Math.max(64, Math.round(W / aspect));
   const c = document.createElement("canvas");
-  c.width = 1024; c.height = 128;
+  c.width = W; c.height = H;
   const g = c.getContext("2d")!;
-  const grad = g.createLinearGradient(0, 0, 0, 128);
-  grad.addColorStop(0, "#ffe9a0"); grad.addColorStop(0.45, "#e2ad2c"); grad.addColorStop(1, "#9c6a12");
-  g.fillStyle = grad; g.fillRect(0, 0, 1024, 128);
+  const grad = g.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, shade(metal, "#ffffff", 0.5)); grad.addColorStop(0.45, metal); grad.addColorStop(1, shade(metal, "#000000", 0.4));
+  g.fillStyle = grad; g.fillRect(0, 0, W, H);
   // brushed-metal streaks
-  for (let i = 0; i < 260; i++) {
+  for (let i = 0; i < 420; i++) {
     g.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
-    g.fillRect(Math.random() * 1024, Math.random() * 128, 40 + Math.random() * 120, 1);
+    g.fillRect(Math.random() * W, Math.random() * H, 60 + Math.random() * 200, 1);
   }
-  g.font = "bold 44px Georgia, 'Times New Roman', serif";
-  g.textAlign = "center"; g.textBaseline = "middle";
-  for (const x of [256, 768]) {
-    // light edge below + dark cut = engraved look
-    g.fillStyle = "rgba(255,240,190,0.7)"; g.fillText("BALLON D'OR", x, 68);
-    g.fillStyle = "#5a3a06"; g.fillText("BALLON D'OR", x, 65);
+  const cut = shade(metal, "#000000", 0.66);
+  if (text) {
+    g.font = `bold ${Math.round(H * 0.44)}px Georgia, 'Times New Roman', serif`;
+    (g as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = `${Math.round(H * 0.08)}px`;
+    g.textAlign = "center"; g.textBaseline = "middle";
+    for (const x of [W / 4, (3 * W) / 4]) {
+      // light edge below + dark cut = engraved look
+      g.fillStyle = shade(metal, "#ffffff", 0.6); g.globalAlpha = 0.7; g.fillText(text, x, H * 0.53);
+      g.globalAlpha = 1; g.fillStyle = cut; g.fillText(text, x, H * 0.5);
+    }
   }
-  g.fillStyle = "#5a3a06";
-  g.fillRect(0, 8, 1024, 3); g.fillRect(0, 117, 1024, 3);
-  bandTex = new THREE.CanvasTexture(c);
-  bandTex.colorSpace = THREE.SRGBColorSpace;
-  bandTex.anisotropy = 4;
-  // centre one "BALLON D'OR" on the front of the plinth
-  bandTex.wrapS = THREE.RepeatWrapping;
-  bandTex.offset.x = 0.25;
-  return bandTex;
+  g.fillStyle = cut;
+  const line = Math.max(2, Math.round(H * 0.025));
+  g.fillRect(0, H * 0.06, W, line); g.fillRect(0, H * 0.94 - line, W, line);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.offset.x = 0.25;
+  bandCache.set(key, tex);
+  return tex;
 }
 
 /** Cradle that holds the ball on top of the plinth (lathe profile). */
@@ -389,7 +407,7 @@ const CRADLE_POINTS = [
   [0.0, 0], [0.105, 0], [0.11, 0.01], [0.085, 0.03], [0.07, 0.05], [0.085, 0.07], [0.0, 0.07],
 ].map(([x, y]) => new THREE.Vector2(x, y));
 
-/** Diamond stalactites hang from the gold lip round the lower tier (lip radius, ring of crystals, top y). */
+/** Diamond stalactites hang from the metal lip round the lower tier (lip radius, ring of crystals, top y). */
 const LIP_R = 0.19;
 const ICICLE_R = 0.184;
 const ICICLE_TOP = 0.07;
@@ -401,18 +419,19 @@ const rnd = (i: number) => {
   return x - Math.floor(x);
 };
 
-let icicleGeo: THREE.BufferGeometry | null = null;
-let icicleTips: Float32Array | null = null;
+const icicleCache = new Map<number, { geo: THREE.BufferGeometry; tips: Float32Array }>();
 /**
- * Faceted diamond stalactites round the plinth: each is a low-sided lathe (crisp facets,
+ * Faceted diamond stalactites round a plinth of ring radius `ringR`: each is a low-sided lathe (crisp facets,
  * flat normals) with a short crown and a long tapering point, slightly leaning and twisted,
  * long and short ones alternating. Merged into one mesh so the ring is a single draw call.
  */
-function diamondIcicles() {
-  if (icicleGeo && icicleTips) return { geo: icicleGeo, tips: icicleTips };
+function diamondIcicles(ringR = ICICLE_R) {
+  const hit = icicleCache.get(ringR);
+  if (hit) return hit;
+  const count = Math.max(12, Math.round((ICICLE_COUNT * ringR) / ICICLE_R / 2) * 2);
   const parts: THREE.BufferGeometry[] = [];
   const tips: number[] = [];
-  for (let i = 0; i < ICICLE_COUNT; i++) {
+  for (let i = 0; i < count; i++) {
     const long = i % 2 === 0;
     const L = long ? 0.034 + rnd(i) * 0.022 : 0.014 + rnd(i) * 0.014;
     const r = (long ? 0.0075 : 0.0055) + rnd(i + 50) * 0.002;
@@ -423,9 +442,9 @@ function diamondIcicles() {
     let g: THREE.BufferGeometry = new THREE.LatheGeometry(prof, sides);
     g = g.toNonIndexed();
     g.computeVertexNormals();
-    const a = (i / ICICLE_COUNT) * Math.PI * 2 + (rnd(i + 9) - 0.5) * 0.06;
+    const a = (i / count) * Math.PI * 2 + (rnd(i + 9) - 0.5) * 0.06;
     const m = new THREE.Matrix4()
-      .makeTranslation(Math.sin(a) * ICICLE_R, ICICLE_TOP, Math.cos(a) * ICICLE_R)
+      .makeTranslation(Math.sin(a) * ringR, ICICLE_TOP, Math.cos(a) * ringR)
       .multiply(new THREE.Matrix4().makeRotationY(a))
       .multiply(new THREE.Matrix4().makeRotationX(-0.06 - rnd(i + 3) * 0.08)) // lean outward
       .multiply(new THREE.Matrix4().makeRotationY(rnd(i + 21) * Math.PI)); // twist facets
@@ -433,36 +452,42 @@ function diamondIcicles() {
     parts.push(g);
     if (long) tips.push(...new THREE.Vector3(0, -L * 0.85, 0).applyMatrix4(m).toArray());
   }
-  icicleGeo = mergeGeometries(parts) ?? new THREE.BufferGeometry();
+  const out = { geo: mergeGeometries(parts) ?? new THREE.BufferGeometry(), tips: new Float32Array(tips) };
   parts.forEach((p) => p.dispose());
-  icicleTips = new Float32Array(tips);
-  return { geo: icicleGeo, tips: icicleTips };
+  icicleCache.set(ringR, out);
+  return out;
 }
 
-let diamondMat: THREE.MeshPhysicalMaterial | null = null;
-/** Diamond: mirror-bright facets over partial transmission (a fully clear crystal only shows the black plinth behind it), diamond IOR 2.42, dispersion and iridescence for rainbow fire. */
-function diamondMaterial() {
-  return (diamondMat ??= new THREE.MeshPhysicalMaterial({
-    color: "#ffffff",
+const diamondCache = new Map<string, THREE.MeshPhysicalMaterial>();
+/** Diamond (or coloured gem): mirror-bright facets over partial transmission (a fully clear crystal only shows the plinth behind it), diamond IOR 2.42, dispersion and iridescence for rainbow fire. */
+function diamondMaterial(gem = "#ffffff") {
+  const key = gem.toLowerCase();
+  const hit = diamondCache.get(key);
+  if (hit) return hit;
+  const white = key === "#ffffff";
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: gem,
     metalness: 0.35,
     roughness: 0,
     transmission: 0.6,
     thickness: 0.03,
     ior: 2.42,
     dispersion: 4,
-    iridescence: 1,
+    iridescence: white ? 1 : 0.5,
     iridescenceThicknessRange: [180, 650],
     iridescenceIOR: 1.6,
     specularIntensity: 1,
     specularColor: new THREE.Color("#ffffff"),
     clearcoat: 1,
     clearcoatRoughness: 0,
-    emissive: new THREE.Color("#d8efff"),
-    emissiveIntensity: 0.07,
+    emissive: new THREE.Color(white ? "#d8efff" : gem),
+    emissiveIntensity: white ? 0.07 : 0.18,
     envMapIntensity: 3.5,
-    attenuationColor: new THREE.Color("#eaf6ff"),
+    attenuationColor: new THREE.Color(white ? "#eaf6ff" : gem),
     attenuationDistance: 0.5,
-  }));
+  });
+  diamondCache.set(key, mat);
+  return mat;
 }
 
 let glintTex: THREE.CanvasTexture | null = null;
@@ -482,9 +507,9 @@ function glintTexture() {
 }
 
 /** Diamond stalactites + twinkling glints (two draw calls per trophy). */
-function DiamondIcicles() {
-  const { geo, tips } = useMemo(() => diamondIcicles(), []);
-  const mat = useMemo(() => diamondMaterial(), []);
+function DiamondIcicles({ ringR = ICICLE_R, gem = "#ffffff" }: { ringR?: number; gem?: string }) {
+  const { geo, tips } = useMemo(() => diamondIcicles(ringR), [ringR]);
+  const mat = useMemo(() => diamondMaterial(gem), [gem]);
   const glints = useMemo(() => {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(tips, 3));
@@ -515,112 +540,120 @@ function DiamondIcicles() {
   );
 }
 
+/** Metal (from the design's colour + finish), plinth and seam materials of one trophy; disposed when the look changes. */
+function useTrophyMaterials(d: TrophyDesign) {
+  const mats = useMemo(() => {
+    const rough = FINISH_ROUGHNESS[d.finish];
+    return {
+      metal: new THREE.MeshPhysicalMaterial({ color: d.metal, metalness: 1, roughness: rough, clearcoat: d.finish === "brosse" ? 0.15 : 0.6, clearcoatRoughness: 0.12, emissive: shade(d.metal, "#000000", 0.6), emissiveIntensity: 0.18 }),
+      seam: new THREE.MeshStandardMaterial({ color: shade(d.metal, "#000000", 0.2), metalness: 1, roughness: Math.min(0.8, rough + 0.16) }),
+      base: new THREE.MeshPhysicalMaterial({ color: d.base, metalness: 0.2, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05 }),
+    };
+  }, [d.metal, d.base, d.finish]);
+  useEffect(() => () => { mats.metal.dispose(); mats.seam.dispose(); mats.base.dispose(); }, [mats]);
+  return mats;
+}
+
+/** Engraved metal band of radius r0 (top) → r1 (bottom) and height h; text-free when the inscription is empty. */
+function EngravedBand({ text, metal, r0, r1, h, y }: { text: string; metal: string; r0: number; r1: number; h: number; y: number }) {
+  const band = useMemo(() => engravedBand(text, metal, (Math.PI * (r0 + r1)) / h), [text, metal, r0, r1, h]);
+  return (
+    <mesh position={[0, y, 0]} castShadow>
+      <cylinderGeometry args={[r0, r1, h, 48, 1, true]} />
+      <meshPhysicalMaterial map={band} bumpMap={band} bumpScale={-1.5} metalness={1} roughness={0.22} clearcoat={0.4} />
+    </mesh>
+  );
+}
 
 /**
- * The Ballon d'Or trophy: gold ball with raised football seams, held by a gold cradle on a
- * two-tier black plinth with an engraved gold band. Origin at the plinth base.
+ * The Ballon d'Or trophy: metal ball with raised football seams, held by a cradle on a
+ * two-tier plinth with an engraved band and optional diamond stalactites. Origin at the plinth base.
  */
-export function GoldenBall(props: ThreeElements["group"]) {
+export function GoldenBall({ design = DEFAULT_DESIGNS.ballon, ...props }: { design?: TrophyDesign } & ThreeElements["group"]) {
   const seams = useMemo(() => ballSeams(), []);
-  const band = useMemo(() => engravedBand(), []);
-  const gold = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ color: "#f4c542", metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.12, emissive: "#6b4300", emissiveIntensity: 0.18 }),
-    [],
-  );
-  const seamGold = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: "#c58f1c", metalness: 1, roughness: 0.32 }),
-    [],
-  );
-  const black = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ color: "#0d0d0f", metalness: 0.2, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05 }),
-    [],
-  );
+  const { metal, seam, base } = useTrophyMaterials(design);
   return (
     <group {...props}>
-      {/* lower tier: polished black */}
-      <mesh position={[0, 0.035, 0]} material={black} castShadow receiveShadow>
+      {/* lower tier */}
+      <mesh position={[0, 0.035, 0]} material={base} castShadow receiveShadow>
         <cylinderGeometry args={[0.165, 0.18, 0.07, 40]} />
       </mesh>
-      {/* gold lip the diamond stalactites hang from */}
-      <mesh position={[0, 0.074, 0]} material={gold}>
+      {/* metal lip the diamond stalactites hang from */}
+      <mesh position={[0, 0.074, 0]} material={metal}>
         <cylinderGeometry args={[LIP_R, LIP_R, 0.01, 48]} />
       </mesh>
-      <DiamondIcicles />
+      {design.diamonds && <DiamondIcicles gem={design.gem} />}
       {/* upper tier: engraved band */}
-      <mesh position={[0, 0.108, 0]} castShadow>
-        <cylinderGeometry args={[0.138, 0.15, 0.058, 48, 1, true]} />
-        <meshPhysicalMaterial map={band} bumpMap={band} bumpScale={-1.5} metalness={1} roughness={0.22} clearcoat={0.4} />
-      </mesh>
-      <mesh position={[0, 0.139, 0]} material={black}>
+      <EngravedBand text={design.inscription} metal={design.metal} r0={0.138} r1={0.15} h={0.058} y={0.108} />
+      <mesh position={[0, 0.139, 0]} material={base}>
         <cylinderGeometry args={[0.12, 0.138, 0.008, 40]} />
       </mesh>
-      {/* gold cradle */}
-      <mesh position={[0, 0.142, 0]} material={gold} castShadow>
+      {/* cradle */}
+      <mesh position={[0, 0.142, 0]} material={metal} castShadow>
         <latheGeometry args={[CRADLE_POINTS, 40]} />
       </mesh>
       {/* the ball */}
       <group position={[0, BALL_Y, 0]} rotation={[0.35, 0.6, 0.1]}>
-        <mesh material={gold} castShadow>
+        <mesh material={metal} castShadow>
           <sphereGeometry args={[BALL_R, 64, 48]} />
         </mesh>
-        <mesh geometry={seams} material={seamGold} />
+        <mesh geometry={seams} material={seam} />
       </group>
     </group>
   );
 }
 
-/** Gold cup profile (lathe): foot, stem, knot, then a wide bowl with a rolled lip folding back inside. */
+/** Cup profile (lathe): foot, stem, knot, then a wide bowl with a rolled lip folding back inside. */
 const CUP_POINTS = [
   [0, 0], [0.075, 0], [0.078, 0.012], [0.045, 0.03], [0.022, 0.06], [0.03, 0.085], [0.022, 0.11], [0.03, 0.125],
   [0.07, 0.15], [0.105, 0.19], [0.122, 0.25], [0.128, 0.305], [0.136, 0.312], [0.12, 0.31], [0.112, 0.26], [0.095, 0.205], [0.05, 0.17], [0, 0.165],
 ].map(([x, y]) => new THREE.Vector2(x, y));
 
-function useTrophyMaterials() {
-  return useMemo(() => ({
-    gold: new THREE.MeshPhysicalMaterial({ color: "#f4c542", metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.12, emissive: "#6b4300", emissiveIntensity: 0.18 }),
-    black: new THREE.MeshPhysicalMaterial({ color: "#0d0d0f", metalness: 0.2, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.05 }),
-  }), []);
-}
+/** Top of the side trophies' plinth. */
+const PLINTH_TOP = 0.118;
 
-/** Polished black two-tier plinth with a gold ring, shared by the side trophies (top at y = 0.1). */
-function Plinth({ gold, black }: { gold: THREE.Material; black: THREE.Material }) {
+/** Two-tier plinth with a metal ring, shared by the side trophies: optional engraved band and diamond stalactites. */
+function Plinth({ design, metal, base }: { design: TrophyDesign; metal: THREE.Material; base: THREE.Material }) {
   return (
     <>
-      <mesh position={[0, 0.035, 0]} material={black} castShadow receiveShadow><cylinderGeometry args={[0.15, 0.165, 0.07, 40]} /></mesh>
-      <mesh position={[0, 0.074, 0]} material={gold}><cylinderGeometry args={[0.158, 0.158, 0.01, 40]} /></mesh>
-      <mesh position={[0, 0.09, 0]} material={black}><cylinderGeometry args={[0.115, 0.13, 0.024, 40]} /></mesh>
+      <mesh position={[0, 0.035, 0]} material={base} castShadow receiveShadow><cylinderGeometry args={[0.15, 0.165, 0.07, 40]} /></mesh>
+      <mesh position={[0, 0.074, 0]} material={metal}><cylinderGeometry args={[0.158, 0.158, 0.01, 40]} /></mesh>
+      {design.diamonds && <DiamondIcicles ringR={0.152} gem={design.gem} />}
+      <mesh position={[0, 0.098, 0]} material={base}><cylinderGeometry args={[0.113, 0.128, 0.04, 40]} /></mesh>
+      {design.inscription && <EngravedBand text={design.inscription} metal={design.metal} r0={0.1155} r1={0.1305} h={0.032} y={0.098} />}
     </>
   );
 }
 
 /**
- * Rarest-card trophy: an upright holographic pink card in a gold frame with a diamond set in its
- * centre, on a gold stem over the black plinth. Origin at the plinth base, about 0.5 tall.
+ * Rarest-card trophy: an upright holographic card (accent colour) in a metal frame with a gem set in its
+ * centre, on a stem over the plinth. Origin at the plinth base, about 0.5 tall.
  */
-export function RareCardTrophy(props: ThreeElements["group"]) {
-  const { gold, black } = useTrophyMaterials();
+export function RareCardTrophy({ design = DEFAULT_DESIGNS.rarest_card, ...props }: { design?: TrophyDesign } & ThreeElements["group"]) {
+  const { metal, base } = useTrophyMaterials(design);
   const holo = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0.55, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [200, 800], emissive: "#5a0026", emissiveIntensity: 0.35 }),
-    [],
+    () => new THREE.MeshPhysicalMaterial({ color: design.accent, metalness: 0.55, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [200, 800], emissive: shade(design.accent, "#000000", 0.65), emissiveIntensity: 0.35 }),
+    [design.accent],
   );
-  const diamond = useMemo(() => diamondMaterial(), []);
+  useEffect(() => () => holo.dispose(), [holo]);
+  const gem = useMemo(() => diamondMaterial(design.gem), [design.gem]);
   const W = 0.2, H = 0.29, F = 0.014;
   return (
     <group {...props}>
-      <Plinth gold={gold} black={black} />
-      <mesh position={[0, 0.125, 0]} material={gold} castShadow><cylinderGeometry args={[0.018, 0.035, 0.05, 24]} /></mesh>
-      <group position={[0, 0.15 + H / 2, 0]} rotation={[0, 0.25, 0.04]}>
+      <Plinth design={design} metal={metal} base={base} />
+      <mesh position={[0, PLINTH_TOP + 0.025, 0]} material={metal} castShadow><cylinderGeometry args={[0.018, 0.035, 0.05, 24]} /></mesh>
+      <group position={[0, PLINTH_TOP + 0.05 + H / 2, 0]} rotation={[0, 0.25, 0.04]}>
         <mesh material={holo} castShadow><boxGeometry args={[W, H, 0.012]} /></mesh>
-        {/* gold frame */}
+        {/* metal frame */}
         {([[0, H / 2, W + F, F], [0, -H / 2, W + F, F], [W / 2, 0, F, H + F], [-W / 2, 0, F, H + F]] as const).map(([x, y, w, h], i) => (
-          <mesh key={i} position={[x, y, 0]} material={gold}><boxGeometry args={[w, h, 0.02]} /></mesh>
+          <mesh key={i} position={[x, y, 0]} material={metal}><boxGeometry args={[w, h, 0.02]} /></mesh>
         ))}
-        {/* inner gold line and the centre diamond, on both faces */}
+        {/* inner metal line and the centre gem, on both faces */}
         {[1, -1].map((s) => (
           <group key={s} position={[0, 0, s * 0.008]} rotation-y={s > 0 ? 0 : Math.PI}>
-            <mesh position={[0, 0.095, 0]} material={gold}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
-            <mesh position={[0, -0.095, 0]} material={gold}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
-            <mesh position={[0, 0, 0.012]} scale={[1, 1.3, 0.55]} material={diamond}><octahedronGeometry args={[0.045, 0]} /></mesh>
+            <mesh position={[0, 0.095, 0]} material={metal}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
+            <mesh position={[0, -0.095, 0]} material={metal}><boxGeometry args={[W * 0.7, 0.006, 0.004]} /></mesh>
+            <mesh position={[0, 0, 0.012]} scale={[1, 1.3, 0.55]} material={gem}><octahedronGeometry args={[0.045, 0]} /></mesh>
           </group>
         ))}
       </group>
@@ -628,19 +661,21 @@ export function RareCardTrophy(props: ThreeElements["group"]) {
   );
 }
 
-/** Most-matches-won trophy: a classic two-handled gold cup with a pink gem, on the black plinth. Origin at the base, about 0.43 tall. */
-export function WinsCup(props: ThreeElements["group"]) {
-  const { gold, black } = useTrophyMaterials();
+/** Most-matches-won trophy: a classic two-handled cup with a gem, on the plinth. Origin at the base, about 0.45 tall. */
+export function WinsCup({ design = DEFAULT_DESIGNS.most_wins, ...props }: { design?: TrophyDesign } & ThreeElements["group"]) {
+  const { metal, base } = useTrophyMaterials(design);
   // the lathe's outer and inner walls share one surface, so both sides must be lit
-  const cupGold = useMemo(() => Object.assign(gold.clone(), { side: THREE.DoubleSide, roughness: 0.34, emissiveIntensity: 0.4 }), [gold]);
-  const gem = useMemo(() => new THREE.MeshPhysicalMaterial({ color: "#ff2d87", metalness: 0, roughness: 0, transmission: 0.5, thickness: 0.02, ior: 2, clearcoat: 1, emissive: "#ff2d87", emissiveIntensity: 0.25 }), []);
+  const cupMetal = useMemo(() => Object.assign(metal.clone(), { side: THREE.DoubleSide, emissiveIntensity: 0.4 }), [metal]);
+  useEffect(() => () => cupMetal.dispose(), [cupMetal]);
+  const gem = useMemo(() => new THREE.MeshPhysicalMaterial({ color: design.gem, metalness: 0, roughness: 0, transmission: 0.5, thickness: 0.02, ior: 2, clearcoat: 1, emissive: design.gem, emissiveIntensity: 0.25 }), [design.gem]);
+  useEffect(() => () => gem.dispose(), [gem]);
   return (
     <group {...props}>
-      <Plinth gold={gold} black={black} />
-      <group position={[0, 0.1, 0]}>
-        <mesh material={cupGold} castShadow><latheGeometry args={[CUP_POINTS, 48]} /></mesh>
+      <Plinth design={design} metal={metal} base={base} />
+      <group position={[0, PLINTH_TOP, 0]}>
+        <mesh material={cupMetal} castShadow><latheGeometry args={[CUP_POINTS, 48]} /></mesh>
         {[1, -1].map((s) => (
-          <mesh key={s} position={[s * 0.112, 0.235, 0]} rotation-z={-s * Math.PI / 2} material={gold}>
+          <mesh key={s} position={[s * 0.112, 0.235, 0]} rotation-z={-s * Math.PI / 2} material={metal}>
             <torusGeometry args={[0.055, 0.011, 12, 28, Math.PI]} />
           </mesh>
         ))}
@@ -650,11 +685,13 @@ export function WinsCup(props: ThreeElements["group"]) {
   );
 }
 
-/** Any trophy of the ceremony by kind. */
-export function TrophyModel({ kind, ...group }: { kind: TrophyKind } & ThreeElements["group"]) {
-  if (kind === "rarest_card") return <RareCardTrophy {...group} />;
-  if (kind === "most_wins") return <WinsCup {...group} />;
-  return <GoldenBall {...group} />;
+/** Any trophy of the ceremony by kind, in the look saved by the admin (or an explicit `design`, e.g. an unsaved preview). */
+export function TrophyModel({ kind, design, ...group }: { kind: TrophyKind; design?: TrophyDesign } & ThreeElements["group"]) {
+  const saved = useTrophyDesign(kind);
+  const d = design ?? saved;
+  if (kind === "rarest_card") return <RareCardTrophy design={d} {...group} />;
+  if (kind === "most_wins") return <WinsCup design={d} {...group} />;
+  return <GoldenBall design={d} {...group} />;
 }
 
 /**
