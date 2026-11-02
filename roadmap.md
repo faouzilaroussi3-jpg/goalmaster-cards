@@ -44,3 +44,4 @@
 - [x] Ballon d'Or : stalactites en diamant réalistes sur le socle
 - [x] Trophées remis avant le Ballon d'Or : carte la plus rare et plus de matchs gagnés de la semaine + onglet admin avec le nom des gagnants
 - [x] Admin seulement : onglet « Qui mérite le Ballon d'Or » avec un score qui additionne tout ce que chaque joueur a accompli dans le jeu
+- [x] Admin tab to view and customise the ceremony trophies (name, engraving, colours, finish, diamonds)
