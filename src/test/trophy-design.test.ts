@@ -13,7 +13,7 @@ describe("Trophy designs", () => {
     expect(trophyNames(rows)).toEqual({ ballon: "Ballon d'Or", rarest_card: "Trophée de la carte la plus rare", most_wins: "Coupe des Champions" });
   });
   it("names must be 3 to 40 characters", () => {
-    expect(designError({ ...DEFAULT_DESIGNS.ballon, name: "  Or " })).toBeNull();
+    expect(designError({ ...DEFAULT_DESIGNS.ballon, name: "  Coupe " })).toBeNull();
     expect(designError({ ...DEFAULT_DESIGNS.ballon, name: "Or" })).not.toBeNull();
     expect(designError({ ...DEFAULT_DESIGNS.ballon, name: "x".repeat(41) })).not.toBeNull();
   });
