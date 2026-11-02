@@ -7,8 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchAll } from "@/lib/fetch-all";
 import { useAuth, useProfile } from "@/lib/auth";
 import { rarityMeta, VERSION_LABEL } from "@/lib/rarity";
-import { sideTrophiesOf, TROPHY_LABEL, trophiesOf } from "@/lib/ballon-dor";
-import { useCeremonies, useCeremonyAwards } from "@/lib/ballon-dor-query";
+import { sideTrophiesOf, trophiesOf } from "@/lib/ballon-dor";
+import { useCeremonies, useCeremonyAwards, useTrophyNames } from "@/lib/ballon-dor-query";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -34,6 +34,7 @@ function ProfilePage() {
   const { data: ceremonies = [] } = useCeremonies();
   const trophies = trophiesOf(ceremonies, uid);
   const { data: awards = [] } = useCeremonyAwards();
+  const TROPHY_LABEL = useTrophyNames();
   const sideTrophies = sideTrophiesOf(awards, uid);
   const [name, setName] = useState("");
   useEffect(() => { if (profile) setName(profile.username); }, [profile]);

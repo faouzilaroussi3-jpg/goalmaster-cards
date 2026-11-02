@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Gem, Swords } from "lucide-react";
-import { TROPHY_LABEL } from "@/lib/ballon-dor";
-import { useCeremonies, useCeremonyAwards, useTrophyLeaders } from "@/lib/ballon-dor-query";
+import { useCeremonies, useCeremonyAwards, useTrophyLeaders, useTrophyNames } from "@/lib/ballon-dor-query";
 
 const VERSION = { alt: " ALT", shiny: " Shiny" } as Record<string, string>;
 const day = (iso: string) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -11,6 +10,7 @@ export function TrophiesAdmin() {
   const { data: leaders, isLoading, error } = useTrophyLeaders();
   const { data: awards = [] } = useCeremonyAwards();
   const { data: ceremonies = [] } = useCeremonies();
+  const TROPHY_LABEL = useTrophyNames();
   const titleOf = (id: string) => ceremonies.find((c) => c.id === id)?.title ?? "Cérémonie";
 
   return (

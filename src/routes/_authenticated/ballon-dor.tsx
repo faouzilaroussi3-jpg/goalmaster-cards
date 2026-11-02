@@ -8,10 +8,10 @@ import { useAuth, useProfile } from "@/lib/auth";
 import { sfx } from "@/lib/sfx";
 import { lookFromRow } from "@/lib/avatar";
 import {
-  awardedIn, canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, nextTrophy, SIDE_TROPHIES, stageMoment, TROPHY_LABEL, trophiesOf,
+  awardedIn, canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, nextTrophy, SIDE_TROPHIES, stageMoment, trophiesOf,
   type Ceremony, type CeremonyAward, type TrophyKind,
 } from "@/lib/ballon-dor";
-import { useAvatars, useCeremonies, useCeremonyAwards, useTrophyLeaders } from "@/lib/ballon-dor-query";
+import { useAvatars, useCeremonies, useCeremonyAwards, useTrophyLeaders, useTrophyNames } from "@/lib/ballon-dor-query";
 import type { CeremonyView, Guest } from "@/components/avatar/CeremonyScene";
 
 const CeremonyScene = lazy(() => import("@/components/avatar/CeremonyScene"));
@@ -59,6 +59,7 @@ function BallonDorPage() {
   const isAdmin = !!profile?.isAdmin;
   const { data: ceremonies = [], isSuccess: ceremoniesReady } = useCeremonies();
   const { data: awards = [], isSuccess: awardsReady } = useCeremonyAwards();
+  const TROPHY_LABEL = useTrophyNames();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
   const cur = currentCeremony(ceremonies, now);
@@ -185,6 +186,7 @@ function HostDesk({ list, awards, present, hostId }: { list: Ceremony[]; awards:
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
+  const TROPHY_LABEL = useTrophyNames();
   const { data: found = [] } = useQuery({
     queryKey: ["admin-players", q],
     enabled: q.trim().length >= 2,

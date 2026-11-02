@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { trophyNames } from "@/lib/trophy-design";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Coins, Package, LogOut, Shield, Volume2, VolumeX } from "lucide-react";
@@ -147,7 +148,8 @@ export function AppHeader() {
         if (!row?.winner_name) return;
         if (row.winner_id === uid) qc.invalidateQueries({ queryKey: ["profile"] });
         if (pathRef.current.startsWith("/ballon-dor")) return;
-        const label = row.kind === "rarest_card" ? "Trophée de la carte la plus rare" : "Trophée des matchs gagnés";
+        const names = trophyNames(qc.getQueryData<Parameters<typeof trophyNames>[0]>(["trophy-designs"]));
+        const label = row.kind === "rarest_card" ? names.rarest_card : names.most_wins;
         if (row.winner_id === uid) sfx.fanfare();
         toast(row.winner_id === uid ? `Tu as gagné le ${label} !` : `${label} : ${row.winner_name}`, { description: row.detail, duration: 12000, action: { label: "Voir", onClick: () => navigate({ to: "/ballon-dor" }) } });
       })
