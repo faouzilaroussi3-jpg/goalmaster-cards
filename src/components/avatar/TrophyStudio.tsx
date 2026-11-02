@@ -8,7 +8,7 @@ import { TrophyModel } from "./Avatar3D";
 /** Admin trophy workshop: one trophy turning on a lit plinth, drawn from an unsaved design so edits show live. */
 export default function TrophyStudio({ kind, design }: { kind: TrophyKind; design: TrophyDesign }) {
   return (
-    <Canvas shadows dpr={[1, 1.75]} camera={{ position: [0, 0.42, 1.25], fov: 35 }}>
+    <Canvas shadows dpr={[1, 1.75]} camera={{ position: [0, 0.42, 1.4], fov: 35 }}>
       <color attach="background" args={["#0b0a0e"]} />
       <fog attach="fog" args={["#0b0a0e", 3, 8]} />
       <ambientLight intensity={0.35} />
