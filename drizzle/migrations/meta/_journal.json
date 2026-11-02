@@ -260,6 +260,13 @@
       "when": 1793531028595,
       "tag": "0036_trophy_designs",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793607315335,
+      "tag": "0037_admin_reorder_rarities",
+      "breakpoints": true
     }
   ]
 }

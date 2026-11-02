@@ -1811,6 +1811,7 @@ export type Database = {
           xp: number
         }[]
       }
+      admin_reorder_rarities: { Args: { _keys: string[] }; Returns: undefined }
       admin_replace_card: {
         Args: { _from: string; _to: string }
         Returns: number
