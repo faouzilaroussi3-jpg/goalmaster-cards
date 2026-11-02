@@ -125,7 +125,7 @@ export function TrophyDesignAdmin() {
             </div>
           </div>
           <label className="flex items-center gap-2 text-sm font-bold">
-            <input type="checkbox" checked={draft.diamonds} onChange={(e) => set("diamonds", e.target.checked)} className="h-4 w-4 accent-[hsl(var(--primary))]" />
+            <input type="checkbox" checked={draft.diamonds} onChange={(e) => set("diamonds", e.target.checked)} className="h-4 w-4 accent-primary" />
             Stalactites en diamant autour du socle
           </label>
           {err && <p className="text-sm text-destructive">{err}</p>}

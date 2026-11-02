@@ -8,10 +8,10 @@ import { useAuth, useProfile } from "@/lib/auth";
 import { sfx } from "@/lib/sfx";
 import { lookFromRow } from "@/lib/avatar";
 import {
-  awardedIn, canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, nextTrophy, SIDE_TROPHIES, stageMoment, TROPHY_LABEL, trophiesOf,
+  awardedIn, canAward, canCancel, canStart, countdown, currentCeremony, MAX_AUDIENCE, nextTrophy, SIDE_TROPHIES, stageMoment, trophiesOf,
   type Ceremony, type CeremonyAward, type TrophyKind,
 } from "@/lib/ballon-dor";
-import { useAvatars, useCeremonies, useCeremonyAwards, useTrophyLeaders } from "@/lib/ballon-dor-query";
+import { useAvatars, useCeremonies, useCeremonyAwards, useTrophyLeaders, useTrophyNames } from "@/lib/ballon-dor-query";
 import type { CeremonyView, Guest } from "@/components/avatar/CeremonyScene";
 
 const CeremonyScene = lazy(() => import("@/components/avatar/CeremonyScene"));
