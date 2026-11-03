@@ -150,10 +150,12 @@ describe("rarity ranking order", () => {
     expect(ranks).toEqual({ common: 1, rare: 3, custom_x: 5, legendary: 6.25, secret_ultimate: 7 });
   });
 
-  it("a rarity moved above Légendaire now counts as Légendaire or better", () => {
-    const ranks = reorderedRanks(["common", "custom_x", "rare", "legendary", "secret_ultimate"], list);
-    expect(ranks.custom_x).toBeLessThan(ranks.legendary);
+  it("moving a rarity to the top makes it the rarest, moving it down puts it under Légendaire", () => {
+    const down = reorderedRanks(["common", "custom_x", "rare", "legendary", "secret_ultimate"], list);
+    expect(down["custom_x"]).toBe(3);
+    expect(down["legendary"]).toBe(6.25);
     const up = reorderedRanks(["common", "rare", "legendary", "secret_ultimate", "custom_x"], list);
-    expect(up.custom_x).toBeGreaterThan(up.secret_ultimate);
+    expect(up["custom_x"]).toBe(7);
+    expect(up["secret_ultimate"]).toBe(6.25);
   });
 });
