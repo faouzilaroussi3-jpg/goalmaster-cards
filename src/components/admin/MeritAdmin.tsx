@@ -14,10 +14,11 @@ export function MeritAdmin() {
   const [withAdmins, setWithAdmins] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
 
+  const rareRank = rarityMeta("rare").rank || 3;
   const { data: rows = [], isLoading, error } = useQuery({
-    queryKey: ["admin-player-stats", 3],
+    queryKey: ["admin-player-stats", rareRank],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_player_stats", { _min_rank: 3 });
+      const { data, error } = await supabase.rpc("admin_player_stats", { _min_rank: rareRank });
       if (error) throw error;
       return (data ?? []) as unknown as PlayerStats[];
     },

@@ -1,13 +1,13 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Power, RotateCcw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Power, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAll } from "@/lib/fetch-all";
 import { PlayerCard } from "@/components/PlayerCard";
 import { RARITIES_QUERY_KEY } from "@/components/RarityRegistry";
 import { CARD_SHAPES, cleanExtras, effectBase, effectStyle, rarityMeta, useRarities, type CardData, type CardShape, type RarityEffect, type RarityInfo } from "@/lib/rarity";
-import { canDeleteRarity, LABEL_MAX, makeMainEffect, RARITY_EFFECTS, rarityDraftError, SHORT_MAX, toggleEffect } from "@/lib/rarity-admin";
+import { canDeleteRarity, LABEL_MAX, makeMainEffect, moveRarity, RARITY_EFFECTS, rarityDraftError, SHORT_MAX, toggleEffect } from "@/lib/rarity-admin";
 
 const inp = "rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground";
 const DEFAULT_TINT = "#ff3d8b";
@@ -101,6 +101,8 @@ export function RaritiesAdmin() {
         </div>
       </form>
 
+      <RarityOrder rarities={rarities} onDone={refresh} />
+
       <section className="panel p-4">
         <h3 className="mb-1 text-2xl">Raretés ({rarities.length})</h3>
         <p className="mb-3 text-xs text-muted-foreground">Clique sur « Modifier » pour changer le nom, le sigle, l'effet visuel ou la couleur d'une rareté : toutes ses cartes changent aussitôt. Le bouton « Activée / Désactivée » arrête ou relance la sortie de ses cartes dans les packs ; les joueurs gardent les cartes qu'ils ont déjà.</p>
@@ -122,6 +124,57 @@ export function RaritiesAdmin() {
         </ul>
       </section>
     </div>
+  );
+}
+
+/** Ranking from least to most rare: move rarities with the arrows, then save the whole order at once. */
+function RarityOrder({ rarities, onDone }: { rarities: RarityInfo[]; onDone: () => void }) {
+  const saved = useMemo(() => rarities.map((r) => r.key), [rarities]);
+  const [order, setOrder] = useState<string[]>(saved);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { setOrder(saved); }, [saved]);
+  const byKey = useMemo(() => Object.fromEntries(rarities.map((r) => [r.key, r])), [rarities]);
+  const list = order.filter((k) => byKey[k]);
+  const changed = list.length === saved.length && list.some((k, i) => k !== saved[i]);
+
+  async function save() {
+    setBusy(true);
+    const { error } = await supabase.rpc("admin_reorder_rarities", { _keys: list });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Classement des raretés enregistré.");
+    onDone();
+  }
+
+  return (
+    <section className="panel p-4" aria-label="Classement des raretés">
+      <h3 className="mb-1 text-2xl">Classement des raretés</h3>
+      <p className="mb-3 text-xs text-muted-foreground">
+        De la moins rare (n°1) à la plus rare. Ce classement décide l'ordre des cartes à l'ouverture des packs, le tri de la collection et du marché,
+        et quelles raretés comptent comme « Légendaire ou mieux » (grande animation de révélation, bandeau des gros tirages, trophée de la carte la plus rare).
+        Les chances de tirage ne changent pas : elles se règlent dans Packs & taux.
+      </p>
+      <ol className="space-y-1.5">
+        {list.map((k, i) => {
+          const r = byKey[k];
+          return (
+            <li key={k} className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 text-sm ${k !== saved[i] ? "border-primary/60 bg-primary/5" : "border-border"}`}>
+              <span className="w-6 text-right font-display text-muted-foreground">{i + 1}</span>
+              <span className="inline-flex h-6 min-w-9 items-center justify-center rounded-md border border-border px-1 font-display text-xs" style={r.color ? { borderColor: r.color, color: r.color } : undefined}>{r.short}</span>
+              <b className="min-w-0 flex-1 truncate text-foreground">{r.label}</b>
+              <button type="button" disabled={busy || i === 0} onClick={() => setOrder(moveRarity(list, i, -1))} aria-label={`Rendre ${r.label} moins rare`}
+                className="rounded-md border border-border p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
+              <button type="button" disabled={busy || i === list.length - 1} onClick={() => setOrder(moveRarity(list, i, 1))} aria-label={`Rendre ${r.label} plus rare`}
+                className="rounded-md border border-border p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
+            </li>
+          );
+        })}
+      </ol>
+      <div className="mt-3 flex gap-2">
+        <button type="button" disabled={busy || !changed} onClick={save} className="flex-1 rounded-lg bg-gold py-2 font-bold text-primary-foreground disabled:opacity-50">Enregistrer le classement</button>
+        <button type="button" disabled={busy || !changed} onClick={() => setOrder(saved)} className="rounded-lg border border-border px-4 text-sm text-muted-foreground disabled:opacity-40">Annuler</button>
+      </div>
+    </section>
   );
 }
 
