@@ -133,8 +133,8 @@ function RarityOrder({ rarities, onDone }: { rarities: RarityInfo[]; onDone: () 
   const [order, setOrder] = useState<string[]>(saved);
   const [busy, setBusy] = useState(false);
   useEffect(() => { setOrder(saved); }, [saved]);
-  const byKey = useMemo(() => Object.fromEntries(rarities.map((r) => [r.key, r])), [rarities]);
-  const list = order.filter((k) => byKey[k]);
+  const byKey = useMemo(() => new Map(rarities.map((r) => [r.key, r])), [rarities]);
+  const list = order.filter((k) => byKey.has(k));
   const changed = list.length === saved.length && list.some((k, i) => k !== saved[i]);
 
   async function save() {
@@ -156,7 +156,8 @@ function RarityOrder({ rarities, onDone }: { rarities: RarityInfo[]; onDone: () 
       </p>
       <ol className="space-y-1.5">
         {list.map((k, i) => {
-          const r = byKey[k];
+          const r = byKey.get(k);
+          if (!r) return null;
           return (
             <li key={k} className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 text-sm ${k !== saved[i] ? "border-primary/60 bg-primary/5" : "border-border"}`}>
               <span className="w-6 text-right font-display text-muted-foreground">{i + 1}</span>
