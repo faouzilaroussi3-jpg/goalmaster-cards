@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { activeRates, canDeleteRarity, makeMainEffect, packBlockingDisable, rankAfter, rarityDraftError, toggleEffect } from "@/lib/rarity-admin";
+import { activeRates, canDeleteRarity, makeMainEffect, moveRarity, packBlockingDisable, rankAfter, rarityDraftError, reorderedRanks, toggleEffect } from "@/lib/rarity-admin";
 import { RARITIES, RARITY_STYLES, effectBase, rarityMeta, setRarities, type RarityRow } from "@/lib/rarity";
 import { RARITY_EFFECTS } from "@/lib/rarity-admin";
 import { rarityEffects } from "@/lib/card-photo";
@@ -129,5 +129,33 @@ describe("switching rarities on and off", () => {
     expect(packBlockingDisable("rare", list, packs)).toBe("Premium");
     expect(packBlockingDisable("common", list, packs)).toBeNull();
     expect(packBlockingDisable("rare", list, [{ ...premium, active: false }])).toBeNull();
+  });
+});
+
+describe("rarity ranking order", () => {
+  const list = [
+    { key: "common", rank: 1 }, { key: "rare", rank: 3 }, { key: "legendary", rank: 5 }, { key: "custom_x", rank: 6.25 }, { key: "secret_ultimate", rank: 7 },
+  ];
+
+  it("moves a rarity one place up or down and ignores moves past either end", () => {
+    const keys = list.map((r) => r.key);
+    expect(moveRarity(keys, 3, -1)).toEqual(["common", "rare", "custom_x", "legendary", "secret_ultimate"]);
+    expect(moveRarity(keys, 0, 1)).toEqual(["rare", "common", "legendary", "custom_x", "secret_ultimate"]);
+    expect(moveRarity(keys, 0, -1)).toEqual(keys);
+    expect(moveRarity(keys, 4, 1)).toEqual(keys);
+  });
+
+  it("hands the existing rank values out again in the new order", () => {
+    const ranks = reorderedRanks(["common", "rare", "custom_x", "legendary", "secret_ultimate"], list);
+    expect(ranks).toEqual({ common: 1, rare: 3, custom_x: 5, legendary: 6.25, secret_ultimate: 7 });
+  });
+
+  it("moving a rarity to the top makes it the rarest, moving it down puts it under Légendaire", () => {
+    const down = reorderedRanks(["common", "custom_x", "rare", "legendary", "secret_ultimate"], list);
+    expect(down["custom_x"]).toBe(3);
+    expect(down["legendary"]).toBe(6.25);
+    const up = reorderedRanks(["common", "rare", "legendary", "secret_ultimate", "custom_x"], list);
+    expect(up["custom_x"]).toBe(7);
+    expect(up["secret_ultimate"]).toBe(6.25);
   });
 });

@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Crown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { rarityMeta } from "@/lib/rarity";
 import type { PlayerStats } from "@/lib/admin-stats";
 import { MERIT_DOMAINS, MERIT_MAX, rankMerit, type MeritRow } from "@/lib/ballon-merit";
 
@@ -14,10 +15,11 @@ export function MeritAdmin() {
   const [withAdmins, setWithAdmins] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
 
+  const rareRank = rarityMeta("rare").rank || 3;
   const { data: rows = [], isLoading, error } = useQuery({
-    queryKey: ["admin-player-stats", 3],
+    queryKey: ["admin-player-stats", rareRank],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_player_stats", { _min_rank: 3 });
+      const { data, error } = await supabase.rpc("admin_player_stats", { _min_rank: rareRank });
       if (error) throw error;
       return (data ?? []) as unknown as PlayerStats[];
     },
