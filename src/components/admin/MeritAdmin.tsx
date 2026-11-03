@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Crown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { rarityMeta } from "@/lib/rarity";
 import type { PlayerStats } from "@/lib/admin-stats";
 import { MERIT_DOMAINS, MERIT_MAX, rankMerit, type MeritRow } from "@/lib/ballon-merit";
 
