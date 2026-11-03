@@ -97,3 +97,21 @@ export function packBlockingDisable(key: string, rarities: { key: string; active
   const blocked = packs.find((p) => p.active && !Object.keys(activeRates((p.slot_rates ?? {}) as Record<string, number>, after)).some((k) => known.has(k)));
   return blocked?.name ?? null;
 }
+
+/** Moves the rarity at `index` one place up (delta -1, less rare) or down (delta +1, rarer); out-of-range moves change nothing. */
+export function moveRarity<T>(order: T[], index: number, delta: -1 | 1): T[] {
+  const to = index + delta;
+  if (index < 0 || index >= order.length || to < 0 || to >= order.length) return order;
+  const next = [...order];
+  [next[index], next[to]] = [next[to], next[index]];
+  return next;
+}
+
+/**
+ * New rank of each rarity once `keys` (least to most rare) is saved: the existing rank values are handed out again
+ * in that order, so the set of ranks never changes. Mirrors admin_reorder_rarities.
+ */
+export function reorderedRanks(keys: string[], current: { key: string; rank: number }[]): Record<string, number> {
+  const slots = [...current].sort((a, b) => a.rank - b.rank || a.key.localeCompare(b.key)).map((r) => r.rank);
+  return Object.fromEntries(keys.map((k, i) => [k, slots[i]]));
+}
