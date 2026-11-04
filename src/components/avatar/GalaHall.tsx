@@ -27,7 +27,7 @@ const ball = (rad: number, p: V3, s?: V3) => at(new THREE.SphereGeometry(rad, 14
 const lathe = (pts: [number, number][], p: V3, seg = 28) => at(new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x, y)), seg), p);
 const plane = (w: number, h: number, p: V3, r?: V3, uvMetres?: number) => {
   const g = new THREE.PlaneGeometry(w, h);
-  if (uvMetres) { const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * w) / uvMetres, (uv.getY(i) * h) / uvMetres); }
+  if (uvMetres) { const uv = g.getAttribute("uv") as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * w) / uvMetres, (uv.getY(i) * h) / uvMetres); }
   return at(g, p, r);
 };
 const tube = (pts: V3[], radius: number) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((q) => new THREE.Vector3(...q))), Math.max(8, pts.length * 4), radius, 6, false);
@@ -61,7 +61,7 @@ const TV_CAM: { p: V3; yaw: number } = { p: [6.4, 0, 1.2], yaw: 1.107 };
 /** Folded velvet curtain hanging from y0 to y1, gathered towards its outer edge around the tie-back. */
 function curtainGeometry(width: number, y0: number, y1: number) {
   const g = new THREE.PlaneGeometry(width, y1 - y0, 48, 24);
-  const pos = g.attributes.position as THREE.BufferAttribute;
+  const pos = g.getAttribute("position") as THREE.BufferAttribute;
   for (let i = 0; i < pos.count; i++) {
     const u = pos.getX(i) / width + 0.5; // 0 = outer edge, 1 = inner edge
     const y = pos.getY(i) + (y1 + y0) / 2;
@@ -77,7 +77,7 @@ function curtainGeometry(width: number, y0: number, y1: number) {
 /** Scalloped swags across the top of the stage opening. Returns the cloth and the gold fringe line under it. */
 function valanceGeometry(width: number, top: number, swags: number) {
   const g = new THREE.PlaneGeometry(width, 1, 160, 10);
-  const pos = g.attributes.position as THREE.BufferAttribute;
+  const pos = g.getAttribute("position") as THREE.BufferAttribute;
   const bottom: V3[] = [];
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
