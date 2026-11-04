@@ -5,22 +5,17 @@ import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
 import { seatPosition, type TrophyKind } from "@/lib/ballon-dor";
 import { Avatar3D, TrophyCase, TrophyModel, type AvatarPose } from "./Avatar3D";
+import { BACKSTAGE_XZ, HOST_XZ, PEDESTALS, STAGE_Y, WINNER_XZ } from "./ceremony-layout";
+import { GalaHall } from "./GalaHall";
 
 export interface Guest { id: string; name: string; look: AvatarLook; trophies: number }
 export type CeremonyView = "stage" | "hall";
 
 // Reveal timeline (seconds after the admin names the winner).
 const T_SPOT = 3.2, T_STAGE = 6.4, T_CAM_BACK = 13;
-const STAGE_Y = 0.5;
-const WINNER_SPOT = new THREE.Vector3(0, STAGE_Y, -2);
-const BACKSTAGE = new THREE.Vector3(4.2, STAGE_Y, -3.6);
-const HOST_SPOT: [number, number, number] = [-2.2, STAGE_Y, -2.3];
-/** Ballon d'Or on the tall centre pedestal, the side trophies on lower ones either side. */
-const PEDESTALS: { kind: TrophyKind; x: number; z: number; h: number; scale: number }[] = [
-  { kind: "ballon", x: 0, z: -3.1, h: 0.9, scale: 1.5 },
-  { kind: "rarest_card", x: -1.3, z: -3.3, h: 0.6, scale: 1.35 },
-  { kind: "most_wins", x: 1.3, z: -3.3, h: 0.6, scale: 1.35 },
-];
+const WINNER_SPOT = new THREE.Vector3(WINNER_XZ[0], STAGE_Y, WINNER_XZ[1]);
+const BACKSTAGE = new THREE.Vector3(BACKSTAGE_XZ[0], STAGE_Y, BACKSTAGE_XZ[1]);
+const HOST_SPOT: [number, number, number] = [HOST_XZ[0], STAGE_Y, HOST_XZ[1]];
 type Phase = "waiting" | "drumroll" | "walk" | "trophy" | "done";
 
 function phaseAt(t: number): Phase {
