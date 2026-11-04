@@ -232,7 +232,8 @@ function Show({ audience, host, winner, revealAt, view, myId, trophy, awarded }:
       {host && (host.id !== winner?.id || phase === "waiting") && (
         <group position={HOST_SPOT} rotation-y={0.35}>
           <Avatar3D look={host.look} pose={phase === "trophy" ? "clap" : "idle"} seed={host.id} />
-          <NameTag name={`${host.name} · Présentateur`} trophies={0} me={host.id === myId} />
+          {/* From the stage camera the host stands right in front of the lens: no tag there. */}
+          {view !== "stage" && <NameTag name={`${host.name} · Présentateur`} trophies={0} me={host.id === myId} />}
         </group>
       )}
       {winner && phase !== "waiting" && (

@@ -123,12 +123,12 @@ function useHallAssets(rows: number) {
     walls: new THREE.MeshStandardMaterial({ map: tex.damask, roughness: 0.85 }),
     ceiling: new THREE.MeshStandardMaterial({ map: tex.coffer, roughness: 0.8 }),
     crystal: new THREE.MeshStandardMaterial({ color: "#ffffff", emissive: "#ffe9c4", emissiveIntensity: 0.35, metalness: 0.1, roughness: 0.04, envMapIntensity: 3, flatShading: true }),
-    warm: new THREE.MeshBasicMaterial({ color: "#ffe6b8" }),
+    warm: new THREE.MeshBasicMaterial({ color: "#f3cf93" }),
     rose: new THREE.MeshStandardMaterial({ roughness: 0.6 }),
     leaf: new THREE.MeshStandardMaterial({ color: "#1f4d2b", roughness: 0.7 }),
     beam: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.055, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     pool: new THREE.MeshBasicMaterial({ map: tex.glow, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }),
-    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }),
+    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
     glowSmall: new THREE.PointsMaterial({ map: tex.glow, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
     glowBig: new THREE.PointsMaterial({ map: tex.glow, size: 0.75, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
   }), [tex]);
@@ -230,6 +230,8 @@ function useHallAssets(rows: number) {
     gold.push(box(2.6, 0.08, 0.1, [0, 3.06, HALL_BACK - 0.06]));
     goldGlow.push(torus(1.25, 0.04, [0, 3.1, HALL_BACK - 0.08], [0, Math.PI, 0], Math.PI, 48));
     warm.push(at(new THREE.CircleGeometry(1.2, 32, 0, Math.PI), [0, 3.1, HALL_BACK - 0.07], [0, Math.PI, 0]));
+    for (let k = 1; k < 8; k++) { const a = (k / 8) * Math.PI; gold.push(bar([0, 3.1, HALL_BACK - 0.09], [Math.cos(a) * 1.2, 3.1 + Math.sin(a) * 1.2, HALL_BACK - 0.09], 0.018)); }
+    gold.push(torus(0.35, 0.02, [0, 3.1, HALL_BACK - 0.09], [0, Math.PI, 0], Math.PI, 24));
 
     // Carpet stanchions (gold posts, velvet ropes)
     for (const sx of [-1, 1]) {
