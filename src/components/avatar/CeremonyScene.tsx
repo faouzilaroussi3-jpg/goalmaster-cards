@@ -5,22 +5,17 @@ import * as THREE from "three";
 import type { AvatarLook } from "@/lib/avatar";
 import { seatPosition, type TrophyKind } from "@/lib/ballon-dor";
 import { Avatar3D, TrophyCase, TrophyModel, type AvatarPose } from "./Avatar3D";
+import { BACKSTAGE_XZ, HOST_XZ, PEDESTALS, STAGE_Y, WINNER_XZ } from "./ceremony-layout";
+import { GalaHall } from "./GalaHall";
 
 export interface Guest { id: string; name: string; look: AvatarLook; trophies: number }
 export type CeremonyView = "stage" | "hall";
 
 // Reveal timeline (seconds after the admin names the winner).
 const T_SPOT = 3.2, T_STAGE = 6.4, T_CAM_BACK = 13;
-const STAGE_Y = 0.5;
-const WINNER_SPOT = new THREE.Vector3(0, STAGE_Y, -2);
-const BACKSTAGE = new THREE.Vector3(4.2, STAGE_Y, -3.6);
-const HOST_SPOT: [number, number, number] = [-2.2, STAGE_Y, -2.3];
-/** Ballon d'Or on the tall centre pedestal, the side trophies on lower ones either side. */
-const PEDESTALS: { kind: TrophyKind; x: number; z: number; h: number; scale: number }[] = [
-  { kind: "ballon", x: 0, z: -3.1, h: 0.9, scale: 1.5 },
-  { kind: "rarest_card", x: -1.3, z: -3.3, h: 0.6, scale: 1.35 },
-  { kind: "most_wins", x: 1.3, z: -3.3, h: 0.6, scale: 1.35 },
-];
+const WINNER_SPOT = new THREE.Vector3(WINNER_XZ[0], STAGE_Y, WINNER_XZ[1]);
+const BACKSTAGE = new THREE.Vector3(BACKSTAGE_XZ[0], STAGE_Y, BACKSTAGE_XZ[1]);
+const HOST_SPOT: [number, number, number] = [HOST_XZ[0], STAGE_Y, HOST_XZ[1]];
 type Phase = "waiting" | "drumroll" | "walk" | "trophy" | "done";
 
 function phaseAt(t: number): Phase {
@@ -148,99 +143,6 @@ function CameraRig({ view, focus }: { view: CeremonyView; focus: React.MutableRe
   return null;
 }
 
-/** Velvet gala chairs behind every audience spot (one instanced draw call). */
-function Seats({ count }: { count: number }) {
-  const ref = useRef<THREE.InstancedMesh>(null);
-  useEffect(() => {
-    const m = ref.current;
-    if (!m) return;
-    const d = new THREE.Object3D();
-    for (let i = 0; i < count; i++) {
-      const [x, y, z] = seatPosition(i);
-      d.position.set(x, y + 0.55, z + 0.45);
-      d.updateMatrix();
-      m.setMatrixAt(i, d.matrix);
-    }
-    m.instanceMatrix.needsUpdate = true;
-  }, [count]);
-  return (
-    <instancedMesh ref={ref} args={[undefined, undefined, count]}>
-      <boxGeometry args={[0.7, 1.1, 0.14]} />
-      <meshStandardMaterial color="#5a0f33" roughness={0.85} />
-    </instancedMesh>
-  );
-}
-
-function Hall({ rows }: { rows: number }) {
-  return (
-    <group>
-      <Seats count={rows * 8} />
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0, 4]}>
-        <planeGeometry args={[26, 26]} />
-        <meshStandardMaterial color="#0c0a0e" roughness={0.9} />
-      </mesh>
-      {/* Pink carpet from the seats to the stage */}
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0.005, 4.5]}>
-        <planeGeometry args={[1.3, 13]} />
-        <meshStandardMaterial color="#b0125a" roughness={0.9} emissive="#3a0420" />
-      </mesh>
-      {/* Audience risers */}
-      {Array.from({ length: rows }, (_, r) => {
-        const [, y, z] = seatPosition(r * 8);
-        return y > 0 ? (
-          <mesh key={r} position={[0, y / 2, z]}>
-            <boxGeometry args={[11.5, y, 1.5]} />
-            <meshStandardMaterial color="#1b171f" roughness={0.7} />
-          </mesh>
-        ) : null;
-      })}
-      {/* Stage */}
-      <mesh position={[0, STAGE_Y / 2, -3.3]}>
-        <boxGeometry args={[10, STAGE_Y, 3.6]} />
-        <meshStandardMaterial color="#0f0d12" roughness={0.25} metalness={0.5} />
-      </mesh>
-      <mesh position={[0, STAGE_Y - 0.03, -1.49]}>
-        <boxGeometry args={[10, 0.04, 0.04]} />
-        <meshStandardMaterial color="#ff2d87" emissive="#ff2d87" emissiveIntensity={3} />
-      </mesh>
-      {/* Steps to the stage on the carpet */}
-      {[0, 1].map((i) => (
-        <mesh key={i} position={[0, (i + 1) * 0.16 - 0.08, -1.2 + -i * 0.25]}>
-          <boxGeometry args={[1.3, 0.16 * (i + 1), 0.3]} />
-          <meshStandardMaterial color="#1b171f" roughness={0.6} />
-        </mesh>
-      ))}
-      {/* Backdrop with a gold ring and light columns */}
-      <mesh position={[0, 3, -5.1]}>
-        <planeGeometry args={[16, 6]} />
-        <meshStandardMaterial color="#09080b" roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 3.2, -5]}>
-        <torusGeometry args={[1.45, 0.06, 16, 96]} />
-        <meshStandardMaterial color="#ffd75e" emissive="#c8901a" emissiveIntensity={1.6} metalness={1} roughness={0.2} />
-      </mesh>
-      {[-6, -4.2, 4.2, 6].map((x) => (
-        <mesh key={x} position={[x, 3, -5]}>
-          <boxGeometry args={[0.12, 5, 0.05]} />
-          <meshStandardMaterial color="#ff2d87" emissive="#ff2d87" emissiveIntensity={2.2} />
-        </mesh>
-      ))}
-      {/* Lectern for the host */}
-      <mesh position={[HOST_SPOT[0] - 0.7, STAGE_Y + 0.55, HOST_SPOT[2] + 0.1]}>
-        <boxGeometry args={[0.55, 1.1, 0.4]} />
-        <meshStandardMaterial color="#1a1720" roughness={0.3} metalness={0.6} />
-      </mesh>
-      {/* Trophy pedestals */}
-      {PEDESTALS.map((p) => (
-        <mesh key={p.kind} position={[p.x, STAGE_Y + p.h / 2, p.z]}>
-          <cylinderGeometry args={[0.3, 0.36, p.h, 32]} />
-          <meshStandardMaterial color="#141218" roughness={0.25} metalness={0.7} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 interface SceneProps {
   audience: Guest[]; host: Guest | null; winner: Guest | null; revealAt: number | null; view: CeremonyView; myId: string;
   /** Trophy the winner on stage receives; `awarded` lists this ceremony's trophies already handed out. */
@@ -317,7 +219,7 @@ function Show({ audience, host, winner, revealAt, view, myId, trophy, awarded }:
   return (
     <>
       <CameraRig view={view} focus={focus} />
-      <Hall rows={rows} />
+      <GalaHall rows={rows} excited={phase === "walk" || phase === "trophy"} />
       {PEDESTALS.map((p) => onPedestal(p.kind) && <TrophyModel key={p.kind} kind={p.kind} position={[p.x, STAGE_Y + p.h, p.z]} scale={p.scale} />)}
       <Beam from={new THREE.Vector3(0, 7.5, 9)} target={spotTarget} width={0.75} />
       <spotLight ref={spot} position={[0, 7.5, 9]} angle={0.16} penumbra={0.6} intensity={140} color="#fff4e0" distance={30} />
@@ -330,7 +232,8 @@ function Show({ audience, host, winner, revealAt, view, myId, trophy, awarded }:
       {host && (host.id !== winner?.id || phase === "waiting") && (
         <group position={HOST_SPOT} rotation-y={0.35}>
           <Avatar3D look={host.look} pose={phase === "trophy" ? "clap" : "idle"} seed={host.id} />
-          <NameTag name={`${host.name} · Présentateur`} trophies={0} me={host.id === myId} />
+          {/* From the stage camera the host stands right in front of the lens: no tag there. */}
+          {view !== "stage" && <NameTag name={`${host.name} · Présentateur`} trophies={0} me={host.id === myId} />}
         </group>
       )}
       {winner && phase !== "waiting" && (
@@ -350,9 +253,9 @@ function Show({ audience, host, winner, revealAt, view, myId, trophy, awarded }:
 /** Ballon d'Or gala hall: stage with the three trophies, the admin as host, connected players' avatars in the stands. */
 export default function CeremonyScene(props: SceneProps) {
   return (
-    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 4.3, 12.8], fov: 50 }} gl={{ antialias: true }}>
+    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 4.3, 12.8], fov: 50, far: 60 }} gl={{ antialias: true }} onCreated={({ gl }) => { requestAnimationFrame(() => gl.domElement.parentElement?.setAttribute("data-scene-ready", "")); }}>
       <color attach="background" args={["#070609"]} />
-      <fog attach="fog" args={["#070609", 14, 32]} />
+      <fog attach="fog" args={["#0a070b", 16, 38]} />
       <ambientLight intensity={0.45} />
       <hemisphereLight args={["#ffd9ec", "#140b12", 0.5]} />
       <directionalLight position={[3, 8, 6]} intensity={0.9} />

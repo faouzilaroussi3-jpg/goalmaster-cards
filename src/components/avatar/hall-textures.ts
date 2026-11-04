@@ -271,8 +271,16 @@ export function glowTexture() {
 /** Wall wash: a fan of light rising from a sconce. */
 export function washTexture() {
   return make(128, 256, (g, w, h) => {
-    const gr = g.createRadialGradient(w / 2, h, 0, w / 2, h, h);
-    gr.addColorStop(0, "rgba(255,226,168,0.9)"); gr.addColorStop(0.5, "rgba(255,190,120,0.25)"); gr.addColorStop(1, "rgba(255,190,120,0)");
-    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    // Sconce glow centred two-thirds down, fanning mostly upward; masked to zero on every edge
+    // so the plane never reads as a rectangle on the wall.
+    g.save(); g.translate(w / 2, h * 0.67); g.scale(1, (h * 0.62) / (w / 2));
+    const gr = g.createRadialGradient(0, 0, 0, 0, 0, w / 2);
+    gr.addColorStop(0, "rgba(255,226,168,0.9)"); gr.addColorStop(0.4, "rgba(255,190,120,0.25)"); gr.addColorStop(1, "rgba(255,190,120,0)");
+    g.fillStyle = gr; g.fillRect(-w, -h, w * 2, h * 2); g.restore();
+    g.globalCompositeOperation = "destination-in";
+    const mask = g.createLinearGradient(0, 0, 0, h);
+    mask.addColorStop(0, "rgba(0,0,0,0)"); mask.addColorStop(0.25, "rgba(0,0,0,1)"); mask.addColorStop(0.67, "rgba(0,0,0,1)"); mask.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = mask; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = "source-over";
   });
 }

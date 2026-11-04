@@ -27,7 +27,7 @@ const ball = (rad: number, p: V3, s?: V3) => at(new THREE.SphereGeometry(rad, 14
 const lathe = (pts: [number, number][], p: V3, seg = 28) => at(new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x, y)), seg), p);
 const plane = (w: number, h: number, p: V3, r?: V3, uvMetres?: number) => {
   const g = new THREE.PlaneGeometry(w, h);
-  if (uvMetres) { const uv = g.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * w) / uvMetres, (uv.getY(i) * h) / uvMetres); }
+  if (uvMetres) { const uv = g.getAttribute("uv") as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, (uv.getX(i) * w) / uvMetres, (uv.getY(i) * h) / uvMetres); }
   return at(g, p, r);
 };
 const tube = (pts: V3[], radius: number) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((q) => new THREE.Vector3(...q))), Math.max(8, pts.length * 4), radius, 6, false);
@@ -48,7 +48,7 @@ function merge(parts: THREE.BufferGeometry[]) {
 }
 const transform = (parts: THREE.BufferGeometry[], p: V3, r: V3) => parts.map((g) => at(g, p, r));
 
-const CHANDELIERS: V3[] = [[-3.4, 0, 2.2], [3.4, 0, 2.2], [-3.4, 0, 7.6], [3.4, 0, 7.6]];
+const CHANDELIERS: V3[] = [[-3.4, 0, 2.2], [3.4, 0, 2.2], [-3.4, 0, 10.4], [3.4, 0, 10.4]];
 const CH_RINGS: { R: number; y: number }[] = [{ R: 0.62, y: 6.25 }, { R: 0.42, y: 5.95 }, { R: 0.22, y: 5.7 }];
 const COLUMN_Z = [-0.2, 3.4, 7, 10.6];
 const PANEL_Z = [1.6, 5.2, 8.8];
@@ -61,7 +61,7 @@ const TV_CAM: { p: V3; yaw: number } = { p: [6.4, 0, 1.2], yaw: 1.107 };
 /** Folded velvet curtain hanging from y0 to y1, gathered towards its outer edge around the tie-back. */
 function curtainGeometry(width: number, y0: number, y1: number) {
   const g = new THREE.PlaneGeometry(width, y1 - y0, 48, 24);
-  const pos = g.attributes.position as THREE.BufferAttribute;
+  const pos = g.getAttribute("position") as THREE.BufferAttribute;
   for (let i = 0; i < pos.count; i++) {
     const u = pos.getX(i) / width + 0.5; // 0 = outer edge, 1 = inner edge
     const y = pos.getY(i) + (y1 + y0) / 2;
@@ -77,7 +77,7 @@ function curtainGeometry(width: number, y0: number, y1: number) {
 /** Scalloped swags across the top of the stage opening. Returns the cloth and the gold fringe line under it. */
 function valanceGeometry(width: number, top: number, swags: number) {
   const g = new THREE.PlaneGeometry(width, 1, 160, 10);
-  const pos = g.attributes.position as THREE.BufferAttribute;
+  const pos = g.getAttribute("position") as THREE.BufferAttribute;
   const bottom: V3[] = [];
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
@@ -123,12 +123,12 @@ function useHallAssets(rows: number) {
     walls: new THREE.MeshStandardMaterial({ map: tex.damask, roughness: 0.85 }),
     ceiling: new THREE.MeshStandardMaterial({ map: tex.coffer, roughness: 0.8 }),
     crystal: new THREE.MeshStandardMaterial({ color: "#ffffff", emissive: "#ffe9c4", emissiveIntensity: 0.35, metalness: 0.1, roughness: 0.04, envMapIntensity: 3, flatShading: true }),
-    warm: new THREE.MeshBasicMaterial({ color: "#ffe6b8" }),
+    warm: new THREE.MeshBasicMaterial({ color: "#f3cf93" }),
     rose: new THREE.MeshStandardMaterial({ roughness: 0.6 }),
     leaf: new THREE.MeshStandardMaterial({ color: "#1f4d2b", roughness: 0.7 }),
     beam: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.055, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     pool: new THREE.MeshBasicMaterial({ map: tex.glow, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }),
-    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }),
+    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.45, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, blending: THREE.AdditiveBlending, depthWrite: false }),
     glowSmall: new THREE.PointsMaterial({ map: tex.glow, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
     glowBig: new THREE.PointsMaterial({ map: tex.glow, size: 0.75, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
   }), [tex]);
@@ -230,6 +230,8 @@ function useHallAssets(rows: number) {
     gold.push(box(2.6, 0.08, 0.1, [0, 3.06, HALL_BACK - 0.06]));
     goldGlow.push(torus(1.25, 0.04, [0, 3.1, HALL_BACK - 0.08], [0, Math.PI, 0], Math.PI, 48));
     warm.push(at(new THREE.CircleGeometry(1.2, 32, 0, Math.PI), [0, 3.1, HALL_BACK - 0.07], [0, Math.PI, 0]));
+    for (let k = 1; k < 8; k++) { const a = (k / 8) * Math.PI; gold.push(bar([0, 3.1, HALL_BACK - 0.09], [Math.cos(a) * 1.2, 3.1 + Math.sin(a) * 1.2, HALL_BACK - 0.09], 0.018)); }
+    gold.push(torus(0.35, 0.02, [0, 3.1, HALL_BACK - 0.09], [0, Math.PI, 0], Math.PI, 24));
 
     // Carpet stanchions (gold posts, velvet ropes)
     for (const sx of [-1, 1]) {
@@ -529,15 +531,15 @@ export function GalaHall({ rows, excited }: { rows: number; excited: boolean }) 
       <MovingHeads excited={excited} head={mats.lacquer} beam={mats.beam} pool={mats.pool} />
       {/* Light washes above the wall sconces */}
       {[-1, 1].map((sx) => PANEL_Z.map((z) => (
-        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.03), 4.5, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
-          <planeGeometry args={[2, 2.4]} />
+        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.1), 4.1, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
+          <planeGeometry args={[2, 3.6]} />
         </mesh>
       )))}
       <points geometry={glows.small} material={mats.glowSmall} />
       <points geometry={glows.big} material={mats.glowBig} />
       {/* Warm chandelier light over the audience */}
-      <pointLight position={[-3.4, 5.4, 4.9]} intensity={9} distance={11} color="#ffd9a0" />
-      <pointLight position={[3.4, 5.4, 4.9]} intensity={9} distance={11} color="#ffd9a0" />
+      <pointLight position={[-3.4, 5.4, 3.4]} intensity={9} distance={11} color="#ffd9a0" />
+      <pointLight position={[3.4, 5.4, 3.4]} intensity={9} distance={11} color="#ffd9a0" />
       <Sparkles count={70} scale={[10, 4.5, 7]} position={[0, 3.2, 1]} size={2.4} speed={0.25} opacity={0.65} color="#ffe2a8" noise={0.6} />
       <Sparkles count={40} scale={[8, 1.2, 7]} position={[0, 5.7, 5]} size={1.6} speed={0.5} opacity={0.8} color="#ffffff" />
     </group>
