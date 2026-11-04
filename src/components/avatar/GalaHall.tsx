@@ -128,7 +128,7 @@ function useHallAssets(rows: number) {
     leaf: new THREE.MeshStandardMaterial({ color: "#1f4d2b", roughness: 0.7 }),
     beam: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.055, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     pool: new THREE.MeshBasicMaterial({ map: tex.glow, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }),
-    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
+    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
     glowSmall: new THREE.PointsMaterial({ map: tex.glow, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
     glowBig: new THREE.PointsMaterial({ map: tex.glow, size: 0.75, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
   }), [tex]);
