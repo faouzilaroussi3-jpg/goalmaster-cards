@@ -128,7 +128,7 @@ function useHallAssets(rows: number) {
     leaf: new THREE.MeshStandardMaterial({ color: "#1f4d2b", roughness: 0.7 }),
     beam: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.055, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     pool: new THREE.MeshBasicMaterial({ map: tex.glow, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }),
-    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
+    wash: new THREE.MeshBasicMaterial({ map: tex.wash, transparent: true, opacity: 0.45, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, blending: THREE.AdditiveBlending, depthWrite: false }),
     glowSmall: new THREE.PointsMaterial({ map: tex.glow, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
     glowBig: new THREE.PointsMaterial({ map: tex.glow, size: 0.75, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true }),
   }), [tex]);
@@ -531,7 +531,7 @@ export function GalaHall({ rows, excited }: { rows: number; excited: boolean }) 
       <MovingHeads excited={excited} head={mats.lacquer} beam={mats.beam} pool={mats.pool} />
       {/* Light washes above the wall sconces */}
       {[-1, 1].map((sx) => PANEL_Z.map((z) => (
-        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.03), 4.1, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
+        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.1), 4.1, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
           <planeGeometry args={[2, 3.6]} />
         </mesh>
       )))}
