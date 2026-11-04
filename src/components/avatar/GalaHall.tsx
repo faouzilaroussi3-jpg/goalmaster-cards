@@ -48,7 +48,7 @@ function merge(parts: THREE.BufferGeometry[]) {
 }
 const transform = (parts: THREE.BufferGeometry[], p: V3, r: V3) => parts.map((g) => at(g, p, r));
 
-const CHANDELIERS: V3[] = [[-3.4, 0, 2.2], [3.4, 0, 2.2], [-3.4, 0, 7.6], [3.4, 0, 7.6]];
+const CHANDELIERS: V3[] = [[-3.4, 0, 2.2], [3.4, 0, 2.2], [-3.4, 0, 10.4], [3.4, 0, 10.4]];
 const CH_RINGS: { R: number; y: number }[] = [{ R: 0.62, y: 6.25 }, { R: 0.42, y: 5.95 }, { R: 0.22, y: 5.7 }];
 const COLUMN_Z = [-0.2, 3.4, 7, 10.6];
 const PANEL_Z = [1.6, 5.2, 8.8];
@@ -536,8 +536,8 @@ export function GalaHall({ rows, excited }: { rows: number; excited: boolean }) 
       <points geometry={glows.small} material={mats.glowSmall} />
       <points geometry={glows.big} material={mats.glowBig} />
       {/* Warm chandelier light over the audience */}
-      <pointLight position={[-3.4, 5.4, 4.9]} intensity={9} distance={11} color="#ffd9a0" />
-      <pointLight position={[3.4, 5.4, 4.9]} intensity={9} distance={11} color="#ffd9a0" />
+      <pointLight position={[-3.4, 5.4, 3.4]} intensity={9} distance={11} color="#ffd9a0" />
+      <pointLight position={[3.4, 5.4, 3.4]} intensity={9} distance={11} color="#ffd9a0" />
       <Sparkles count={70} scale={[10, 4.5, 7]} position={[0, 3.2, 1]} size={2.4} speed={0.25} opacity={0.65} color="#ffe2a8" noise={0.6} />
       <Sparkles count={40} scale={[8, 1.2, 7]} position={[0, 5.7, 5]} size={1.6} speed={0.5} opacity={0.8} color="#ffffff" />
     </group>
