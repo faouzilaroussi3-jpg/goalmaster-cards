@@ -531,8 +531,8 @@ export function GalaHall({ rows, excited }: { rows: number; excited: boolean }) 
       <MovingHeads excited={excited} head={mats.lacquer} beam={mats.beam} pool={mats.pool} />
       {/* Light washes above the wall sconces */}
       {[-1, 1].map((sx) => PANEL_Z.map((z) => (
-        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.03), 4.5, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
-          <planeGeometry args={[2, 2.4]} />
+        <mesh key={`${sx}${z}`} position={[sx * (HALL_HALF_W - 0.03), 4.1, z]} rotation-y={-sx * Math.PI / 2} material={mats.wash}>
+          <planeGeometry args={[2, 3.6]} />
         </mesh>
       )))}
       <points geometry={glows.small} material={mats.glowSmall} />
