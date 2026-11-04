@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as HallPreviewRouteImport } from './routes/hall-preview'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAmisRouteImport } from './routes/_authenticated/amis'
@@ -44,11 +43,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HallPreviewRoute = HallPreviewRouteImport.update({
-  id: '/hall-preview',
-  path: '/hall-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -150,7 +144,6 @@ const ApiPublicCardPhotoSplatRoute = ApiPublicCardPhotoSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/hall-preview': typeof HallPreviewRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
@@ -173,7 +166,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/hall-preview': typeof HallPreviewRoute
   '/leaderboard': typeof LeaderboardRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/amis': typeof AuthenticatedAmisRoute
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/hall-preview': typeof HallPreviewRoute
   '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/amis': typeof AuthenticatedAmisRoute
@@ -223,7 +214,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/hall-preview'
     | '/leaderboard'
     | '/admin'
     | '/amis'
@@ -246,7 +236,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/hall-preview'
     | '/leaderboard'
     | '/admin'
     | '/amis'
@@ -270,7 +259,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/hall-preview'
     | '/leaderboard'
     | '/_authenticated/admin'
     | '/_authenticated/amis'
@@ -295,7 +283,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  HallPreviewRoute: typeof HallPreviewRoute
   LeaderboardRoute: typeof LeaderboardRoute
   ApiPublicCardPhotoSplatRoute: typeof ApiPublicCardPhotoSplatRoute
 }
@@ -321,13 +308,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hall-preview': {
-      id: '/hall-preview'
-      path: '/hall-preview'
-      fullPath: '/hall-preview'
-      preLoaderRoute: typeof HallPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -504,7 +484,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  HallPreviewRoute: HallPreviewRoute,
   LeaderboardRoute: LeaderboardRoute,
   ApiPublicCardPhotoSplatRoute: ApiPublicCardPhotoSplatRoute,
 }
