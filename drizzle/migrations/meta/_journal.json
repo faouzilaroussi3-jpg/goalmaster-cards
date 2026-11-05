@@ -267,6 +267,13 @@
       "when": 1793607315335,
       "tag": "0037_admin_reorder_rarities",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793862916748,
+      "tag": "0038_quiz_mode",
+      "breakpoints": true
     }
   ]
 }

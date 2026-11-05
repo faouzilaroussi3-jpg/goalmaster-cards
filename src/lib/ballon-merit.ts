@@ -13,6 +13,7 @@ export const MERIT_DOMAINS = [
   { key: "challenges", label: "Défis", hint: "1 pt par défi réussi" },
   { key: "progress", label: "Progression", hint: "Points d'expérience gagnés" },
   { key: "market", label: "Marché", hint: "1 pt par vente aux enchères" },
+  { key: "quiz", label: "Quiz", hint: "Points gagnés au Quiz foot (toutes parties)" },
 ] as const;
 
 export type MeritDomain = (typeof MERIT_DOMAINS)[number]["key"];
@@ -29,6 +30,7 @@ export function meritRaw(s: PlayerStats): Record<MeritDomain, number> {
     challenges: Number(s.challenges_claimed),
     progress: Number(s.xp),
     market: Number(s.auctions_sold),
+    quiz: Number(s.quiz_points ?? 0),
   };
 }
 
