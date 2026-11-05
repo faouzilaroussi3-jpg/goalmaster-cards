@@ -215,6 +215,12 @@ export function AppHeader() {
     </Link>
   );
 
+  const quiz = (
+    <Link to="/quiz" className={linkCls} activeProps={activeCls}>
+      Quiz
+    </Link>
+  );
+
   const badge = (n: number, label: string) =>
     n > 0 && (
       <span aria-label={label} className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">

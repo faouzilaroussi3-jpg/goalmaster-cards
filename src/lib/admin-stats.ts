@@ -30,6 +30,9 @@ export interface PlayerStats {
   auctions_sold: number;
   ballon_dor: number;
   challenges_claimed: number;
+  /** Total quiz points over all runs, and best single 40 s run. */
+  quiz_points?: number;
+  quiz_best?: number;
 }
 
 /** Matches = tactical 11v11 games + games steered by hand (vs bot or friend). */
