@@ -1397,6 +1397,48 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_runs: {
+        Row: {
+          answered: number
+          correct: number
+          cur_answer: string | null
+          cur_points: number | null
+          cur_rarity: string | null
+          ends_at: string
+          id: string
+          score: number
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          answered?: number
+          correct?: number
+          cur_answer?: string | null
+          cur_points?: number | null
+          cur_rarity?: string | null
+          ends_at: string
+          id?: string
+          score?: number
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          answered?: number
+          correct?: number
+          cur_answer?: string | null
+          cur_points?: number | null
+          cur_rarity?: string | null
+          ends_at?: string
+          id?: string
+          score?: number
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rarities: {
         Row: {
           active: boolean
@@ -1654,6 +1696,21 @@ export type Database = {
         Args: { _exclude?: string[]; _rarity: string }
         Returns: string
       }
+      _quiz_next: { Args: { _number: number; _run: string }; Returns: Json }
+      _quiz_pos: { Args: { p: string }; Returns: string }
+      _quiz_question: { Args: { _d: number }; Returns: Json }
+      _quiz_result: {
+        Args: { _r: Database["public"]["Tables"]["quiz_runs"]["Row"] }
+        Returns: Json
+      }
+      _quiz_trivia: {
+        Args: never
+        Returns: {
+          a: string
+          q: string
+          w: string[]
+        }[]
+      }
       _rarest_label: {
         Args: {
           _label: string
@@ -1800,6 +1857,8 @@ export type Database = {
           live_wins: number
           match_rating: number
           packs_opened: number
+          quiz_best: number
+          quiz_points: number
           rare_owned: number
           rare_pulled: number
           tactic_draws: number
@@ -1862,6 +1921,7 @@ export type Database = {
         Returns: undefined
       }
       admin_weekly_trophies: { Args: never; Returns: Json }
+      answer_quiz: { Args: { _choice: string; _run: string }; Returns: Json }
       auction_min_bid: {
         Args: { _current: number; _start: number }
         Returns: number
@@ -1901,6 +1961,7 @@ export type Database = {
       }
       create_live_match: { Args: { _opponent: string }; Returns: string }
       create_match: { Args: { _opponent: string }; Returns: string }
+      finish_quiz: { Args: { _run: string }; Returns: Json }
       get_auction_bids: {
         Args: { _auction_id: string }
         Returns: {
@@ -2176,6 +2237,17 @@ export type Database = {
           match_id: string
         }[]
       }
+      get_quiz_leaderboard: {
+        Args: { _period?: string }
+        Returns: {
+          avatar_url: string
+          best: number
+          runs: number
+          total: number
+          user_id: string
+          username: string
+        }[]
+      }
       get_recent_drops: {
         Args: { _limit?: number }
         Returns: {
@@ -2253,6 +2325,7 @@ export type Database = {
       send_friend_request: { Args: { _to: string }; Returns: string }
       send_message: { Args: { _body: string; _to: string }; Returns: string }
       start_bot_match: { Args: { _level: string }; Returns: string }
+      start_quiz: { Args: never; Returns: Json }
       submit_halftime: {
         Args: { _match_id: string; _subs: Json; _tactic: string }
         Returns: undefined
