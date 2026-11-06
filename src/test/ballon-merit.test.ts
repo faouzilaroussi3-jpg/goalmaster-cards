@@ -20,7 +20,7 @@ describe("qui mérite le Ballon d'Or", () => {
   });
 
   it("the leader of every domain scores the maximum", () => {
-    const [top] = rankMerit([p("a", { packs_opened: 5, unique_owned: 9, duel_wins: 2, tactic_wins: 1, challenges_claimed: 3, xp: 50, auctions_sold: 1 }), p("b", { packs_opened: 1 })]);
+    const [top] = rankMerit([p("a", { packs_opened: 5, unique_owned: 9, duel_wins: 2, tactic_wins: 1, challenges_claimed: 3, xp: 50, auctions_sold: 1, quiz_points: 20 }), p("b", { packs_opened: 1 })]);
     expect(top?.player.username).toBe("a");
     expect(top?.total).toBe(MERIT_MAX);
   });

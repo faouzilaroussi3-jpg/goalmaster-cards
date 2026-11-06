@@ -1,0 +1,18 @@
+import { describe, expect, it } from "vitest";
+import { quizOptionCount, quizPoints, quizSecondsLeft, QUIZ_SECONDS } from "@/lib/quiz";
+
+describe("quiz rules", () => {
+  it("lasts 40 seconds", () => expect(QUIZ_SECONDS).toBe(40));
+  it("Commune is hardest: most points and 4 choices", () => {
+    expect(quizPoints(0)).toBe(10);
+    expect(quizOptionCount(0)).toBe(4);
+  });
+  it("rarest question is the easiest: 2 choices, fewest points", () => {
+    expect(quizPoints(1)).toBe(2);
+    expect(quizOptionCount(1)).toBe(2);
+  });
+  it("counts time down from the server end", () => {
+    expect(quizSecondsLeft(new Date(10_000).toISOString(), 0, 0)).toBe(10);
+    expect(quizSecondsLeft(new Date(10_000).toISOString(), 0, 20_000)).toBe(0);
+  });
+});
