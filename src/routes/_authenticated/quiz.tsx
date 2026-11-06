@@ -71,7 +71,7 @@ function QuizPage() {
   };
 
   useEffect(() => {
-    if (!run) return;
+    if (!run) return undefined;
     const t = setInterval(() => {
       const s = quizSecondsLeft(run.endsAt, run.offset);
       setLeft(s);
