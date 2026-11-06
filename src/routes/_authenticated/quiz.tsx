@@ -85,7 +85,7 @@ function QuizPage() {
     setBusy(true);
     const { data, error } = await supabase.rpc("start_quiz");
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     const d = data as unknown as { run_id: string; ends_at: string; server_now: string; question: QuizQuestion };
     finishing.current = false;
     setResult(null); setScore(0); setCorrect(0); setFlash(null); setLeft(QUIZ_SECONDS);
@@ -99,14 +99,14 @@ function QuizPage() {
     setBusy(true);
     const { data, error } = await supabase.rpc("answer_quiz", { _run: run.id, _choice: choice });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     const d = data as unknown as Result & { finished: boolean; was_correct?: boolean; answer?: string; question?: QuizQuestion };
     if (d.answer !== undefined) {
       setFlash({ choice, answer: d.answer, ok: !!d.was_correct });
       if (d.was_correct) sfx.coins(); else sfx.error();
     }
     setScore(d.score); setCorrect(d.correct);
-    if (d.finished) return end(run.id, d);
+    if (d.finished) { void end(run.id, d); return; }
     setTimeout(() => { setFlash(null); setQ(d.question ?? null); }, 350);
   };
 
