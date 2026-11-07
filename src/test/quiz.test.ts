@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { quizOptionCount, quizPoints, quizSecondsLeft, QUIZ_SECONDS } from "@/lib/quiz";
+import { quizFormat, quizOptionCount, quizPoints, quizSecondsLeft, QUIZ_SECONDS } from "@/lib/quiz";
 
 describe("quiz rules", () => {
-  it("lasts 40 seconds", () => expect(QUIZ_SECONDS).toBe(40));
+  it("lasts one minute", () => expect(QUIZ_SECONDS).toBe(60));
+  it("alternates words, a photo with words and image choices", () => {
+    expect([1, 2, 3, 4, 5, 6].map(quizFormat)).toEqual([
+      "text", "photo_words", "image_choice", "text", "photo_words", "image_choice",
+    ]);
+  });
   it("Commune is hardest: most points and 4 choices", () => {
     expect(quizPoints(0)).toBe(10);
     expect(quizOptionCount(0)).toBe(4);

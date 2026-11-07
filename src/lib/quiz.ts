@@ -1,5 +1,10 @@
 /** Quiz foot: rules mirrored from the SQL (_quiz_next / start_quiz). */
-export const QUIZ_SECONDS = 40;
+export const QUIZ_SECONDS = 60;
+
+export type QuizFormat = "text" | "photo_words" | "image_choice";
+export function quizFormat(number: number): QuizFormat {
+  return (["text", "photo_words", "image_choice"] as const)[Math.max(0, number - 1) % 3] ?? "text";
+}
 
 /**
  * Points for a correct answer. Question rarity is drawn with the Classique pack rates;
@@ -27,4 +32,7 @@ export interface QuizQuestion {
   label: string;
   color: string | null;
   points: number;
+  format?: QuizFormat;
+  image_url?: string;
+  image_options?: { value: string; image_url: string }[];
 }
