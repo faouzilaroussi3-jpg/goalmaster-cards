@@ -274,6 +274,13 @@
       "when": 1793862916748,
       "tag": "0038_quiz_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1794055747363,
+      "tag": "0039_quiz_visual_formats_minute",
+      "breakpoints": true
     }
   ]
 }

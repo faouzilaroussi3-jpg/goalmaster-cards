@@ -14,9 +14,9 @@ export const Route = createFileRoute("/_authenticated/quiz")({
   head: () => ({
     meta: [
       { title: "Quiz foot — Goalmaster" },
-      { name: "description", content: "Réponds au plus de questions foot possible en 40 secondes. Des milliers de questions, des raretés comme les packs et un classement." },
+      { name: "description", content: "Une minute de quiz foot : questions classiques, joueurs à reconnaître et photos à choisir. Des milliers de questions et un classement Goalmaster." },
       { property: "og:title", content: "Quiz foot — Goalmaster" },
-      { property: "og:description", content: "40 secondes, des milliers de questions foot : grimpe au classement du Quiz." },
+      { property: "og:description", content: "60 secondes, des questions foot et des photos de joueurs : grimpe au classement du Quiz Goalmaster." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -47,6 +47,11 @@ function QuizPage() {
   const [flash, setFlash] = useState<{ choice: string; answer: string; ok: boolean } | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const finishing = useRef(false);
+  const nextQuestion = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (nextQuestion.current) clearTimeout(nextQuestion.current);
+  }, []);
 
   const board = useQuery({
     queryKey: ["quiz-board", period],
@@ -60,6 +65,7 @@ function QuizPage() {
   const end = async (runId: string, r?: Result) => {
     if (finishing.current) return;
     finishing.current = true;
+    if (nextQuestion.current) clearTimeout(nextQuestion.current);
     let res = r;
     if (!res) {
       const { data } = await supabase.rpc("finish_quiz", { _run: runId });
@@ -95,7 +101,7 @@ function QuizPage() {
   };
 
   const answer = async (choice: string) => {
-    if (!run || !q || busy) return;
+    if (!run || !q || busy || flash || finishing.current) return;
     setBusy(true);
     const { data, error } = await supabase.rpc("answer_quiz", { _run: run.id, _choice: choice });
     setBusy(false);
@@ -107,7 +113,10 @@ function QuizPage() {
     }
     setScore(d.score); setCorrect(d.correct);
     if (d.finished) { void end(run.id, d); return; }
-    setTimeout(() => { setFlash(null); setQ(d.question ?? null); }, 350);
+    nextQuestion.current = setTimeout(() => {
+      if (finishing.current) return;
+      setFlash(null); setQ(d.question ?? null);
+    }, 350);
   };
 
   const pct = (left / QUIZ_SECONDS) * 100;
@@ -137,16 +146,26 @@ function QuizPage() {
               <span>{q.label}</span><span>+{q.points} pts</span>
             </div>
             <p className="text-lg font-semibold">{q.prompt}</p>
+            {q.format === "photo_words" && q.image_url && (
+              <figure className="mx-auto mt-3 w-40 sm:w-48">
+                <QuizPhoto key={q.image_url} src={q.image_url} />
+                <figcaption className="mt-2 flex min-h-10 items-center justify-center rounded-md border border-border bg-muted px-2 text-center font-semibold">
+                  {flash?.choice ?? "?"}
+                </figcaption>
+              </figure>
+            )}
           </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {q.options.map((o) => {
+          <div className={cn("grid gap-2", q.format === "image_choice" ? "grid-cols-2" : "sm:grid-cols-2")}>
+            {q.options.map((o, i) => {
               const state = flash ? (o === flash.answer ? "good" : o === flash.choice ? "bad" : "idle") : "idle";
+              const photo = q.image_options?.find((item) => item.value === o);
               return (
                 <Button key={o} variant="outline" disabled={busy || !!flash} onClick={() => answer(o)} data-sfx="none"
-                  className={cn("h-auto min-h-12 whitespace-normal py-3 text-base",
+                  aria-label={photo ? `Photo ${i + 1}` : o}
+                  className={cn("h-auto min-h-12 whitespace-normal text-base", photo ? "block overflow-hidden p-1" : "py-3",
                     state === "good" && "border-primary bg-primary text-primary-foreground",
                     state === "bad" && "border-destructive bg-destructive text-destructive-foreground")}>
-                  {o}
+                  {photo ? <QuizPhoto src={photo.image_url} /> : o}
                 </Button>
               );
             })}
@@ -188,6 +207,20 @@ function QuizPage() {
           {board.data?.length === 0 && <li className="px-4 py-6 text-center text-sm text-muted-foreground">Personne n'a encore joué{period === "week" ? " cette semaine" : ""}.</li>}
         </ol>
       </section>
+    </div>
+  );
+}
+
+function QuizPhoto({ src }: { src: string }) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <div className="aspect-[4/3] w-full overflow-hidden rounded-md bg-muted">
+      {failed ? (
+        <span className="flex h-full items-center justify-center text-xs text-muted-foreground">Photo indisponible</span>
+      ) : (
+        <img src={src} alt="" draggable={false} onError={() => setFailed(true)}
+          className="h-full w-full object-contain" />
+      )}
     </div>
   );
 }
