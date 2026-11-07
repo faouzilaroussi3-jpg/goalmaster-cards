@@ -266,6 +266,7 @@ export function AppHeader() {
           {session && defis}
           {session && duelLink}
           {session && matchLink}
+          {session && quiz}
           {session && amis}
           {session && messages}
           {session && avatarLink}
@@ -311,6 +312,7 @@ export function AppHeader() {
         {session && defis}
         {session && duelLink}
         {session && matchLink}
+        {session && quiz}
         {session && amis}
         {session && messages}
         {session && avatarLink}
