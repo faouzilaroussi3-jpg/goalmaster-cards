@@ -1711,6 +1711,10 @@ export type Database = {
           w: string[]
         }[]
       }
+      _quiz_visual_question: {
+        Args: { _d: number; _format: string }
+        Returns: Json
+      }
       _rarest_label: {
         Args: {
           _label: string
