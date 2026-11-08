@@ -45,5 +45,5 @@
 - [x] Trophées remis avant le Ballon d'Or : carte la plus rare et plus de matchs gagnés de la semaine + onglet admin avec le nom des gagnants
 - [x] Admin seulement : onglet « Qui mérite le Ballon d'Or » avec un score qui additionne tout ce que chaque joueur a accompli dans le jeu
 - [x] Admin tab to view and customise the ceremony trophies (name, engraving, colours, finish, diamonds)
-- [ ] Quiz : une minute, alternance questions classiques / mots sous une photo / choix de photos.
-- [ ] Vérifier une partie complète et les nouveaux formats sur téléphone.
+- [x] Quiz : une minute, alternance questions classiques / mots sous une photo / choix de photos.
+- [x] Vérifier une partie complète et les nouveaux formats sur téléphone.
