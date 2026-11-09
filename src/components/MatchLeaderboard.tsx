@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ export function MatchLeaderboard({ limit = 50 }: { limit?: number }) {
         <li key={row.user_id} className="flex items-center gap-3 rounded-lg bg-secondary/60 px-3 py-2">
           <span className={cn("w-7 font-display text-xl", i < 3 ? "text-gold" : "text-muted-foreground")}>{i + 1}</span>
           <span className="flex-1 truncate font-semibold">
-            {row.username} <span className="text-xs text-muted-foreground">Niv. {row.level}</span>
+            <Link to="/joueur/$userId" params={{ userId: row.user_id }} className="hover:text-primary">{row.username}</Link> <span className="text-xs text-muted-foreground">Niv. {row.level}</span>
           </span>
           <span className="hidden gap-3 text-xs text-muted-foreground sm:flex">
             <span>{row.wins} V</span><span>{row.draws} N</span><span>{row.losses} D</span>

@@ -26,6 +26,7 @@ import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/q
 import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
 import { Route as AuthenticatedDuelsIndexRouteImport } from './routes/_authenticated/duels.index'
 import { Route as AuthenticatedDuelsDuelIdRouteImport } from './routes/_authenticated/duels.$duelId'
+import { Route as AuthenticatedJoueurUserIdRouteImport } from './routes/_authenticated/joueur.$userId'
 import { Route as AuthenticatedMatchsIndexRouteImport } from './routes/_authenticated/matchs.index'
 import { Route as AuthenticatedMatchsMatchIdRouteImport } from './routes/_authenticated/matchs.$matchId'
 import { Route as AuthenticatedMatchsEquipeRouteImport } from './routes/_authenticated/matchs.equipe'
@@ -117,6 +118,12 @@ const AuthenticatedDuelsDuelIdRoute =
     path: '/duels/$duelId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedJoueurUserIdRoute =
+  AuthenticatedJoueurUserIdRouteImport.update({
+    id: '/joueur/$userId',
+    path: '/joueur/$userId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMatchsIndexRoute =
   AuthenticatedMatchsIndexRouteImport.update({
     id: '/matchs/',
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof AuthenticatedQuizRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/joueur/$userId': typeof AuthenticatedJoueurUserIdRoute
   '/matchs/$matchId': typeof AuthenticatedMatchsMatchIdRoute
   '/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/duels/': typeof AuthenticatedDuelsIndexRoute
@@ -186,6 +194,7 @@ export interface FileRoutesByTo {
   '/quiz': typeof AuthenticatedQuizRoute
   '/transferts': typeof AuthenticatedTransfertsRoute
   '/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/joueur/$userId': typeof AuthenticatedJoueurUserIdRoute
   '/matchs/$matchId': typeof AuthenticatedMatchsMatchIdRoute
   '/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/duels': typeof AuthenticatedDuelsIndexRoute
@@ -211,6 +220,7 @@ export interface FileRoutesById {
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/transferts': typeof AuthenticatedTransfertsRoute
   '/_authenticated/duels/$duelId': typeof AuthenticatedDuelsDuelIdRoute
+  '/_authenticated/joueur/$userId': typeof AuthenticatedJoueurUserIdRoute
   '/_authenticated/matchs/$matchId': typeof AuthenticatedMatchsMatchIdRoute
   '/_authenticated/matchs/equipe': typeof AuthenticatedMatchsEquipeRoute
   '/_authenticated/duels/': typeof AuthenticatedDuelsIndexRoute
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/transferts'
     | '/duels/$duelId'
+    | '/joueur/$userId'
     | '/matchs/$matchId'
     | '/matchs/equipe'
     | '/duels/'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/transferts'
     | '/duels/$duelId'
+    | '/joueur/$userId'
     | '/matchs/$matchId'
     | '/matchs/equipe'
     | '/duels'
@@ -283,6 +295,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quiz'
     | '/_authenticated/transferts'
     | '/_authenticated/duels/$duelId'
+    | '/_authenticated/joueur/$userId'
     | '/_authenticated/matchs/$matchId'
     | '/_authenticated/matchs/equipe'
     | '/_authenticated/duels/'
@@ -420,6 +433,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDuelsDuelIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/joueur/$userId': {
+      id: '/_authenticated/joueur/$userId'
+      path: '/joueur/$userId'
+      fullPath: '/joueur/$userId'
+      preLoaderRoute: typeof AuthenticatedJoueurUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/matchs/': {
       id: '/_authenticated/matchs/'
       path: '/matchs'
@@ -471,6 +491,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRoute
   AuthenticatedDuelsDuelIdRoute: typeof AuthenticatedDuelsDuelIdRoute
+  AuthenticatedJoueurUserIdRoute: typeof AuthenticatedJoueurUserIdRoute
   AuthenticatedMatchsMatchIdRoute: typeof AuthenticatedMatchsMatchIdRoute
   AuthenticatedMatchsEquipeRoute: typeof AuthenticatedMatchsEquipeRoute
   AuthenticatedDuelsIndexRoute: typeof AuthenticatedDuelsIndexRoute
@@ -491,6 +512,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedTransfertsRoute: AuthenticatedTransfertsRoute,
   AuthenticatedDuelsDuelIdRoute: AuthenticatedDuelsDuelIdRoute,
+  AuthenticatedJoueurUserIdRoute: AuthenticatedJoueurUserIdRoute,
   AuthenticatedMatchsMatchIdRoute: AuthenticatedMatchsMatchIdRoute,
   AuthenticatedMatchsEquipeRoute: AuthenticatedMatchsEquipeRoute,
   AuthenticatedDuelsIndexRoute: AuthenticatedDuelsIndexRoute,
