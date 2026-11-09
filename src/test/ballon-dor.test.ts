@@ -31,14 +31,15 @@ describe("Ballon d'Or ceremonies", () => {
     expect(canAward(c({ status: "live" }))).toBe(true);
     expect(canAward(c({ status: "finished" }))).toBe(false);
   });
-  it("counts each Ballon d'Or won for the player's showcase", () => {
+  it("a Ballon d'Or is kept only until the next ceremony", () => {
     const list = [
       c({ id: "1", status: "finished", winner_id: "u1", awarded_at: "2026-10-04T20:00:00Z" }),
       c({ id: "2", status: "finished", winner_id: "u2", awarded_at: "2026-10-11T20:00:00Z" }),
       c({ id: "3", status: "finished", winner_id: "u1", awarded_at: "2026-10-18T20:00:00Z" }),
       c({ id: "4", status: "cancelled", winner_id: "u1" }),
     ];
-    expect(trophiesOf(list, "u1").map((t) => t.id)).toEqual(["3", "1"]);
+    expect(trophiesOf(list, "u1").map((t) => t.id)).toEqual(["3"]);
+    expect(trophiesOf(list.slice(0, 2), "u1")).toEqual([]);
   });
 });
 
@@ -71,7 +72,12 @@ describe("Side trophies before the Ballon d'Or", () => {
     expect(awardedIn(done, list)).toEqual(["rarest_card", "most_wins", "ballon"]);
   });
   it("side trophies go to the winner's showcase", () => {
-    const list = [aw({ id: "1", winner_id: "u1" }), aw({ id: "2", winner_id: "u2" })];
+    const list = [aw({ id: "1", winner_id: "u1" }), aw({ id: "2", kind: "most_wins", winner_id: "u2" })];
     expect(sideTrophiesOf(list, "u1").map((a) => a.id)).toEqual(["1"]);
+  });
+  it("a side trophy goes back to the new week's winner", () => {
+    const list = [aw({ id: "1", winner_id: "u1" }), aw({ id: "2", winner_id: "u2", awarded_at: "2026-11-08T19:05:00Z" })];
+    expect(sideTrophiesOf(list, "u1")).toEqual([]);
+    expect(sideTrophiesOf(list, "u2").map((a) => a.id)).toEqual(["2"]);
   });
 });
