@@ -26,9 +26,10 @@ export const canStart = (c: Ceremony, list: Ceremony[]) => c.status === "schedul
 export const canAward = (c: Ceremony) => c.status === "live";
 export const canCancel = (c: Ceremony) => c.status === "scheduled" || c.status === "live";
 
-/** Ballons d'Or won by a player, newest first. */
+/** Ballon d'Or currently held by a player: a trophy is kept only until the next ceremony hands it to someone else (0 or 1 item). */
 export function trophiesOf(list: Ceremony[], userId: string): Ceremony[] {
-  return list.filter((c) => c.status === "finished" && c.winner_id === userId).sort((a, b) => (b.awarded_at ?? "").localeCompare(a.awarded_at ?? ""));
+  const latest = list.filter((c) => c.status === "finished" && c.winner_id).sort((a, b) => (b.awarded_at ?? "").localeCompare(a.awarded_at ?? ""))[0];
+  return latest && latest.winner_id === userId ? [latest] : [];
 }
 
 export const MAX_AUDIENCE = 40;
@@ -97,7 +98,9 @@ export function stageMoment(c: Ceremony | null, awards: CeremonyAward[]): StageM
   return last ? { key: `${c.id}:${last.kind}`, kind: last.kind, winnerId: last.winner_id, winnerName: last.winner_name, detail: last.detail, coins: last.reward_coins } : null;
 }
 
-/** Side trophies won by a player, newest first. */
+/** Side trophies currently held by a player: each kind belongs only to its latest winner, newest first. */
 export function sideTrophiesOf(awards: CeremonyAward[], userId: string): CeremonyAward[] {
-  return awards.filter((a) => a.winner_id === userId).sort((a, b) => b.awarded_at.localeCompare(a.awarded_at));
+  const latest = new Map<string, CeremonyAward>();
+  for (const a of awards) { const cur = latest.get(a.kind); if (!cur || a.awarded_at > cur.awarded_at) latest.set(a.kind, a); }
+  return [...latest.values()].filter((a) => a.winner_id === userId).sort((a, b) => b.awarded_at.localeCompare(a.awarded_at));
 }
