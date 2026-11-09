@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +47,7 @@ export function LeaderboardTable({ limit = 50, compact }: { limit?: number; comp
             <li key={row.user_id} className="flex items-center gap-3 rounded-lg bg-secondary/60 px-3 py-2">
               <span className={cn("w-7 font-display text-xl", i < 3 ? "text-gold" : "text-muted-foreground")}>{i + 1}</span>
               <span className="flex-1 truncate font-semibold">
-                {row.username} <span className="text-xs text-muted-foreground">Niv. {row.level}</span>
+                <Link to="/joueur/$userId" params={{ userId: row.user_id }} className="hover:text-primary">{row.username}</Link> <span className="text-xs text-muted-foreground">Niv. {row.level}</span>
               </span>
               {!compact && (
                 <span className="hidden gap-4 text-xs text-muted-foreground sm:flex">

@@ -202,6 +202,7 @@ function FriendsPage() {
 
 export function PlayerBadge({ id, name, level }: { id?: string; name: string; level: number }) {
   const body = (
+    <>
       <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 font-display text-lg text-primary">
         {name.slice(0, 1).toUpperCase()}
       </span>
@@ -209,6 +210,9 @@ export function PlayerBadge({ id, name, level }: { id?: string; name: string; le
         <p className="truncate font-semibold">{name}</p>
         <p className="text-xs text-muted-foreground">Niveau {level}</p>
       </div>
-    </div>
+    </>
   );
+  return id
+    ? <Link to="/joueur/$userId" params={{ userId: id }} className="flex min-w-0 items-center gap-3 hover:opacity-80" aria-label={`Voir le profil de ${name}`}>{body}</Link>
+    : <div className="flex min-w-0 items-center gap-3">{body}</div>;
 }

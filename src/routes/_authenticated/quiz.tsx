@@ -199,7 +199,7 @@ function QuizPage() {
           {(board.data ?? []).map((r, i) => (
             <li key={r.user_id} className={cn("flex items-center gap-3 px-4 py-2 text-sm", r.user_id === uid && "bg-primary/10")}>
               <span className="w-6 font-bold text-primary">{i + 1}</span>
-              <span className="flex-1 truncate font-semibold">{r.username}</span>
+              <Link to="/joueur/$userId" params={{ userId: r.user_id }} className="flex-1 truncate font-semibold hover:text-primary">{r.username}</Link>
               <span className="text-xs text-muted-foreground">{r.total} pts au total · {r.runs} parties</span>
               <span className="w-16 text-right font-bold">{r.best} pts</span>
             </li>
