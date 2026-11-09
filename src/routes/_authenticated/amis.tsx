@@ -109,7 +109,7 @@ function FriendsPage() {
             {search.data?.length === 0 && <li className="text-sm text-muted-foreground">Aucun joueur trouvé.</li>}
             {search.data?.map((p) => (
               <li key={p.user_id} className="flex items-center gap-3 rounded-lg border border-border bg-background/60 p-3">
-                <PlayerBadge name={p.username} level={p.level} />
+                <PlayerBadge id={p.user_id} name={p.username} level={p.level} />
                 <div className="ml-auto">
                   {p.relation === "none" && (
                     <Button size="sm" data-sfx="none" disabled={busy} onClick={() => add.mutate(p)} className="bg-gold text-primary-foreground">
@@ -139,7 +139,7 @@ function FriendsPage() {
           <ul className="space-y-2">
             {incoming.map((f) => (
               <li key={f.friendship_id} className="flex items-center gap-3 rounded-lg border border-primary/50 bg-background/60 p-3 shadow-[0_0_18px_-8px_var(--primary)]">
-                <PlayerBadge name={f.username} level={f.level} />
+                <PlayerBadge id={f.user_id} name={f.username} level={f.level} />
                 <div className="ml-auto flex gap-2">
                   <Button size="sm" data-sfx="none" disabled={busy} onClick={() => respond.mutate({ f, accept: true })} className="bg-gold text-primary-foreground">
                     <Check className="h-4 w-4" /> Accepter
@@ -159,7 +159,7 @@ function FriendsPage() {
           <ul className="space-y-2">
             {outgoing.map((f) => (
               <li key={f.friendship_id} className="flex items-center gap-3 rounded-lg border border-border bg-background/60 p-3">
-                <PlayerBadge name={f.username} level={f.level} />
+                <PlayerBadge id={f.user_id} name={f.username} level={f.level} />
                 <Button size="sm" variant="secondary" data-sfx="none" disabled={busy} onClick={() => remove.mutate(f)} className="ml-auto">
                   Annuler
                 </Button>
@@ -177,7 +177,7 @@ function FriendsPage() {
         <ul className="grid gap-2 sm:grid-cols-2">
           {friends.map((f) => (
             <li key={f.friendship_id} className="flex items-center gap-3 rounded-lg border border-border bg-background/60 p-3">
-              <PlayerBadge name={f.username} level={f.level} />
+              <PlayerBadge id={f.user_id} name={f.username} level={f.level} />
               <div className="ml-auto flex gap-2">
                 <Button asChild size="sm" className="bg-gold text-primary-foreground">
                   <Link to="/messages" search={{ ami: f.user_id }}>
@@ -200,9 +200,8 @@ function FriendsPage() {
   );
 }
 
-export function PlayerBadge({ name, level }: { name: string; level: number }) {
-  return (
-    <div className="flex min-w-0 items-center gap-3">
+export function PlayerBadge({ id, name, level }: { id?: string; name: string; level: number }) {
+  const body = (
       <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 font-display text-lg text-primary">
         {name.slice(0, 1).toUpperCase()}
       </span>
